@@ -251,62 +251,52 @@ export interface CityScoreProfile {
 }
 
 export const cityScoreProfiles: CityScoreProfile[] = [
-  {
-    cityId: "amsterdam",
-    scores: {
-      affordability: 3,
-      safety: 8,
-      weather: 4,
-      salaryPotential: 9,
-      familyFit: 6,
-      expatFit: 10,
-      bigCityEnergy: 8,
-      internationalVibe: 10,
-      publicTransport: 9,
-    },
-  },
-  {
-    cityId: "rotterdam",
-    scores: {
-      affordability: 6,
-      safety: 7,
-      weather: 4,
-      salaryPotential: 7,
-      familyFit: 7,
-      expatFit: 8,
-      bigCityEnergy: 6,
-      internationalVibe: 7,
-      publicTransport: 8,
-    },
-  },
-  {
-    cityId: "paris",
-    scores: {
-      affordability: 2,
-      safety: 6,
-      weather: 6,
-      salaryPotential: 8,
-      familyFit: 7,
-      expatFit: 6,
-      bigCityEnergy: 10,
-      internationalVibe: 9,
-      publicTransport: 10,
-    },
-  },
-  {
-    cityId: "lyon",
-    scores: {
-      affordability: 8,
-      safety: 7,
-      weather: 8,
-      salaryPotential: 5,
-      familyFit: 9,
-      expatFit: 5,
-      bigCityEnergy: 5,
-      internationalVibe: 5,
-      publicTransport: 7,
-    },
-  },
+  // Netherlands
+  { cityId: "amsterdam", scores: { affordability: 3, safety: 8, weather: 4, salaryPotential: 9, familyFit: 6, expatFit: 10, bigCityEnergy: 8, internationalVibe: 10, publicTransport: 9 } },
+  { cityId: "rotterdam", scores: { affordability: 6, safety: 7, weather: 4, salaryPotential: 7, familyFit: 7, expatFit: 8, bigCityEnergy: 6, internationalVibe: 7, publicTransport: 8 } },
+  { cityId: "the-hague", scores: { affordability: 5, safety: 8, weather: 4, salaryPotential: 8, familyFit: 9, expatFit: 10, bigCityEnergy: 5, internationalVibe: 10, publicTransport: 8 } },
+  { cityId: "eindhoven", scores: { affordability: 7, safety: 8, weather: 4, salaryPotential: 9, familyFit: 8, expatFit: 8, bigCityEnergy: 4, internationalVibe: 7, publicTransport: 6 } },
+  { cityId: "utrecht", scores: { affordability: 5, safety: 8, weather: 4, salaryPotential: 7, familyFit: 7, expatFit: 7, bigCityEnergy: 6, internationalVibe: 6, publicTransport: 8 } },
+  // France
+  { cityId: "paris", scores: { affordability: 2, safety: 6, weather: 6, salaryPotential: 8, familyFit: 7, expatFit: 6, bigCityEnergy: 10, internationalVibe: 9, publicTransport: 10 } },
+  { cityId: "lyon", scores: { affordability: 8, safety: 7, weather: 8, salaryPotential: 5, familyFit: 9, expatFit: 5, bigCityEnergy: 5, internationalVibe: 5, publicTransport: 7 } },
+  { cityId: "bordeaux", scores: { affordability: 7, safety: 6, weather: 7, salaryPotential: 5, familyFit: 8, expatFit: 5, bigCityEnergy: 5, internationalVibe: 5, publicTransport: 6 } },
+  { cityId: "marseille", scores: { affordability: 7, safety: 4, weather: 10, salaryPotential: 4, familyFit: 5, expatFit: 4, bigCityEnergy: 7, internationalVibe: 5, publicTransport: 5 } },
+  { cityId: "lille", scores: { affordability: 9, safety: 5, weather: 3, salaryPotential: 4, familyFit: 6, expatFit: 4, bigCityEnergy: 4, internationalVibe: 5, publicTransport: 7 } },
+  { cityId: "nantes", scores: { affordability: 8, safety: 7, weather: 7, salaryPotential: 4, familyFit: 9, expatFit: 5, bigCityEnergy: 5, internationalVibe: 4, publicTransport: 7 } },
+  { cityId: "nice", scores: { affordability: 5, safety: 6, weather: 10, salaryPotential: 4, familyFit: 6, expatFit: 7, bigCityEnergy: 6, internationalVibe: 7, publicTransport: 6 } },
+  { cityId: "strasbourg", scores: { affordability: 8, safety: 7, weather: 5, salaryPotential: 5, familyFit: 8, expatFit: 8, bigCityEnergy: 4, internationalVibe: 8, publicTransport: 7 } },
+  // Germany
+  { cityId: "berlin", scores: { affordability: 7, safety: 6, weather: 5, salaryPotential: 7, familyFit: 7, expatFit: 10, bigCityEnergy: 10, internationalVibe: 9, publicTransport: 9 } },
+  { cityId: "munich", scores: { affordability: 4, safety: 9, weather: 6, salaryPotential: 9, familyFit: 9, expatFit: 8, bigCityEnergy: 8, internationalVibe: 8, publicTransport: 9 } },
+  { cityId: "frankfurt", scores: { affordability: 4, safety: 6, weather: 5, salaryPotential: 10, familyFit: 6, expatFit: 8, bigCityEnergy: 7, internationalVibe: 9, publicTransport: 8 } },
+  { cityId: "stuttgart", scores: { affordability: 5, safety: 8, weather: 6, salaryPotential: 9, familyFit: 8, expatFit: 7, bigCityEnergy: 5, internationalVibe: 6, publicTransport: 7 } },
+  { cityId: "hamburg", scores: { affordability: 5, safety: 7, weather: 4, salaryPotential: 8, familyFit: 7, expatFit: 7, bigCityEnergy: 8, internationalVibe: 7, publicTransport: 8 } },
+  // Italy
+  { cityId: "rome", scores: { affordability: 6, safety: 5, weather: 9, salaryPotential: 4, familyFit: 6, expatFit: 5, bigCityEnergy: 8, internationalVibe: 7, publicTransport: 6 } },
+  { cityId: "milan", scores: { affordability: 4, safety: 6, weather: 7, salaryPotential: 7, familyFit: 6, expatFit: 8, bigCityEnergy: 9, internationalVibe: 8, publicTransport: 8 } },
+  { cityId: "torino", scores: { affordability: 8, safety: 6, weather: 7, salaryPotential: 4, familyFit: 7, expatFit: 5, bigCityEnergy: 5, internationalVibe: 4, publicTransport: 7 } },
+  // Hungary
+  { cityId: "budapest", scores: { affordability: 10, safety: 7, weather: 7, salaryPotential: 3, familyFit: 7, expatFit: 7, bigCityEnergy: 8, internationalVibe: 6, publicTransport: 8 } },
+  // Spain
+  { cityId: "madrid", scores: { affordability: 6, safety: 7, weather: 9, salaryPotential: 5, familyFit: 7, expatFit: 8, bigCityEnergy: 9, internationalVibe: 8, publicTransport: 8 } },
+  { cityId: "barcelona", scores: { affordability: 5, safety: 6, weather: 9, salaryPotential: 5, familyFit: 7, expatFit: 9, bigCityEnergy: 9, internationalVibe: 9, publicTransport: 8 } },
+  { cityId: "valencia", scores: { affordability: 8, safety: 7, weather: 10, salaryPotential: 4, familyFit: 8, expatFit: 8, bigCityEnergy: 6, internationalVibe: 6, publicTransport: 7 } },
+  // Belgium
+  { cityId: "brussels", scores: { affordability: 4, safety: 6, weather: 4, salaryPotential: 7, familyFit: 8, expatFit: 10, bigCityEnergy: 7, internationalVibe: 10, publicTransport: 8 } },
+  { cityId: "antwerp", scores: { affordability: 5, safety: 6, weather: 4, salaryPotential: 6, familyFit: 7, expatFit: 7, bigCityEnergy: 6, internationalVibe: 7, publicTransport: 7 } },
+  // Switzerland
+  { cityId: "geneva", scores: { affordability: 1, safety: 9, weather: 6, salaryPotential: 10, familyFit: 8, expatFit: 10, bigCityEnergy: 5, internationalVibe: 10, publicTransport: 8 } },
+  { cityId: "zurich", scores: { affordability: 1, safety: 10, weather: 6, salaryPotential: 10, familyFit: 8, expatFit: 9, bigCityEnergy: 6, internationalVibe: 9, publicTransport: 10 } },
+  // Austria
+  { cityId: "vienna", scores: { affordability: 5, safety: 9, weather: 6, salaryPotential: 6, familyFit: 9, expatFit: 7, bigCityEnergy: 8, internationalVibe: 7, publicTransport: 9 } },
+  // Portugal
+  { cityId: "lisbon", scores: { affordability: 6, safety: 8, weather: 10, salaryPotential: 4, familyFit: 7, expatFit: 9, bigCityEnergy: 7, internationalVibe: 9, publicTransport: 7 } },
+  { cityId: "porto", scores: { affordability: 8, safety: 8, weather: 8, salaryPotential: 3, familyFit: 7, expatFit: 8, bigCityEnergy: 5, internationalVibe: 7, publicTransport: 6 } },
+  // Denmark
+  { cityId: "copenhagen", scores: { affordability: 2, safety: 9, weather: 4, salaryPotential: 9, familyFit: 10, expatFit: 9, bigCityEnergy: 7, internationalVibe: 8, publicTransport: 9 } },
+  // Sweden
+  { cityId: "stockholm", scores: { affordability: 3, safety: 7, weather: 4, salaryPotential: 9, familyFit: 10, expatFit: 8, bigCityEnergy: 8, internationalVibe: 8, publicTransport: 9 } },
 ];
 
 export interface QuizResult {
@@ -332,10 +322,52 @@ const dimensionLabels: Record<QuizDimension, string> = {
 };
 
 const cityNames: Record<string, { city: string; country: string }> = {
+  // Netherlands
   amsterdam: { city: "Amsterdam", country: "Netherlands" },
   rotterdam: { city: "Rotterdam", country: "Netherlands" },
+  "the-hague": { city: "The Hague", country: "Netherlands" },
+  eindhoven: { city: "Eindhoven", country: "Netherlands" },
+  utrecht: { city: "Utrecht", country: "Netherlands" },
+  // France
   paris: { city: "Paris", country: "France" },
   lyon: { city: "Lyon", country: "France" },
+  bordeaux: { city: "Bordeaux", country: "France" },
+  marseille: { city: "Marseille", country: "France" },
+  lille: { city: "Lille", country: "France" },
+  nantes: { city: "Nantes", country: "France" },
+  nice: { city: "Nice", country: "France" },
+  strasbourg: { city: "Strasbourg", country: "France" },
+  // Germany
+  berlin: { city: "Berlin", country: "Germany" },
+  munich: { city: "Munich", country: "Germany" },
+  frankfurt: { city: "Frankfurt", country: "Germany" },
+  stuttgart: { city: "Stuttgart", country: "Germany" },
+  hamburg: { city: "Hamburg", country: "Germany" },
+  // Italy
+  rome: { city: "Rome", country: "Italy" },
+  milan: { city: "Milan", country: "Italy" },
+  torino: { city: "Torino", country: "Italy" },
+  // Hungary
+  budapest: { city: "Budapest", country: "Hungary" },
+  // Spain
+  madrid: { city: "Madrid", country: "Spain" },
+  barcelona: { city: "Barcelona", country: "Spain" },
+  valencia: { city: "Valencia", country: "Spain" },
+  // Belgium
+  brussels: { city: "Brussels", country: "Belgium" },
+  antwerp: { city: "Antwerp", country: "Belgium" },
+  // Switzerland
+  geneva: { city: "Geneva", country: "Switzerland" },
+  zurich: { city: "Zurich", country: "Switzerland" },
+  // Austria
+  vienna: { city: "Vienna", country: "Austria" },
+  // Portugal
+  lisbon: { city: "Lisbon", country: "Portugal" },
+  porto: { city: "Porto", country: "Portugal" },
+  // Denmark
+  copenhagen: { city: "Copenhagen", country: "Denmark" },
+  // Sweden
+  stockholm: { city: "Stockholm", country: "Sweden" },
 };
 
 export function calculateQuizResults(
