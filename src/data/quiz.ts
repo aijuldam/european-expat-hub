@@ -34,6 +34,7 @@ export interface QuizQuestion {
   category: QuizCategory;
   question: string;
   description?: string;
+  multiSelect?: boolean;
   options: QuizOption[];
 }
 
@@ -256,8 +257,9 @@ export const quizQuestions: QuizQuestion[] = [
   {
     id: "language_skills",
     category: "language",
-    question: "Which local language do you already speak or are most willing to learn?",
-    description: "Choose the one that fits you best.",
+    multiSelect: true,
+    question: "Which local languages do you already speak or are willing to learn?",
+    description: "Select all that apply.",
     options: [
       ...Array.from(
         new Set(countries.flatMap((c) => c.languages))
@@ -430,7 +432,7 @@ const cityNames: Record<string, { city: string; country: string }> = {
 };
 
 export function calculateQuizResults(
-  answers: Record<string, string>
+  answers: Record<string, string | string[]>
 ): QuizResult[] {
   const userDimensionScores: Record<QuizDimension, number> = {
     affordability: 0,
@@ -447,10 +449,14 @@ export function calculateQuizResults(
   for (const questionId of Object.keys(answers)) {
     const question = quizQuestions.find((q) => q.id === questionId);
     if (!question) continue;
-    const option = question.options.find((o) => o.value === answers[questionId]);
-    if (!option) continue;
-    for (const [dim, score] of Object.entries(option.scores)) {
-      userDimensionScores[dim as QuizDimension] += score;
+    const raw = answers[questionId];
+    const values = Array.isArray(raw) ? raw : [raw];
+    for (const val of values) {
+      const option = question.options.find((o) => o.value === val);
+      if (!option) continue;
+      for (const [dim, score] of Object.entries(option.scores)) {
+        userDimensionScores[dim as QuizDimension] += score;
+      }
     }
   }
 

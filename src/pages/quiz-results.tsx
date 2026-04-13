@@ -13,9 +13,9 @@ import { ArrowRight, MapPin, Trophy, BarChart3, RotateCcw } from "lucide-react";
 export default function QuizResults() {
   const results = useMemo(() => {
     const params = new URLSearchParams(window.location.search);
-    const answers: Record<string, string> = {};
+    const answers: Record<string, string | string[]> = {};
     params.forEach((value, key) => {
-      answers[key] = value;
+      answers[key] = value.includes(",") ? value.split(",") : value;
     });
     return calculateQuizResults(answers);
   }, []);
