@@ -1,6 +1,6 @@
 export interface SalaryInput {
   grossAnnual: number;
-  country: "nl" | "fr";
+  country: "nl" | "fr" | "hu";
   thirtyPercentRuling?: boolean;
   cadreStatus?: boolean;
 }
@@ -230,9 +230,80 @@ function calculateFrenchNetSalary(
   };
 }
 
+// ── Hungary ────────────────────────────────────────────────────────────────
+// Source: 2024 Hungarian tax law (Act CXVII of 1995 as amended)
+// Salaries in Hungary are denominated in HUF; inputs here are treated as
+// EUR-equivalent for cross-country comparison purposes.
+
+const hungarianTaxParams = {
+  year: 2024,
+  incomeTaxRate: 0.15,          // SZJA — flat personal income tax
+  socialContributions: {
+    pension: 0.10,              // Nyugdíjjárulék
+    health: 0.07,               // Egészségbiztosítási járulék (7%)
+    labourMarket: 0.015,        // Munkaerőpiaci járulék
+  },
+  // Employer-side (informational, not deducted from net shown):
+  employerSocialTax: 0.13,      // Szociális hozzájárulási adó (szocho)
+};
+
+function calculateHungarianNetSalary(grossAnnual: number): SalaryBreakdown {
+  const { incomeTaxRate, socialContributions } = hungarianTaxParams;
+
+  const incomeTax = grossAnnual * incomeTaxRate;
+  const pension = grossAnnual * socialContributions.pension;
+  const health = grossAnnual * socialContributions.health;
+  const labourMarket = grossAnnual * socialContributions.labourMarket;
+  const totalSocial = pension + health + labourMarket;
+  const totalDeductions = incomeTax + totalSocial;
+  const netAnnual = grossAnnual - totalDeductions;
+
+  const breakdown: { label: string; amount: number; description: string }[] = [
+    {
+      label: "Income tax (SZJA)",
+      amount: Math.round(incomeTax),
+      description: `Flat ${incomeTaxRate * 100}% személyi jövedelemadó`,
+    },
+    {
+      label: "Pension contribution",
+      amount: Math.round(pension),
+      description: `${+(socialContributions.pension * 100).toPrecision(4)}% nyugdíjjárulék`,
+    },
+    {
+      label: "Health insurance",
+      amount: Math.round(health),
+      description: `${+(socialContributions.health * 100).toPrecision(4)}% egészségbiztosítási járulék`,
+    },
+    {
+      label: "Labour market contribution",
+      amount: Math.round(labourMarket),
+      description: `${+(socialContributions.labourMarket * 100).toPrecision(4)}% munkaerőpiaci járulék`,
+    },
+  ];
+
+  return {
+    grossAnnual,
+    grossMonthly: Math.round(grossAnnual / 12),
+    taxableIncome: grossAnnual,
+    incomeTax: Math.round(incomeTax),
+    socialContributions: Math.round(totalSocial),
+    totalDeductions: Math.round(totalDeductions),
+    netAnnual: Math.round(netAnnual),
+    netMonthly: Math.round(netAnnual / 12),
+    effectiveTaxRate:
+      Math.round((totalDeductions / grossAnnual) * 100 * 10) / 10,
+    breakdown,
+    disclaimer:
+      "This is an indicative estimate based on 2024 Hungarian tax parameters (15% flat SZJA + 18.5% employee social contributions). Hungarian salaries are typically denominated in HUF; EUR-equivalent input is used here for cross-country comparison. Actual results may vary based on personal circumstances, family status, and age-based exemptions (e.g. under-25 income tax relief). Employer social tax (szocho, 13%) is not included in the net figure shown. This is not tax or legal advice.",
+  };
+}
+
 export function calculateSalary(input: SalaryInput): SalaryBreakdown {
   if (input.country === "nl") {
     return calculateDutchNetSalary(input.grossAnnual, input.thirtyPercentRuling ?? false);
+  }
+  if (input.country === "hu") {
+    return calculateHungarianNetSalary(input.grossAnnual);
   }
   return calculateFrenchNetSalary(input.grossAnnual, input.cadreStatus ?? false);
 }

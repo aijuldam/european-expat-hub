@@ -11,7 +11,7 @@ import { calculateSalary, type SalaryBreakdown } from "@/data/salary-calculator"
 import { Calculator, ArrowRight, AlertTriangle } from "lucide-react";
 
 export default function SalaryCalculator() {
-  const [country, setCountry] = useState<"nl" | "fr">("nl");
+  const [country, setCountry] = useState<"nl" | "fr" | "hu">("nl");
   const [grossInput, setGrossInput] = useState<string>("50000");
   const [thirtyPercentRuling, setThirtyPercentRuling] = useState(false);
   const [cadreStatus, setCadreStatus] = useState(false);
@@ -19,7 +19,7 @@ export default function SalaryCalculator() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const c = params.get("country");
-    if (c === "nl" || c === "fr") setCountry(c);
+    if (c === "nl" || c === "fr" || c === "hu") setCountry(c);
   }, []);
 
   const grossAnnual = parseInt(grossInput) || 0;
@@ -57,13 +57,14 @@ export default function SalaryCalculator() {
               <div className="space-y-6">
                 <div>
                   <Label className="text-sm font-medium mb-2 block">Country</Label>
-                  <Select value={country} onValueChange={(v) => setCountry(v as "nl" | "fr")}>
+                  <Select value={country} onValueChange={(v) => setCountry(v as "nl" | "fr" | "hu")}>
                     <SelectTrigger data-testid="select-country">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="nl">Netherlands</SelectItem>
                       <SelectItem value="fr">France</SelectItem>
+                      <SelectItem value="hu">Hungary</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

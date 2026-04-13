@@ -5,7 +5,7 @@ export interface Country {
   languages: string[];
   summary: string;
   flagEmoji: string;
-  salaryCalculatorType: "dutch" | "french" | "none";
+  salaryCalculatorType: "dutch" | "french" | "hungarian" | "none";
   nationalTaxNotes: string;
   methodologyNotes: string;
   avgWeatherSummary: string;
@@ -125,7 +125,7 @@ export const countries: Country[] = [
     summary:
       "Hungary offers one of the most affordable lifestyles in the EU, centred around its stunning capital Budapest. With a flat income tax rate, low cost of living, and a growing tech and startup scene, it attracts expats looking for European city life on a budget. EU membership means freedom of movement within the bloc.",
     flagEmoji: "HU",
-    salaryCalculatorType: "none",
+    salaryCalculatorType: "hungarian",
     nationalTaxNotes:
       "Hungary has a flat personal income tax rate of 15%. Social contributions for employees total approximately 18.5% (pension, health, labour market). Employer contributions are around 13%. Net salaries are higher in percentage terms than many Western European countries.",
     methodologyNotes:
