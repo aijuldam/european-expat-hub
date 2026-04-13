@@ -4,8 +4,22 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { quizQuestions } from "@/data/quiz";
+import { quizQuestions, categoryConfig } from "@/data/quiz";
 import { ArrowLeft, ArrowRight, Compass } from "lucide-react";
+import { Shield, Coins, Sun, Banknote, Heart, Languages, Globe, Zap, Train, Palette } from "lucide-react";
+
+const categoryIcons: Record<string, React.ElementType> = {
+  safety: Shield,
+  costOfLiving: Coins,
+  weather: Sun,
+  salary: Banknote,
+  family: Heart,
+  language: Languages,
+  international: Globe,
+  cityLife: Zap,
+  transport: Train,
+  lifestyle: Palette,
+};
 
 export default function Quiz() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -56,6 +70,16 @@ export default function Quiz() {
 
         <div className="flex-1 flex items-center justify-center py-12 px-4">
           <div className="w-full max-w-2xl">
+            {(() => {
+              const cat = categoryConfig[question.category];
+              const Icon = categoryIcons[question.category];
+              return (
+                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border mb-3 ${cat.colorClass}`}>
+                  {Icon && <Icon className="w-3.5 h-3.5" aria-hidden="true" />}
+                  {cat.label}
+                </span>
+              );
+            })()}
             <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-2" data-testid="text-question">
               {question.question}
             </h2>

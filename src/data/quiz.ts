@@ -1,3 +1,5 @@
+import { countries } from "@/data/countries";
+
 export type QuizDimension =
   | "affordability"
   | "safety"
@@ -9,6 +11,18 @@ export type QuizDimension =
   | "internationalVibe"
   | "publicTransport";
 
+export type QuizCategory =
+  | "family"
+  | "costOfLiving"
+  | "salary"
+  | "safety"
+  | "weather"
+  | "international"
+  | "cityLife"
+  | "transport"
+  | "language"
+  | "lifestyle";
+
 export interface QuizOption {
   label: string;
   value: string;
@@ -17,14 +31,29 @@ export interface QuizOption {
 
 export interface QuizQuestion {
   id: string;
+  category: QuizCategory;
   question: string;
   description?: string;
   options: QuizOption[];
 }
 
+export const categoryConfig: Record<QuizCategory, { label: string; colorClass: string }> = {
+  safety:      { label: "Safety",         colorClass: "bg-blue-50 text-blue-700 border-blue-200" },
+  costOfLiving:{ label: "Cost of Living", colorClass: "bg-teal-50 text-teal-700 border-teal-200" },
+  weather:     { label: "Weather",        colorClass: "bg-amber-50 text-amber-700 border-amber-200" },
+  salary:      { label: "Salary",         colorClass: "bg-violet-50 text-violet-700 border-violet-200" },
+  family:      { label: "Family",         colorClass: "bg-rose-50 text-rose-700 border-rose-200" },
+  language:    { label: "Language",        colorClass: "bg-indigo-50 text-indigo-700 border-indigo-200" },
+  international:{ label: "International", colorClass: "bg-cyan-50 text-cyan-700 border-cyan-200" },
+  cityLife:    { label: "City Life",      colorClass: "bg-orange-50 text-orange-700 border-orange-200" },
+  transport:   { label: "Transport",      colorClass: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  lifestyle:   { label: "Lifestyle",      colorClass: "bg-pink-50 text-pink-700 border-pink-200" },
+};
+
 export const quizQuestions: QuizQuestion[] = [
   {
     id: "family_status",
+    category: "family",
     question: "What is your current family situation?",
     description: "This helps us match you with cities that fit your lifestyle.",
     options: [
@@ -47,6 +76,7 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "budget",
+    category: "costOfLiving",
     question: "How important is affordability to you?",
     description: "Consider housing, groceries, transport, and daily expenses.",
     options: [
@@ -69,6 +99,7 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "salary_expectations",
+    category: "salary",
     question: "What matters more: higher salary or lower cost of living?",
     options: [
       {
@@ -90,6 +121,7 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "safety",
+    category: "safety",
     question: "How important is safety in your daily life?",
     options: [
       {
@@ -111,6 +143,7 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "weather",
+    category: "weather",
     question: "What kind of weather do you prefer?",
     description: "Think about sunshine, warmth, and seasonal variation.",
     options: [
@@ -133,6 +166,7 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "international",
+    category: "international",
     question: "How important is an international, cosmopolitan atmosphere?",
     options: [
       {
@@ -154,6 +188,7 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "city_energy",
+    category: "cityLife",
     question: "What kind of city energy do you prefer?",
     options: [
       {
@@ -175,6 +210,7 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "transport",
+    category: "transport",
     question: "How do you plan to get around?",
     options: [
       {
@@ -196,29 +232,35 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "language",
+    category: "language",
     question: "How open are you to learning a new language?",
     description:
       "Some cities are easier to navigate in English than others.",
     options: [
       {
-        label: "I prefer English-friendly environments",
+        label: "I prefer English-first environments",
         value: "english",
         scores: { expatFit: 3, internationalVibe: 1 },
       },
+      ...Array.from(
+        new Set(countries.flatMap((c) => c.languages))
+      )
+        .sort()
+        .map((lang) => ({
+          label: `I'm open to learning ${lang}`,
+          value: lang.toLowerCase(),
+          scores: { expatFit: 1 } as Partial<Record<QuizDimension, number>>,
+        })),
       {
-        label: "I am willing to learn the local language over time",
-        value: "willing",
-        scores: { expatFit: 1 },
-      },
-      {
-        label: "I already speak French or Dutch",
-        value: "speaks",
-        scores: {},
+        label: "I strongly prefer not to learn a new local language",
+        value: "none",
+        scores: { expatFit: 3, internationalVibe: 2 },
       },
     ],
   },
   {
     id: "lifestyle",
+    category: "lifestyle",
     question: "What lifestyle matters most to you?",
     options: [
       {

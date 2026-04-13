@@ -2,6 +2,7 @@ export interface Country {
   id: string;
   name: string;
   slug: string;
+  languages: string[];
   summary: string;
   flagEmoji: string;
   salaryCalculatorType: "dutch" | "french" | "none";
@@ -20,6 +21,7 @@ export const countries: Country[] = [
     id: "nl",
     name: "Netherlands",
     slug: "netherlands",
+    languages: ["Dutch"],
     summary:
       "The Netherlands is a small, densely populated country known for its flat landscape, cycling culture, and progressive policies. It ranks consistently high in quality of life, safety, and work-life balance. English proficiency is among the highest in Europe, making it a popular destination for international professionals.",
     flagEmoji: "NL",
@@ -44,6 +46,7 @@ export const countries: Country[] = [
     id: "fr",
     name: "France",
     slug: "france",
+    languages: ["French"],
     summary:
       "France is Western Europe's largest country, renowned for its culture, cuisine, and quality of life. It offers world-class healthcare, excellent public infrastructure, and a diverse range of living environments from cosmopolitan Paris to charming regional cities. The 35-hour workweek reflects the importance placed on leisure and family time.",
     flagEmoji: "FR",
@@ -68,6 +71,7 @@ export const countries: Country[] = [
     id: "de",
     name: "Germany",
     slug: "germany",
+    languages: ["German"],
     summary:
       "Germany is Europe's largest economy and a powerhouse of engineering, technology, and innovation. It offers a high standard of living, robust social security, excellent infrastructure, and a strong job market. With a federal system, each state has its own character — from cosmopolitan Berlin to prosperous Bavaria.",
     flagEmoji: "DE",
@@ -92,6 +96,7 @@ export const countries: Country[] = [
     id: "it",
     name: "Italy",
     slug: "italy",
+    languages: ["Italian"],
     summary:
       "Italy offers an unmatched combination of history, culture, cuisine, and natural beauty. From the fashion capital of Milan to eternal Rome and the Alps of Torino, Italy provides a deeply rewarding lifestyle. The pace of life is slower and quality of living high, though bureaucracy and economic challenges persist in some regions.",
     flagEmoji: "IT",
@@ -116,6 +121,7 @@ export const countries: Country[] = [
     id: "hu",
     name: "Hungary",
     slug: "hungary",
+    languages: ["Hungarian"],
     summary:
       "Hungary offers one of the most affordable lifestyles in the EU, centred around its stunning capital Budapest. With a flat income tax rate, low cost of living, and a growing tech and startup scene, it attracts expats looking for European city life on a budget. EU membership means freedom of movement within the bloc.",
     flagEmoji: "HU",
@@ -140,6 +146,7 @@ export const countries: Country[] = [
     id: "es",
     name: "Spain",
     slug: "spain",
+    languages: ["Spanish"],
     summary:
       "Spain combines a Mediterranean lifestyle with modern European infrastructure. Known for its warm climate, vibrant culture, world-class gastronomy, and strong work-life balance, it consistently ranks among the most popular expat destinations. Major cities offer strong job markets in tech, tourism, and international business.",
     flagEmoji: "ES",
@@ -164,6 +171,7 @@ export const countries: Country[] = [
     id: "be",
     name: "Belgium",
     slug: "belgium",
+    languages: ["Dutch", "French"],
     summary:
       "Belgium punches above its weight as a small country with outsized influence — home to NATO, the EU headquarters, and a high standard of living. With excellent healthcare, strong social protection, and a central location in Western Europe, it's a popular base for international professionals and diplomats.",
     flagEmoji: "BE",
@@ -188,6 +196,7 @@ export const countries: Country[] = [
     id: "ch",
     name: "Switzerland",
     slug: "switzerland",
+    languages: ["German", "French", "Italian"],
     summary:
       "Switzerland is synonymous with high quality of life, political stability, and precision. With some of Europe's highest salaries, pristine natural landscapes, excellent infrastructure, and a tradition of neutrality, it attracts top international talent. The cost of living is equally high, but purchasing power often remains strong.",
     flagEmoji: "CH",
@@ -212,6 +221,7 @@ export const countries: Country[] = [
     id: "at",
     name: "Austria",
     slug: "austria",
+    languages: ["German"],
     summary:
       "Austria offers a remarkable combination of cultural richness, natural beauty, and high living standards. Vienna consistently ranks as the world's most liveable city. With strong social welfare, universal healthcare, and a central European location, Austria is an increasingly popular expat destination.",
     flagEmoji: "AT",
@@ -236,6 +246,7 @@ export const countries: Country[] = [
     id: "pt",
     name: "Portugal",
     slug: "portugal",
+    languages: ["Portuguese"],
     summary:
       "Portugal has emerged as one of Europe's most sought-after expat destinations — combining Atlantic charm, a warm climate, affordable living, and growing tech hubs in Lisbon and Porto. The country offers excellent quality of life at a fraction of Northern European costs, with a welcoming culture and impressive safety record.",
     flagEmoji: "PT",
@@ -260,6 +271,7 @@ export const countries: Country[] = [
     id: "dk",
     name: "Denmark",
     slug: "denmark",
+    languages: ["Danish"],
     summary:
       "Denmark is the birthplace of hygge — the art of cosy, contented living. It consistently tops global rankings for happiness, quality of life, and work-life balance. With one of Europe's most egalitarian societies, strong public services, and a booming life-science and tech sector, Denmark is a compelling destination for skilled expats.",
     flagEmoji: "DK",
@@ -284,6 +296,7 @@ export const countries: Country[] = [
     id: "se",
     name: "Sweden",
     slug: "sweden",
+    languages: ["Swedish"],
     summary:
       "Sweden combines Scandinavian design sensibility with a world-class social system, strong innovation economy, and a deep commitment to sustainability and equality. Stockholm is a leading European tech and startup hub, and the country offers an exceptionally high quality of life across all regions.",
     flagEmoji: "SE",
