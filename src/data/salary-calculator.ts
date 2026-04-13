@@ -308,6 +308,14 @@ export function calculateSalary(input: SalaryInput): SalaryBreakdown {
   return calculateFrenchNetSalary(input.grossAnnual, input.cadreStatus ?? false);
 }
 
+// ── Exchange rate config ───────────────────────────────────────────────────
+// Update `rate` and `lastUpdated` once a month.
+// Source: ECB / Magyar Nemzeti Bank (MNB) reference rates.
+export const hufEurRate = {
+  rate: 395,              // 1 EUR = 395 HUF
+  lastUpdated: "1 Apr 2025",
+};
+
 export const monthNames = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
