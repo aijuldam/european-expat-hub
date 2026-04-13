@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { calculateSalary, hufEurRate, type SalaryBreakdown } from "@/data/salary-calculator";
-import { Calculator, AlertTriangle, Info } from "lucide-react";
+import { Calculator, AlertTriangle, Info, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 // Default gross inputs per country
 const DEFAULT_GROSS: Record<string, string> = {
@@ -225,6 +225,73 @@ export default function SalaryCalculator() {
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Median income benchmark */}
+              {(() => {
+                const median = result.medianGrossAnnual;
+                const pct = Math.round(((grossAnnual - median) / median) * 100);
+                const absPct = Math.abs(pct);
+                const isAbove = pct > 0;
+                const isAt = absPct <= 3; // within ±3% → "around median"
+
+                // Display values — respect HUF/EUR toggle
+                const fmtMedian = isHungary && showInEur
+                  ? `${Math.round(median / hufEurRate.rate).toLocaleString()} EUR`
+                  : `${median.toLocaleString()} ${isHungary ? "HUF" : "EUR"}`;
+
+                const Icon = isAt ? Minus : isAbove ? TrendingUp : TrendingDown;
+                const colorClass = isAt
+                  ? "text-muted-foreground"
+                  : isAbove
+                  ? "text-emerald-600"
+                  : "text-amber-600";
+                const bgClass = isAt
+                  ? "bg-muted/40"
+                  : isAbove
+                  ? "bg-emerald-50 border-emerald-200"
+                  : "bg-amber-50 border-amber-200";
+
+                const label = isAt
+                  ? "Around the country median"
+                  : isAbove
+                  ? `${absPct}% above the country median`
+                  : `${absPct}% below the country median`;
+
+                // Progress bar: median anchored at 50%; salary fills proportionally
+                // Clamp displayed bar between 10% and 90% of width
+                const barPct = Math.min(90, Math.max(10, 50 + (pct / 2)));
+
+                return (
+                  <div className={`rounded-lg border px-4 py-3 mb-4 ${bgClass}`} data-testid="benchmark-block">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        Income benchmark
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        Source: {result.medianSource}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <Icon className={`w-4 h-4 flex-shrink-0 ${colorClass}`} />
+                      <span className={`text-sm font-semibold ${colorClass}`}>{label}</span>
+                    </div>
+                    {/* Visual bar */}
+                    <div className="relative h-2 bg-muted rounded-full overflow-hidden mb-2">
+                      {/* Median marker */}
+                      <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/30 z-10" style={{ left: "50%" }} />
+                      {/* User salary fill */}
+                      <div
+                        className={`absolute top-0 left-0 h-full rounded-full transition-all ${isAt ? "bg-muted-foreground/50" : isAbove ? "bg-emerald-500" : "bg-amber-500"}`}
+                        style={{ width: `${barPct}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Your salary: <span className="font-medium text-foreground">{formatAmt(grossAnnual)}</span></span>
+                      <span>Median: <span className="font-medium text-foreground">{fmtMedian}</span></span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Exchange rate helper — Hungary only */}
               {isHungary && (

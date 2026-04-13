@@ -17,6 +17,10 @@ export interface SalaryBreakdown {
   effectiveTaxRate: number;
   breakdown: { label: string; amount: number; description: string }[];
   disclaimer: string;
+  /** Median gross annual salary in the country's native currency */
+  medianGrossAnnual: number;
+  /** Short citation for the median figure */
+  medianSource: string;
 }
 
 interface TaxBracket {
@@ -43,6 +47,9 @@ const dutchTaxParams = {
     minCredit: 0,
   },
   thirtyPercentRulingExemption: 0.3,
+  // Median gross annual wage — CBS Statline 2023 (full-time equivalent)
+  medianGrossAnnual: 44000,
+  medianSource: "CBS Statline 2023",
 };
 
 function calculateDutchNetSalary(
@@ -130,6 +137,8 @@ function calculateDutchNetSalary(
     breakdown,
     disclaimer:
       "This is an indicative estimate based on 2024 Dutch tax parameters. Social security contributions are included in the tax brackets. Actual results may vary based on personal circumstances. This is not tax or legal advice.",
+    medianGrossAnnual: dutchTaxParams.medianGrossAnnual,
+    medianSource: dutchTaxParams.medianSource,
   };
 }
 
@@ -148,6 +157,9 @@ const frenchTaxParams = {
     { upTo: 177106, rate: 0.41 },
     { upTo: Infinity, rate: 0.45 },
   ] as TaxBracket[],
+  // Median gross annual wage — INSEE 2022 (salaire médian brut, full-time)
+  medianGrossAnnual: 26512,
+  medianSource: "INSEE 2022",
 };
 
 function calculateFrenchNetSalary(
@@ -227,6 +239,8 @@ function calculateFrenchNetSalary(
     breakdown,
     disclaimer:
       "This is an indicative estimate based on 2024 French tax and social contribution parameters. Actual results may vary based on personal circumstances, family quotient, and specific employment terms. This is not tax or legal advice.",
+    medianGrossAnnual: frenchTaxParams.medianGrossAnnual,
+    medianSource: frenchTaxParams.medianSource,
   };
 }
 
@@ -245,6 +259,9 @@ const hungarianTaxParams = {
   },
   // Employer-side (informational, not deducted from net shown):
   employerSocialTax: 0.13,      // Szociális hozzájárulási adó (szocho)
+  // Median gross annual wage — KSH (Hungarian Central Statistical Office) 2023
+  medianGrossAnnual: 4_320_000, // ~360 000 HUF/month median gross
+  medianSource: "KSH 2023",
 };
 
 function calculateHungarianNetSalary(grossAnnual: number): SalaryBreakdown {
@@ -295,6 +312,8 @@ function calculateHungarianNetSalary(grossAnnual: number): SalaryBreakdown {
     breakdown,
     disclaimer:
       "This is an indicative estimate based on 2024 Hungarian tax parameters (15% flat SZJA + 18.5% employee social contributions). Hungarian salaries are typically denominated in HUF; EUR-equivalent input is used here for cross-country comparison. Actual results may vary based on personal circumstances, family status, and age-based exemptions (e.g. under-25 income tax relief). Employer social tax (szocho, 13%) is not included in the net figure shown. This is not tax or legal advice.",
+    medianGrossAnnual: hungarianTaxParams.medianGrossAnnual,
+    medianSource: hungarianTaxParams.medianSource,
   };
 }
 
