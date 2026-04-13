@@ -2,8 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cities } from "@/data/cities";
+import { CityCombobox } from "@/components/ui/city-combobox";
 import { compareCities } from "@/data/comparison";
 import { Scale, ArrowRight, Check, Minus } from "lucide-react";
 
@@ -45,33 +44,23 @@ export default function Compare() {
           <div className="grid sm:grid-cols-2 gap-6 mb-10">
             <div>
               <label className="text-sm font-medium text-foreground mb-2 block">First City</label>
-              <Select value={city1Id} onValueChange={setCity1Id}>
-                <SelectTrigger data-testid="select-city1">
-                  <SelectValue placeholder="Select a city" />
-                </SelectTrigger>
-                <SelectContent>
-                  {cities.map((c) => (
-                    <SelectItem key={c.id} value={c.id} disabled={c.id === city2Id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <CityCombobox
+                value={city1Id}
+                onChange={setCity1Id}
+                excludeId={city2Id}
+                label="Select first city"
+                data-testid="select-city1"
+              />
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-2 block">Second City</label>
-              <Select value={city2Id} onValueChange={setCity2Id}>
-                <SelectTrigger data-testid="select-city2">
-                  <SelectValue placeholder="Select a city" />
-                </SelectTrigger>
-                <SelectContent>
-                  {cities.map((c) => (
-                    <SelectItem key={c.id} value={c.id} disabled={c.id === city1Id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <CityCombobox
+                value={city2Id}
+                onChange={setCity2Id}
+                excludeId={city1Id}
+                label="Select second city"
+                data-testid="select-city2"
+              />
             </div>
           </div>
 
