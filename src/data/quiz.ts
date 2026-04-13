@@ -231,30 +231,47 @@ export const quizQuestions: QuizQuestion[] = [
     ],
   },
   {
-    id: "language",
+    id: "language_env",
     category: "language",
-    question: "How open are you to learning a new language?",
-    description:
-      "Some cities are easier to navigate in English than others.",
+    question: "What kind of language environment works for you?",
+    description: "Some cities are much easier to navigate in English than others.",
     options: [
       {
-        label: "I prefer English-first environments",
-        value: "english",
+        label: "English-first — I need English at work and in daily life",
+        value: "english_first",
         scores: { expatFit: 3, internationalVibe: 1 },
       },
+      {
+        label: "Mixed — I can manage with some local language alongside English",
+        value: "mixed",
+        scores: { expatFit: 1 },
+      },
+      {
+        label: "Fully local — I'm happy to work and live in the local language",
+        value: "local",
+        scores: {},
+      },
+    ],
+  },
+  {
+    id: "language_skills",
+    category: "language",
+    question: "Which local language do you already speak or are most willing to learn?",
+    description: "Choose the one that fits you best.",
+    options: [
       ...Array.from(
         new Set(countries.flatMap((c) => c.languages))
       )
         .sort()
         .map((lang) => ({
-          label: `I'm open to learning ${lang}`,
+          label: lang,
           value: lang.toLowerCase(),
           scores: { expatFit: 1 } as Partial<Record<QuizDimension, number>>,
         })),
       {
-        label: "I strongly prefer not to learn a new local language",
+        label: "None — I'd rather stay in English",
         value: "none",
-        scores: { expatFit: 3, internationalVibe: 2 },
+        scores: { expatFit: 2, internationalVibe: 1 } as Partial<Record<QuizDimension, number>>,
       },
     ],
   },

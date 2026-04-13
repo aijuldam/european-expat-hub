@@ -13,7 +13,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-6 text-sm">
             <Globe className="w-4 h-4" />
-            <span>Netherlands & France available now</span>
+            <span>{countries.length} countries available now</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight mb-6 max-w-4xl mx-auto leading-tight" data-testid="text-hero-title">
             Find the best European city for your life, family, and finances
