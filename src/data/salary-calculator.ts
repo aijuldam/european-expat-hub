@@ -1,6 +1,6 @@
 export interface SalaryInput {
   grossAnnual: number;
-  country: "nl" | "fr" | "hu";
+  country: "nl" | "fr" | "hu" | "de";
   thirtyPercentRuling?: boolean;
   cadreStatus?: boolean;
 }
@@ -317,12 +317,162 @@ function calculateHungarianNetSalary(grossAnnual: number): SalaryBreakdown {
   };
 }
 
+// ── Germany ────────────────────────────────────────────────────────────────
+// Source: Einkommensteuergesetz (EStG) §32a 2024 — Grundtabelle.
+// Employee social contributions per SGB V / SGB VI / SGB III / SGB XI 2024.
+
+const germanTaxParams = {
+  year: 2024,
+  // Personal allowances (deducted from gross before income-tax brackets apply)
+  grundfreibetrag: 11_604,         // Basic personal allowance
+  arbeitnehmerPauschbetrag: 1_230, // Standard work-expense flat-rate deduction
+  // Income-tax zone boundaries (zvE = taxable income after allowances)
+  zone2End: 17_005,
+  zone3End: 66_760,
+  zone4End: 277_826,
+  // Solidaritätszuschlag — only levied when income tax exceeds the threshold
+  soliThreshold: 18_130,
+  soliRate: 0.055,
+  // Social contributions — employee share only; all subject to assessment ceilings
+  socialContributions: {
+    // GKV: 7.3% statutory + avg ~1.6% Zusatzbeitrag → employee pays half = 8.15%
+    health:       { rate: 0.0815, ceiling: 62_100 },
+    // Pflegeversicherung: 1.7% employee (assumes ≥1 child; childless +0.6%)
+    longTermCare: { rate: 0.0170, ceiling: 62_100 },
+    // Rentenversicherung: 18.6% → 9.3% employee
+    pension:      { rate: 0.0930, ceiling: 90_600 },
+    // Arbeitslosenversicherung: 2.6% → 1.3% employee
+    unemployment: { rate: 0.0130, ceiling: 90_600 },
+  },
+  // Median gross annual wage — Destatis 2023 (Verdienststrukturerhebung)
+  medianGrossAnnual: 43_750,
+  medianSource: "Destatis 2023",
+};
+
+/**
+ * Compute Einkommensteuer using the official §32a 2024 zone formula.
+ * Input: zvE = taxable income (gross − social contributions − allowances).
+ */
+function computeGermanIncomeTax(zvE: number): number {
+  const { grundfreibetrag, zone2End, zone3End, zone4End } = germanTaxParams;
+
+  if (zvE <= grundfreibetrag) return 0;
+
+  if (zvE <= zone2End) {
+    // Zone 2: progressive 14% → 24%
+    const y = (zvE - grundfreibetrag) / 10_000;
+    return Math.round((979.18 * y + 1_400) * y);
+  }
+
+  if (zvE <= zone3End) {
+    // Zone 3: progressive 24% → 42%
+    const z = (zvE - zone2End) / 10_000;
+    return Math.round((192.59 * z + 2_397) * z + 1_025.38);
+  }
+
+  if (zvE <= zone4End) {
+    // Zone 4: flat 42%
+    return Math.round(0.42 * zvE - 9_972.98);
+  }
+
+  // Zone 5: flat 45% (Reichensteuer)
+  return Math.round(0.45 * zvE - 18_307.73);
+}
+
+function calculateGermanNetSalary(grossAnnual: number): SalaryBreakdown {
+  const sc = germanTaxParams.socialContributions;
+
+  const healthBase       = Math.min(grossAnnual, sc.health.ceiling);
+  const careBase         = Math.min(grossAnnual, sc.longTermCare.ceiling);
+  const pensionBase      = Math.min(grossAnnual, sc.pension.ceiling);
+  const unemploymentBase = Math.min(grossAnnual, sc.unemployment.ceiling);
+
+  const healthContrib       = healthBase       * sc.health.rate;
+  const longTermCareContrib = careBase         * sc.longTermCare.rate;
+  const pensionContrib      = pensionBase      * sc.pension.rate;
+  const unemploymentContrib = unemploymentBase * sc.unemployment.rate;
+  const totalSocial = healthContrib + longTermCareContrib + pensionContrib + unemploymentContrib;
+
+  // Taxable income = gross − social contributions − Arbeitnehmer-Pauschbetrag
+  const zvE = Math.max(
+    0,
+    grossAnnual - totalSocial - germanTaxParams.arbeitnehmerPauschbetrag,
+  );
+
+  const incomeTax = computeGermanIncomeTax(zvE);
+
+  // Solidaritätszuschlag (only if income tax exceeds the 2024 free threshold)
+  const soli =
+    incomeTax > germanTaxParams.soliThreshold
+      ? Math.round(incomeTax * germanTaxParams.soliRate)
+      : 0;
+
+  const totalDeductions = totalSocial + incomeTax + soli;
+  const netAnnual = grossAnnual - totalDeductions;
+
+  const breakdown: { label: string; amount: number; description: string }[] = [
+    {
+      label: "Health insurance (GKV)",
+      amount: Math.round(healthContrib),
+      description: `8.15% employee share (capped at ${sc.health.ceiling.toLocaleString()} EUR/yr)`,
+    },
+    {
+      label: "Long-term care insurance",
+      amount: Math.round(longTermCareContrib),
+      description: `1.7% Pflegeversicherung employee share (childless: +0.6%)`,
+    },
+    {
+      label: "Pension insurance",
+      amount: Math.round(pensionContrib),
+      description: `9.3% Rentenversicherung employee share (capped at ${sc.pension.ceiling.toLocaleString()} EUR/yr)`,
+    },
+    {
+      label: "Unemployment insurance",
+      amount: Math.round(unemploymentContrib),
+      description: `1.3% Arbeitslosenversicherung employee share`,
+    },
+    {
+      label: "Income tax (Einkommensteuer)",
+      amount: incomeTax,
+      description: `2024 progressive rate on ${Math.round(zvE).toLocaleString()} EUR taxable income`,
+    },
+  ];
+
+  if (soli > 0) {
+    breakdown.push({
+      label: "Solidarity surcharge (Soli)",
+      amount: soli,
+      description: `5.5% on income tax above ${germanTaxParams.soliThreshold.toLocaleString()} EUR threshold`,
+    });
+  }
+
+  return {
+    grossAnnual,
+    grossMonthly: Math.round(grossAnnual / 12),
+    taxableIncome: Math.round(zvE),
+    incomeTax,
+    socialContributions: Math.round(totalSocial),
+    totalDeductions: Math.round(totalDeductions),
+    netAnnual: Math.round(netAnnual),
+    netMonthly: Math.round(netAnnual / 12),
+    effectiveTaxRate: Math.round((totalDeductions / grossAnnual) * 100 * 10) / 10,
+    breakdown,
+    disclaimer:
+      "This is an indicative estimate based on 2024 German tax parameters (EStG §32a Grundtabelle). Social contributions apply the 2024 statutory rates and assessment ceilings. Taxable income is approximated as gross salary minus employee social contributions and the standard Arbeitnehmer-Pauschbetrag (€1,230). Church tax, capital gains, child allowances, and other individual deductions are not included. Childless employees pay an additional 0.6% long-term care surcharge. This is not tax or legal advice.",
+    medianGrossAnnual: germanTaxParams.medianGrossAnnual,
+    medianSource: germanTaxParams.medianSource,
+  };
+}
+
 export function calculateSalary(input: SalaryInput): SalaryBreakdown {
   if (input.country === "nl") {
     return calculateDutchNetSalary(input.grossAnnual, input.thirtyPercentRuling ?? false);
   }
   if (input.country === "hu") {
     return calculateHungarianNetSalary(input.grossAnnual);
+  }
+  if (input.country === "de") {
+    return calculateGermanNetSalary(input.grossAnnual);
   }
   return calculateFrenchNetSalary(input.grossAnnual, input.cadreStatus ?? false);
 }

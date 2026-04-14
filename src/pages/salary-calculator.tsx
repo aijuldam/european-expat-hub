@@ -14,11 +14,12 @@ import { Calculator, AlertTriangle, Info, TrendingUp, TrendingDown, Minus } from
 const DEFAULT_GROSS: Record<string, string> = {
   nl: "50000",
   fr: "50000",
+  de: "50000",
   hu: "12000000",   // ~1 M HUF/month, representative Budapest tech salary
 };
 
 export default function SalaryCalculator() {
-  const [country, setCountry] = useState<"nl" | "fr" | "hu">("nl");
+  const [country, setCountry] = useState<"nl" | "fr" | "hu" | "de">("nl");
   const [grossInput, setGrossInput] = useState<string>(DEFAULT_GROSS.nl);
   const [thirtyPercentRuling, setThirtyPercentRuling] = useState(false);
   const [cadreStatus, setCadreStatus] = useState(false);
@@ -28,7 +29,7 @@ export default function SalaryCalculator() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const c = params.get("country");
-    if (c === "nl" || c === "fr" || c === "hu") {
+    if (c === "nl" || c === "fr" || c === "hu" || c === "de") {
       setCountry(c);
       setGrossInput(DEFAULT_GROSS[c]);
     }
@@ -36,7 +37,7 @@ export default function SalaryCalculator() {
 
   // Reset gross input and EUR toggle when country changes
   const handleCountryChange = (v: string) => {
-    const c = v as "nl" | "fr" | "hu";
+    const c = v as "nl" | "fr" | "hu" | "de";
     setCountry(c);
     setGrossInput(DEFAULT_GROSS[c]);
     setShowInEur(false);
@@ -99,6 +100,7 @@ export default function SalaryCalculator() {
                     <SelectContent>
                       <SelectItem value="nl">Netherlands</SelectItem>
                       <SelectItem value="fr">France</SelectItem>
+                      <SelectItem value="de">Germany</SelectItem>
                       <SelectItem value="hu">Hungary</SelectItem>
                     </SelectContent>
                   </Select>
