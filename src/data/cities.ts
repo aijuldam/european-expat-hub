@@ -392,6 +392,35 @@ export const cities: City[] = [
     lastUpdated: "2024-12-01",
   },
 
+  {
+    id: "annecy",
+    name: "Annecy",
+    slug: "annecy",
+    countryId: "fr",
+    shortSummary:
+      "Nicknamed the Venice of the Alps, Annecy sits on the shore of one of Europe's cleanest lakes, surrounded by dramatic mountain peaks. It offers an exceptionally high quality of life — pristine air, outdoor sports year-round, a charming medieval old town, and a growing high-tech corridor shared with nearby Geneva and Grenoble.",
+    bestFor:
+      "Nature lovers, outdoor enthusiasts, families, and remote workers seeking an Alpine lifestyle with French culture, exceptional safety, and easy access to Geneva and Lyon.",
+    sunnyDaysPerYear: 210,
+    avgTempByMonth: [1, 3, 7, 11, 15, 19, 22, 21, 17, 12, 5, 2],
+    safetyIndex: 82,
+    medianSalaryGross: 33000,
+    estimatedMedianSalaryNet: 21900,
+    costOfLivingIndex: 68,
+    rentIndex: 62,
+    groceriesIndex: 66,
+    transportIndex: 45,
+    diningIndex: 65,
+    familyFitSummary:
+      "One of France's most family-friendly cities. Exceptional safety, outstanding schools, abundant outdoor space, and a relaxed pace of life make it ideal for families. Lake swimming, hiking, and skiing are accessible year-round. Housing is spacious by French standards outside the old town.",
+    expatFitSummary:
+      "A growing expat community — particularly among remote workers and cross-border professionals commuting to Geneva (45 min). French language skills are essential for daily life; the international scene is smaller than Paris or Lyon. Quality of life consistently impresses newcomers and compensates for the smaller city scale.",
+    population: "132,000",
+    language: "French",
+    currency: "EUR",
+    lastUpdated: "2024-12-01",
+  },
+
   // ── GERMANY ──────────────────────────────────────────────────────────────────
   {
     id: "berlin",

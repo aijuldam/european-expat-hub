@@ -327,6 +327,7 @@ export const cityScoreProfiles: CityScoreProfile[] = [
   { cityId: "nantes", scores: { affordability: 8, safety: 7, weather: 7, salaryPotential: 4, familyFit: 9, expatFit: 5, bigCityEnergy: 5, internationalVibe: 4, publicTransport: 7 } },
   { cityId: "nice", scores: { affordability: 5, safety: 6, weather: 10, salaryPotential: 4, familyFit: 6, expatFit: 7, bigCityEnergy: 6, internationalVibe: 7, publicTransport: 6 } },
   { cityId: "strasbourg", scores: { affordability: 8, safety: 7, weather: 5, salaryPotential: 5, familyFit: 8, expatFit: 8, bigCityEnergy: 4, internationalVibe: 8, publicTransport: 7 } },
+  { cityId: "annecy",     scores: { affordability: 5, safety: 9, weather: 7, salaryPotential: 4, familyFit: 9, expatFit: 4, bigCityEnergy: 2, internationalVibe: 4, publicTransport: 4 } },
   // Germany
   { cityId: "berlin", scores: { affordability: 7, safety: 6, weather: 5, salaryPotential: 7, familyFit: 7, expatFit: 10, bigCityEnergy: 10, internationalVibe: 9, publicTransport: 9 } },
   { cityId: "munich", scores: { affordability: 4, safety: 9, weather: 6, salaryPotential: 9, familyFit: 9, expatFit: 8, bigCityEnergy: 8, internationalVibe: 8, publicTransport: 9 } },
