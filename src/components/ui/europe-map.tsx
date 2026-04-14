@@ -1,6 +1,51 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+// ── Country color palette ────────────────────────────────────────────────────
+// Curated cartographic palette: muted, premium, color-blind conscious.
+// Avoids red/green pairs. Neighboring countries use different hue families.
+// Each entry: base fill (default), hover fill (darker/richer), label text.
+//
+// Neighbor separation check:
+//   FR(amber) ↔ ES(terracotta)  different hue ✓
+//   ES(terracotta) ↔ PT(rose)   different hue ✓
+//   DE(sage) ↔ NL(teal)         green→blue ✓
+//   DE(sage) ↔ BE(lavender)     green→purple ✓
+//   DE(sage) ↔ AT(periwinkle)   green→blue-gray ✓
+//   DE(sage) ↔ CH(jade)         different lightness + hue ✓
+//   CH(jade) ↔ AT(periwinkle)   teal→slate ✓
+//   AT(periwinkle) ↔ HU(gold)   blue-gray→amber ✓
+//   IT(peach) ↔ AT(periwinkle)  warm→cool ✓
+//   SE(steel blue) ↔ DK(cobalt) lighter→darker ✓
+interface CountryColor {
+  /** Default fill */
+  base: string;
+  /** Hover / focus fill — darker / richer */
+  hover: string;
+  /** Label text color — dark for light fills, light for dark fills */
+  text: string;
+  /** Pill background for small-country hover label (same as hover) */
+  pill: string;
+}
+
+const COUNTRY_COLORS: Record<string, CountryColor> = {
+  se: { base: "#B8CDD8", hover: "#7EAABF", text: "#1a2a35", pill: "#7EAABF" },
+  dk: { base: "#6E93B0", hover: "#4A7494", text: "#ffffff", pill: "#4A7494" },
+  de: { base: "#93B897", hover: "#5F8F65", text: "#1a2e1d", pill: "#5F8F65" },
+  nl: { base: "#4E96A8", hover: "#2E7890", text: "#ffffff", pill: "#2E7890" },
+  be: { base: "#A494C4", hover: "#7E6AA8", text: "#ffffff", pill: "#7E6AA8" },
+  fr: { base: "#E4BD60", hover: "#C09630", text: "#2c1e06", pill: "#C09630" },
+  es: { base: "#D08060", hover: "#A85C3C", text: "#ffffff", pill: "#A85C3C" },
+  pt: { base: "#B05C6E", hover: "#8A3A4C", text: "#ffffff", pill: "#8A3A4C" },
+  ch: { base: "#6AACA2", hover: "#448880", text: "#ffffff", pill: "#448880" },
+  at: { base: "#A4B6CC", hover: "#7490B0", text: "#1a2035", pill: "#7490B0" },
+  hu: { base: "#C89A50", hover: "#A07428", text: "#2a1a04", pill: "#A07428" },
+  it: { base: "#E4A468", hover: "#BC7840", text: "#2e1a05", pill: "#BC7840" },
+};
+
+/** Fallback for any unsupported/unknown country ID */
+const UNSUPPORTED_COLOR = "#C8D4DC";
+
 // ── Coordinate system ───────────────────────────────────────────────────────
 // Equirectangular projection:
 //   x = (lon + 12) * 16
@@ -207,16 +252,16 @@ export function EuropeMap({ supportedIds, onCountryClick, className }: EuropeMap
       {/* Interactive country shapes */}
       {COUNTRY_SHAPES.map((shape) => {
         const isSupported = supportedIds.has(shape.id);
-        const isHovered = hovered === shape.id;
-        const isFocused = focused === shape.id;
-        const isActive  = isHovered || isFocused;
-        const isSmall   = SMALL_COUNTRIES.has(shape.id);
+        const isHovered   = hovered === shape.id;
+        const isFocused   = focused === shape.id;
+        const isActive    = isHovered || isFocused;
+        const isSmall     = SMALL_COUNTRIES.has(shape.id);
 
-        const fill = isSupported
-          ? isActive
-            ? "hsl(var(--primary) / 0.34)"
-            : "hsl(var(--primary) / 0.13)"
-          : "hsl(var(--muted-foreground) / 0.09)";
+        const color  = COUNTRY_COLORS[shape.id];
+        const fill   = isSupported
+          ? isActive ? (color?.hover ?? "#6A8A9A") : (color?.base ?? UNSUPPORTED_COLOR)
+          : UNSUPPORTED_COLOR;
+        const labelColor = isActive ? "#ffffff" : (color?.text ?? "#1a2030");
 
         return (
           <g
@@ -251,7 +296,7 @@ export function EuropeMap({ supportedIds, onCountryClick, className }: EuropeMap
               stroke="white"
               strokeWidth={isActive ? "2" : "1.5"}
               strokeLinejoin="round"
-              style={{ transition: "fill 120ms ease, stroke-width 120ms ease" }}
+              style={{ transition: "fill 130ms ease" }}
             />
 
             {/* Always-visible label (large countries) */}
@@ -263,32 +308,27 @@ export function EuropeMap({ supportedIds, onCountryClick, className }: EuropeMap
                 dominantBaseline="middle"
                 fontSize="8"
                 fontWeight={isActive ? "700" : "500"}
-                fill={
-                  isActive
-                    ? "hsl(var(--primary))"
-                    : "hsl(var(--foreground) / 0.65)"
-                }
+                fill={labelColor}
                 style={{
                   pointerEvents: "none",
                   userSelect: "none",
-                  transition: "fill 120ms ease",
+                  transition: "fill 130ms ease",
                 }}
               >
                 {shape.name}
               </text>
             )}
 
-            {/* Hover-only floating label (small countries) */}
+            {/* Hover-only floating label pill (small countries) */}
             {isSupported && isSmall && isActive && (
               <>
-                {/* Label pill background */}
                 <rect
                   x={shape.lx - 26}
                   y={shape.ly - 26}
                   width="52"
                   height="16"
                   rx="4"
-                  fill="hsl(var(--primary))"
+                  fill={color?.pill ?? "#4A7494"}
                   style={{ pointerEvents: "none" }}
                 />
                 <text
@@ -298,7 +338,7 @@ export function EuropeMap({ supportedIds, onCountryClick, className }: EuropeMap
                   dominantBaseline="middle"
                   fontSize="7.5"
                   fontWeight="600"
-                  fill="hsl(var(--primary-foreground))"
+                  fill="#ffffff"
                   style={{ pointerEvents: "none", userSelect: "none" }}
                 >
                   {shape.name}
