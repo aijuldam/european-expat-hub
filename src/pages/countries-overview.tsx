@@ -2,21 +2,49 @@ import { Link } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EuropeMap } from "@/components/ui/europe-map";
 import { countries } from "@/data/countries";
 import { getCitiesByCountryId } from "@/data/cities";
 import { ArrowRight, MapPin, Sun, Shield, Wallet } from "lucide-react";
 
+const SUPPORTED_IDS = new Set(countries.map((c) => c.id));
+
+/** Scroll to a country card, accounting for the 64px sticky navbar */
+function scrollToCountry(id: string) {
+  const el = document.getElementById(`country-${id}`);
+  if (!el) return;
+  const top = el.getBoundingClientRect().top + window.scrollY - 80;
+  window.scrollTo({ top, behavior: "smooth" });
+}
+
 export default function CountriesOverview() {
   return (
     <Layout>
-      <div className="bg-primary/5 py-12 md:py-16">
+      <div className="bg-primary/5 py-10 md:py-14">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-3" data-testid="text-countries-title">
-            Explore Countries
-          </h1>
-          <p className="text-muted-foreground max-w-xl">
-            Start with a country to understand the national context, then drill into specific cities for detailed profiles.
-          </p>
+          <div className="flex flex-col md:flex-row md:items-center gap-8">
+            {/* Left: heading */}
+            <div className="md:flex-1">
+              <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-3" data-testid="text-countries-title">
+                Explore Countries
+              </h1>
+              <p className="text-muted-foreground max-w-md">
+                Start with a country to understand the national context, then drill into specific cities for detailed profiles.
+              </p>
+              <p className="text-xs text-muted-foreground mt-3 hidden md:block">
+                Click a country on the map to jump to its section.
+              </p>
+            </div>
+
+            {/* Right: interactive Europe map */}
+            <div className="w-full md:w-[340px] lg:w-[400px] flex-shrink-0">
+              <EuropeMap
+                supportedIds={SUPPORTED_IDS}
+                onCountryClick={scrollToCountry}
+                className="max-h-[220px] md:max-h-[240px]"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -25,7 +53,7 @@ export default function CountriesOverview() {
           {countries.map((country) => {
             const countryCities = getCitiesByCountryId(country.id);
             return (
-              <Card key={country.id} className="overflow-hidden" data-testid={`card-country-${country.id}`}>
+              <Card key={country.id} id={`country-${country.id}`} className="overflow-hidden" data-testid={`card-country-${country.id}`}>
                 <CardContent className="p-0">
                   <div className="p-6 md:p-8">
                     <div className="flex items-center gap-3 mb-4">

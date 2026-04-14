@@ -11,13 +11,21 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { cities } from "@/data/cities";
+import { countries } from "@/data/countries";
 
 // ── Country metadata ────────────────────────────────────────────────────────
-const COUNTRY_META: Record<string, { label: string; flag: string }> = {
-  nl: { label: "Netherlands", flag: "🇳🇱" },
-  fr: { label: "France",      flag: "🇫🇷" },
-  hu: { label: "Hungary",     flag: "🇭🇺" },
+// Flag emoji keyed by country ID — single source of truth for flag display.
+// `countries.ts` stores 2-letter codes in flagEmoji; real emoji lives here.
+const FLAG_EMOJI: Record<string, string> = {
+  nl: "🇳🇱", fr: "🇫🇷", de: "🇩🇪", it: "🇮🇹", hu: "🇭🇺",
+  es: "🇪🇸", be: "🇧🇪", ch: "🇨🇭", at: "🇦🇹", pt: "🇵🇹",
+  dk: "🇩🇰", se: "🇸🇪", gb: "🇬🇧", pl: "🇵🇱", cz: "🇨🇿",
 };
+
+// Auto-derived from countries data — always in sync, no manual maintenance.
+const COUNTRY_META: Record<string, { label: string; flag: string }> = Object.fromEntries(
+  countries.map((c) => [c.id, { label: c.name, flag: FLAG_EMOJI[c.id] ?? "" }])
+);
 
 // Group cities by country, preserving natural order
 const CITY_GROUPS = Object.entries(
