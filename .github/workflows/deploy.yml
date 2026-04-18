@@ -42,6 +42,16 @@ jobs:
           BASE_PATH: /european-expat-hub/
           NODE_ENV: production
 
+      - name: Verify prerendered HTML (CI check)
+        run: |
+          grep -q '<h1' dist/public/index.html \
+            || { echo "❌ / is missing <h1"; exit 1; }
+          grep -q '<h1' dist/public/countries/netherlands/index.html \
+            || { echo "❌ /countries/netherlands is missing <h1"; exit 1; }
+          grep -q '<h1' dist/public/salary-calculator/index.html \
+            || { echo "❌ /salary-calculator is missing <h1"; exit 1; }
+          echo "✓ All spot-check routes contain <h1>"
+
       - name: Copy index.html to 404.html (SPA fallback)
         run: cp dist/public/index.html dist/public/404.html
 

@@ -1,7 +1,11 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SeoHead } from "@/components/SeoHead";
+import { expandRoutes } from "@/routes";
+import { countries } from "@/data/countries";
+import { cities } from "@/data/cities";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Quiz from "@/pages/quiz";
@@ -12,6 +16,16 @@ import CityDetail from "@/pages/city-detail";
 import Compare from "@/pages/compare";
 import SalaryCalculator from "@/pages/salary-calculator";
 import Methodology from "@/pages/methodology";
+
+// Computed once — includes static routes + every country + every city path.
+const allRoutes = expandRoutes(countries, cities);
+
+/** Renders correct <head> tags for the current wouter path (static AND dynamic). */
+function RouteHead() {
+  const [loc] = useLocation();
+  const route = allRoutes.find((r) => r.path === loc) ?? allRoutes[0];
+  return <SeoHead seo={route.seo} path={loc} />;
+}
 
 const queryClient = new QueryClient();
 
@@ -32,11 +46,17 @@ function Router() {
   );
 }
 
-function App() {
+// locationHook is only passed during SSR prerendering (entry-server.tsx).
+// In the browser it is undefined, and WouterRouter falls back to history API.
+function App({ locationHook }: { locationHook?: (...args: unknown[]) => unknown }) {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <WouterRouter
+          base={import.meta.env.BASE_URL.replace(/\/$/, "")}
+          hook={locationHook as never}
+        >
+          <RouteHead />
           <Router />
         </WouterRouter>
         <Toaster />
