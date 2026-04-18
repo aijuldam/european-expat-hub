@@ -82,6 +82,21 @@ export const staticRoutes: RouteConfig[] = [
       description: "How we score cities, calculate salary estimates, and compile quality-of-life indices.",
     },
   },
+  {
+    path: "/tools/compare",
+    seo: {
+      title: "European City Cost Comparison Tool | European Expat Hub",
+      description:
+        "Compare cost of living, rent, salaries, healthcare, and climate side by side for 10 European cities. Shareable link and embeddable widget.",
+    },
+  },
+  {
+    path: "/embed/compare",
+    seo: {
+      title: "City Comparison Embed | European Expat Hub",
+      description: "Embeddable side-by-side city cost comparison widget.",
+    },
+  },
 ];
 
 /** Expand static routes + one entry per country + one entry per city. */

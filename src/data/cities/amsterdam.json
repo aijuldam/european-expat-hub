@@ -1,0 +1,47 @@
+{
+  "cityId": "amsterdam",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Amsterdam 2025", "url": "https://www.numbeo.com/cost-of-living/in/Amsterdam" },
+    { "label": "CBS Netherlands Statistics 2024", "url": "https://www.cbs.nl/en-gb" },
+    { "label": "GVB Transit Fares 2025", "url": "https://www.gvb.nl" },
+    { "label": "Zorgverzekeringslijn 2025", "url": "https://www.zorgverzekeringslijn.nl" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 1900,
+    "oneBrOutside": 1450,
+    "threeBrCityCenter": 3200
+  },
+  "groceriesIndex": 65,
+  "eatingOut": {
+    "dinnerForTwo": 65,
+    "latte": 4.5,
+    "domesticBeer": 4.0
+  },
+  "transport": {
+    "monthlyPass": 102,
+    "taxiStart": 3.5,
+    "fuelLiter": 1.95
+  },
+  "utilities": {
+    "basic85m2": 225
+  },
+  "internet": {
+    "monthly": 45
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 44000,
+    "currency": "EUR",
+    "note": "After 37.07% Box-1 income tax & social contributions (AOW/WLZ). ZVW health premium (~€150/mo) paid separately."
+  },
+  "healthcare": {
+    "monthlyEstimate": 150,
+    "note": "Basic health insurance (basisverzekering) mandatory own-risk not included. Benchmark premium 2025."
+  },
+  "climate": {
+    "avgHighByMonth": [5, 6, 10, 13, 17, 20, 22, 22, 19, 14, 9, 6],
+    "avgLowByMonth": [1, 1, 3, 6, 10, 13, 15, 14, 11, 8, 4, 2],
+    "sunshineHoursPerYear": 1661
+  }
+}

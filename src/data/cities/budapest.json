@@ -1,0 +1,46 @@
+{
+  "cityId": "budapest",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Budapest 2025", "url": "https://www.numbeo.com/cost-of-living/in/Budapest" },
+    { "label": "KSH Hungary Statistics 2024", "url": "https://www.ksh.hu" },
+    { "label": "BKK Transit Fares 2025", "url": "https://bkk.hu" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 700,
+    "oneBrOutside": 500,
+    "threeBrCityCenter": 1300
+  },
+  "groceriesIndex": 42,
+  "eatingOut": {
+    "dinnerForTwo": 30,
+    "latte": 2.0,
+    "domesticBeer": 1.8
+  },
+  "transport": {
+    "monthlyPass": 18,
+    "taxiStart": 2.0,
+    "fuelLiter": 1.55
+  },
+  "utilities": {
+    "basic85m2": 130
+  },
+  "internet": {
+    "monthly": 15
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 46500,
+    "currency": "EUR",
+    "note": "After flat 15% SZJA personal income tax + 18.5% employee social contributions. Very competitive effective rate."
+  },
+  "healthcare": {
+    "monthlyEstimate": 0,
+    "note": "State health insurance (OEP) deducted via social contributions, included in net estimate. Supplemental private insurance ~€20-40/mo optional."
+  },
+  "climate": {
+    "avgHighByMonth": [3, 6, 12, 18, 23, 26, 28, 28, 23, 16, 8, 4],
+    "avgLowByMonth": [-4, -2, 2, 7, 12, 15, 17, 17, 12, 7, 2, -2],
+    "sunshineHoursPerYear": 2000
+  }
+}

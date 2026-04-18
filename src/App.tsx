@@ -17,6 +17,8 @@ import CityDetail from "@/pages/city-detail";
 import Compare from "@/pages/compare";
 import SalaryCalculator from "@/pages/salary-calculator";
 import Methodology from "@/pages/methodology";
+import ToolsCompare from "@/pages/tools-compare";
+import EmbedCompare from "@/pages/embed-compare";
 
 // Computed once — includes static routes + every country + every city path.
 const allRoutes = expandRoutes(countries, cities);
@@ -42,6 +44,8 @@ function Router() {
       <Route path="/compare" component={Compare} />
       <Route path="/salary-calculator" component={SalaryCalculator} />
       <Route path="/methodology" component={Methodology} />
+      <Route path="/tools/compare" component={ToolsCompare} />
+      <Route path="/embed/compare" component={EmbedCompare} />
       <Route component={NotFound} />
     </Switch>
   );

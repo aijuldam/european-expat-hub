@@ -1,0 +1,46 @@
+{
+  "cityId": "berlin",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Berlin 2025", "url": "https://www.numbeo.com/cost-of-living/in/Berlin" },
+    { "label": "Destatis Germany Statistics 2024", "url": "https://www.destatis.de" },
+    { "label": "BVG Transit Fares 2025", "url": "https://www.bvg.de" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 1400,
+    "oneBrOutside": 1050,
+    "threeBrCityCenter": 2500
+  },
+  "groceriesIndex": 55,
+  "eatingOut": {
+    "dinnerForTwo": 55,
+    "latte": 4.0,
+    "domesticBeer": 4.5
+  },
+  "transport": {
+    "monthlyPass": 86,
+    "taxiStart": 4.0,
+    "fuelLiter": 1.8
+  },
+  "utilities": {
+    "basic85m2": 250
+  },
+  "internet": {
+    "monthly": 40
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 40500,
+    "currency": "EUR",
+    "note": "After progressive Einkommensteuer + ~19.5% total employee social contributions (KV/RV/AV/PV). Solidarity surcharge near-eliminated."
+  },
+  "healthcare": {
+    "monthlyEstimate": 0,
+    "note": "Statutory health insurance (GKV) is deducted at source and included in the net salary estimate above."
+  },
+  "climate": {
+    "avgHighByMonth": [3, 5, 10, 15, 20, 24, 26, 26, 21, 14, 8, 4],
+    "avgLowByMonth": [-2, -1, 2, 6, 11, 15, 17, 16, 12, 7, 3, 0],
+    "sunshineHoursPerYear": 1626
+  }
+}

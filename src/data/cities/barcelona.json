@@ -1,0 +1,46 @@
+{
+  "cityId": "barcelona",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Barcelona 2025", "url": "https://www.numbeo.com/cost-of-living/in/Barcelona" },
+    { "label": "INE Spain Statistics 2024", "url": "https://www.ine.es" },
+    { "label": "TMB Barcelona Transit Fares", "url": "https://www.tmb.cat" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 1300,
+    "oneBrOutside": 950,
+    "threeBrCityCenter": 2400
+  },
+  "groceriesIndex": 59,
+  "eatingOut": {
+    "dinnerForTwo": 50,
+    "latte": 2.2,
+    "domesticBeer": 2.5
+  },
+  "transport": {
+    "monthlyPass": 40,
+    "taxiStart": 2.3,
+    "fuelLiter": 1.65
+  },
+  "utilities": {
+    "basic85m2": 130
+  },
+  "internet": {
+    "monthly": 35
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 39000,
+    "currency": "EUR",
+    "note": "After progressive IRPF (~38%) + 6.35% employee social security. Beckham Law (24% flat) not applied."
+  },
+  "healthcare": {
+    "monthlyEstimate": 35,
+    "note": "Public healthcare (SCS) is free for residents; figure reflects typical private supplemental policy."
+  },
+  "climate": {
+    "avgHighByMonth": [13, 15, 17, 19, 23, 27, 30, 30, 27, 22, 17, 14],
+    "avgLowByMonth": [4, 5, 7, 10, 14, 18, 21, 21, 18, 13, 8, 5],
+    "sunshineHoursPerYear": 2591
+  }
+}

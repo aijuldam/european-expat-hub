@@ -1,0 +1,47 @@
+{
+  "cityId": "lisbon",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Lisbon 2025", "url": "https://www.numbeo.com/cost-of-living/in/Lisbon" },
+    { "label": "INE Portugal Statistics 2024", "url": "https://www.ine.pt" },
+    { "label": "Carris/Metro Lisboa Fares 2025", "url": "https://www.metrolisboa.pt" },
+    { "label": "IPMA Climate Normals Lisbon", "url": "https://www.ipma.pt" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 1300,
+    "oneBrOutside": 950,
+    "threeBrCityCenter": 2400
+  },
+  "groceriesIndex": 54,
+  "eatingOut": {
+    "dinnerForTwo": 40,
+    "latte": 1.8,
+    "domesticBeer": 1.5
+  },
+  "transport": {
+    "monthlyPass": 40,
+    "taxiStart": 3.25,
+    "fuelLiter": 1.75
+  },
+  "utilities": {
+    "basic85m2": 140
+  },
+  "internet": {
+    "monthly": 35
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 38500,
+    "currency": "EUR",
+    "note": "After progressive IRS (up to 48%) + 11% employee social security. IFICI (ex-NHR) regime not applied."
+  },
+  "healthcare": {
+    "monthlyEstimate": 40,
+    "note": "Public SNS healthcare is free; figure reflects typical private top-up policy for faster access."
+  },
+  "climate": {
+    "avgHighByMonth": [15, 16, 19, 20, 23, 27, 30, 30, 27, 22, 17, 15],
+    "avgLowByMonth": [8, 9, 11, 12, 15, 18, 21, 21, 19, 15, 11, 9],
+    "sunshineHoursPerYear": 2806
+  }
+}

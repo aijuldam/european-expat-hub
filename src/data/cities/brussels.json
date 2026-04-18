@@ -1,0 +1,46 @@
+{
+  "cityId": "brussels",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Brussels 2025", "url": "https://www.numbeo.com/cost-of-living/in/Brussels" },
+    { "label": "Statbel Belgium Statistics 2024", "url": "https://statbel.fgov.be" },
+    { "label": "STIB-MIVB Transit Fares 2025", "url": "https://www.stib-mivb.be" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 1200,
+    "oneBrOutside": 950,
+    "threeBrCityCenter": 2300
+  },
+  "groceriesIndex": 64,
+  "eatingOut": {
+    "dinnerForTwo": 60,
+    "latte": 4.0,
+    "domesticBeer": 3.5
+  },
+  "transport": {
+    "monthlyPass": 50,
+    "taxiStart": 2.7,
+    "fuelLiter": 1.75
+  },
+  "utilities": {
+    "basic85m2": 220
+  },
+  "internet": {
+    "monthly": 45
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 39000,
+    "currency": "EUR",
+    "note": "After progressive IPP/PB (up to 50%) + ~13% employee social security contributions. Belgium has high tax wedge."
+  },
+  "healthcare": {
+    "monthlyEstimate": 0,
+    "note": "INAMI/RIZIV health insurance deducted at source, included in net salary estimate. Very comprehensive coverage."
+  },
+  "climate": {
+    "avgHighByMonth": [6, 7, 11, 15, 19, 22, 24, 24, 20, 15, 10, 7],
+    "avgLowByMonth": [1, 1, 3, 6, 10, 13, 15, 15, 12, 8, 4, 2],
+    "sunshineHoursPerYear": 1554
+  }
+}

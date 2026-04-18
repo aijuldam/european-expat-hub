@@ -1,0 +1,46 @@
+{
+  "cityId": "copenhagen",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Copenhagen 2025", "url": "https://www.numbeo.com/cost-of-living/in/Copenhagen" },
+    { "label": "Danmarks Statistik 2024", "url": "https://www.dst.dk" },
+    { "label": "Rejsekort / DSB Fares 2025", "url": "https://www.dsb.dk" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 1700,
+    "oneBrOutside": 1300,
+    "threeBrCityCenter": 3000
+  },
+  "groceriesIndex": 90,
+  "eatingOut": {
+    "dinnerForTwo": 90,
+    "latte": 6.0,
+    "domesticBeer": 7.0
+  },
+  "transport": {
+    "monthlyPass": 105,
+    "taxiStart": 6.5,
+    "fuelLiter": 1.85
+  },
+  "utilities": {
+    "basic85m2": 235
+  },
+  "internet": {
+    "monthly": 35
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 44000,
+    "currency": "EUR",
+    "note": "After AM-bidrag (8%) + combined state and municipal income tax (~43% on remainder). Based on EUR equivalent at 1 EUR ≈ 7.46 DKK."
+  },
+  "healthcare": {
+    "monthlyEstimate": 0,
+    "note": "Universal public healthcare fully funded by taxes. No additional premium required."
+  },
+  "climate": {
+    "avgHighByMonth": [3, 4, 7, 12, 17, 20, 23, 22, 18, 12, 7, 4],
+    "avgLowByMonth": [-1, -1, 1, 5, 10, 13, 16, 16, 12, 8, 4, 1],
+    "sunshineHoursPerYear": 1737
+  }
+}

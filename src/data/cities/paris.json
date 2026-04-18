@@ -1,0 +1,46 @@
+{
+  "cityId": "paris",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Paris 2025", "url": "https://www.numbeo.com/cost-of-living/in/Paris" },
+    { "label": "INSEE France Statistics 2024", "url": "https://www.insee.fr" },
+    { "label": "RATP Transit Fares 2025", "url": "https://www.ratp.fr" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 1800,
+    "oneBrOutside": 1350,
+    "threeBrCityCenter": 3500
+  },
+  "groceriesIndex": 72,
+  "eatingOut": {
+    "dinnerForTwo": 70,
+    "latte": 4.0,
+    "domesticBeer": 5.5
+  },
+  "transport": {
+    "monthlyPass": 86,
+    "taxiStart": 4.0,
+    "fuelLiter": 1.9
+  },
+  "utilities": {
+    "basic85m2": 200
+  },
+  "internet": {
+    "monthly": 30
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 42000,
+    "currency": "EUR",
+    "note": "After progressive IR (tranches up to 45%) + ~22% employee charges sociales. Estimate based on 2024 brackets."
+  },
+  "healthcare": {
+    "monthlyEstimate": 0,
+    "note": "Assurance maladie deducted at source via charges sociales, included in net salary estimate. Mutuelle top-up ~€40-80/mo extra."
+  },
+  "climate": {
+    "avgHighByMonth": [7, 9, 13, 17, 21, 25, 27, 27, 23, 17, 11, 7],
+    "avgLowByMonth": [2, 2, 5, 8, 12, 15, 18, 17, 14, 10, 6, 3],
+    "sunshineHoursPerYear": 1662
+  }
+}

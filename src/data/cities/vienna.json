@@ -1,0 +1,46 @@
+{
+  "cityId": "vienna",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Vienna 2025", "url": "https://www.numbeo.com/cost-of-living/in/Vienna" },
+    { "label": "Statistik Austria 2024", "url": "https://www.statistik.at" },
+    { "label": "Wiener Linien Fares 2025", "url": "https://www.wienerlinien.at" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 1300,
+    "oneBrOutside": 950,
+    "threeBrCityCenter": 2600
+  },
+  "groceriesIndex": 65,
+  "eatingOut": {
+    "dinnerForTwo": 60,
+    "latte": 4.5,
+    "domesticBeer": 4.5
+  },
+  "transport": {
+    "monthlyPass": 24,
+    "taxiStart": 3.8,
+    "fuelLiter": 1.7
+  },
+  "utilities": {
+    "basic85m2": 215
+  },
+  "internet": {
+    "monthly": 30
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 41500,
+    "currency": "EUR",
+    "note": "After progressive Einkommensteuer (up to 55%) + ~18% employee social contributions (SV). Austria has a 13th/14th month system; shown as annualised net."
+  },
+  "healthcare": {
+    "monthlyEstimate": 0,
+    "note": "Public Krankenversicherung (KV) deducted at source, included in net salary estimate. Comprehensive public coverage."
+  },
+  "climate": {
+    "avgHighByMonth": [3, 5, 10, 16, 21, 24, 27, 26, 21, 14, 8, 4],
+    "avgLowByMonth": [-3, -2, 2, 7, 12, 15, 17, 17, 12, 7, 3, -1],
+    "sunshineHoursPerYear": 1884
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "cityId": "munich",
+  "lastReviewed": "2026-04-18",
+  "sources": [
+    { "label": "Numbeo Munich 2025", "url": "https://www.numbeo.com/cost-of-living/in/Munich" },
+    { "label": "Destatis Germany Statistics 2024", "url": "https://www.destatis.de" },
+    { "label": "MVV Transit Fares 2025", "url": "https://www.mvv-muenchen.de" }
+  ],
+  "rent": {
+    "oneBrCityCenter": 2000,
+    "oneBrOutside": 1550,
+    "threeBrCityCenter": 3600
+  },
+  "groceriesIndex": 60,
+  "eatingOut": {
+    "dinnerForTwo": 65,
+    "latte": 4.5,
+    "domesticBeer": 5.0
+  },
+  "transport": {
+    "monthlyPass": 57,
+    "taxiStart": 4.5,
+    "fuelLiter": 1.8
+  },
+  "utilities": {
+    "basic85m2": 260
+  },
+  "internet": {
+    "monthly": 40
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 40500,
+    "currency": "EUR",
+    "note": "After progressive Einkommensteuer + ~19.5% employee social contributions. Church tax not applied."
+  },
+  "healthcare": {
+    "monthlyEstimate": 0,
+    "note": "GKV statutory health insurance deducted at source, included in net salary estimate."
+  },
+  "climate": {
+    "avgHighByMonth": [2, 4, 10, 15, 20, 24, 26, 26, 21, 14, 7, 3],
+    "avgLowByMonth": [-5, -5, -1, 4, 9, 13, 15, 14, 10, 5, 0, -4],
+    "sunshineHoursPerYear": 1738
+  }
+}
