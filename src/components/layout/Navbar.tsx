@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
+import { HeaderCitySelector } from "./HeaderCitySelector";
 
 export function Navbar() {
   const [location] = useLocation();
@@ -8,20 +8,22 @@ export function Navbar() {
     { href: "/quiz", label: "Quiz" },
     { href: "/countries", label: "Countries" },
     { href: "/compare", label: "Compare" },
-    { href: "/salary-calculator", label: "Salary Calculator" },
+    { href: "/salary-calculator", label: "Salary" },
     { href: "/methodology", label: "Methodology" },
   ];
 
   return (
     <header className="border-b bg-background sticky top-0 z-50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="font-serif font-bold text-xl text-primary flex items-center gap-2">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
+        <Link href="/" className="font-serif font-bold text-xl text-primary flex items-center gap-2 shrink-0">
           <div className="w-8 h-8 rounded bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-sans text-sm">EH</span>
           </div>
-          European Expat Hub
+          <span className="hidden sm:inline">European Expat Hub</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6">
+
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-5 flex-1 justify-center">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -36,8 +38,10 @@ export function Navbar() {
             </Link>
           ))}
         </nav>
-        <div className="flex md:hidden">
-          {/* Mobile menu button could go here, omitting for brevity or adding a simple one later */}
+
+        {/* City selector — always visible, right-aligned */}
+        <div className="shrink-0">
+          <HeaderCitySelector />
         </div>
       </div>
     </header>

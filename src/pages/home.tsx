@@ -4,33 +4,96 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cities } from "@/data/cities";
 import { countries, getCountryById } from "@/data/countries";
+import { useCityLocation } from "@/context/location-context";
 import { ArrowRight, BarChart3, Calculator, Globe, MapPin, Scale, Compass } from "lucide-react";
 
+const FLAG: Record<string, string> = {
+  nl: "🇳🇱", fr: "🇫🇷", de: "🇩🇪", it: "🇮🇹", hu: "🇭🇺",
+  es: "🇪🇸", be: "🇧🇪", ch: "🇨🇭", at: "🇦🇹", pt: "🇵🇹",
+  dk: "🇩🇰", se: "🇸🇪",
+};
+
 export default function Home() {
+  const { state } = useCityLocation();
+  const selectedCity = state.cityId ? cities.find((c) => c.id === state.cityId) : null;
+  const selectedCountry = state.countryId
+    ? countries.find((c) => c.id === state.countryId)
+    : null;
+
+  // Build city-guide URL when a selection exists
+  const cityGuideHref =
+    selectedCity && selectedCountry
+      ? `/countries/${selectedCountry.slug}/${selectedCity.slug}`
+      : null;
+
   return (
     <Layout>
       <section className="relative bg-primary text-primary-foreground py-20 md:py-28">
         <div className="container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-6 text-sm">
-            <Globe className="w-4 h-4" />
-            <span>{countries.length} countries available now</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight mb-6 max-w-4xl mx-auto leading-tight" data-testid="text-hero-title">
-            Find the best European city for your life, family, and finances
+          {selectedCity && selectedCountry ? (
+            /* ── Personalised badge ── */
+            <div className="inline-flex items-center gap-2 bg-white/15 rounded-full px-4 py-1.5 mb-6 text-sm">
+              <span aria-hidden>{FLAG[selectedCountry.id] ?? ""}</span>
+              <span>Your destination: <strong>{selectedCity.name}</strong></span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-6 text-sm">
+              <Globe className="w-4 h-4" />
+              <span>{countries.length} countries available now</span>
+            </div>
+          )}
+
+          <h1
+            className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight mb-6 max-w-4xl mx-auto leading-tight"
+            data-testid="text-hero-title"
+          >
+            {selectedCity
+              ? `Your complete guide to living in ${selectedCity.name}`
+              : "Find the best European city for your life, family, and finances"}
           </h1>
+
           <p className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-10">
-            A structured decision tool that combines personalized recommendations, salary estimation, and city comparison to help you choose where to live in Europe.
+            {selectedCity
+              ? `Cost of living, salaries, safety, weather — everything you need to plan your move to ${selectedCity.name}.`
+              : "A structured decision tool that combines personalized recommendations, salary estimation, and city comparison to help you choose where to live in Europe."}
           </p>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/quiz">
-              <Button size="lg" variant="secondary" className="text-base px-8 gap-2" data-testid="button-start-quiz">
-                <Compass className="w-5 h-5" />
-                Take the Quiz
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+            {cityGuideHref ? (
+              /* Personalised primary CTA */
+              <Link href={cityGuideHref}>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="text-base px-8 gap-2"
+                  data-testid="button-city-guide"
+                >
+                  <MapPin className="w-5 h-5" />
+                  {selectedCity.name} guide
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/quiz">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="text-base px-8 gap-2"
+                  data-testid="button-start-quiz"
+                >
+                  <Compass className="w-5 h-5" />
+                  Take the Quiz
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            )}
             <Link href="/countries">
-              <Button size="lg" variant="outline" className="text-base px-8 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" data-testid="button-browse-countries">
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base px-8 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+                data-testid="button-browse-countries"
+              >
                 Browse Countries
               </Button>
             </Link>
