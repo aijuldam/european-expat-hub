@@ -15,15 +15,20 @@ const DEFAULT_GROSS: Record<CountryCode, string> = {
   nl: "50000",
   fr: "50000",
   de: "50000",
-  hu: "12000000",   // ~30k EUR/year in HUF, representative Budapest tech salary
+  hu: "12000000",   // ~30k EUR/year in HUF
   be: "50000",
   at: "50000",
   es: "40000",
   pt: "35000",
   it: "40000",
-  ch: "120000",     // CHF — representative Zurich tech salary
-  se: "600000",     // SEK — representative Stockholm tech salary
-  dk: "550000",     // DKK — representative Copenhagen tech salary
+  ch: "120000",     // CHF — Zurich reference
+  se: "600000",     // SEK — Stockholm reference
+  dk: "550000",     // DKK — Copenhagen reference
+  ie: "55000",      // EUR — Dublin tech salary
+  lu: "70000",      // EUR — Luxembourg finance salary
+  no: "700000",     // NOK — Oslo reference
+  pl: "100000",     // PLN — Warsaw tech salary
+  cz: "700000",     // CZK — Prague tech salary
 };
 
 export default function SalaryCalculator() {
@@ -107,12 +112,17 @@ export default function SalaryCalculator() {
                     <SelectContent>
                       <SelectItem value="at">Austria</SelectItem>
                       <SelectItem value="be">Belgium</SelectItem>
+                      <SelectItem value="cz">Czech Republic (CZK)</SelectItem>
                       <SelectItem value="dk">Denmark (DKK)</SelectItem>
                       <SelectItem value="fr">France</SelectItem>
                       <SelectItem value="de">Germany</SelectItem>
                       <SelectItem value="hu">Hungary (HUF)</SelectItem>
+                      <SelectItem value="ie">Ireland</SelectItem>
                       <SelectItem value="it">Italy</SelectItem>
+                      <SelectItem value="lu">Luxembourg</SelectItem>
                       <SelectItem value="nl">Netherlands</SelectItem>
+                      <SelectItem value="no">Norway (NOK)</SelectItem>
+                      <SelectItem value="pl">Poland (PLN)</SelectItem>
                       <SelectItem value="pt">Portugal</SelectItem>
                       <SelectItem value="es">Spain</SelectItem>
                       <SelectItem value="se">Sweden (SEK)</SelectItem>

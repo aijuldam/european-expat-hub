@@ -19,9 +19,11 @@
 // ── Shared types ──────────────────────────────────────────────────────────────
 
 export type CountryCode =
-  | "nl" | "fr" | "de" | "hu"   // existing
-  | "be" | "at" | "es" | "pt"   // new eurozone
-  | "it" | "ch" | "se" | "dk";  // new (IT: euro; CH/SE/DK: native ccy)
+  | "nl" | "fr" | "de" | "hu"         // original four
+  | "be" | "at" | "es" | "pt"         // eurozone batch 2
+  | "it" | "ch" | "se" | "dk"         // eurozone + non-EUR batch 3
+  | "ie" | "lu"                        // new eurozone
+  | "no" | "pl" | "cz";               // new non-EUR (NOK / PLN / CZK)
 
 export interface SalaryInput {
   grossAnnual: number;
@@ -881,6 +883,305 @@ function calculateDanishNetSalary(grossAnnual: number): SalaryBreakdown {
     p.medianGrossAnnual, p.medianSource);
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// 13. IRELAND
+// Source: Revenue.ie 2026, Budget 2026
+// Income tax: 20% standard rate (single band €42,000); 40% above
+// Tax credits: Personal €1,875 + PAYE €1,875 = €3,750
+// USC: progressive surtax; exempt if gross ≤ €13,000
+// PRSI: class A1, 4.1% flat (Budget 2025 increase)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const ieTaxParams = {
+  itStandardBand: 42_000,
+  itStandardRate: 0.20,
+  itHigherRate: 0.40,
+  personalCredit: 1_875,
+  payeCredit: 1_875,
+  uscBrackets: [
+    { upTo: 12_012,    rate: 0.005 },
+    { upTo: 25_760,    rate: 0.020 },
+    { upTo: 70_044,    rate: 0.045 },
+    { upTo: Infinity,  rate: 0.080 },
+  ] as TaxBracket[],
+  uscExemptThreshold: 13_000,
+  prsiRate: 0.041,
+  medianGrossAnnual: 40_000,    // CSO 2023: ~€39,754 median
+  medianSource: "CSO 2023",
+};
+
+function calculateIrishNetSalary(grossAnnual: number): SalaryBreakdown {
+  const p = ieTaxParams;
+
+  // PRSI — class A1 flat rate; simplified as annual
+  const prsi = round(grossAnnual * p.prsiRate);
+
+  // USC — exempt if annual gross ≤ €13,000
+  const usc = grossAnnual <= p.uscExemptThreshold
+    ? 0
+    : round(applyBrackets(grossAnnual, p.uscBrackets));
+
+  // Income tax (standard vs higher band)
+  const rawIT = grossAnnual <= p.itStandardBand
+    ? grossAnnual * p.itStandardRate
+    : p.itStandardBand * p.itStandardRate + (grossAnnual - p.itStandardBand) * p.itHigherRate;
+  const totalCredits = p.personalCredit + p.payeCredit;
+  const incomeTax = round(Math.max(0, rawIT - totalCredits));
+
+  const bd: SalaryBreakdown["breakdown"] = [
+    { label: "PRSI (Class A1)",  amount: prsi,      description: `${pct(p.prsiRate)} flat rate` },
+    { label: "USC",              amount: usc,        description: "Universal Social Charge — progressive" },
+    { label: "Income Tax",       amount: incomeTax,  description: `20% to €${p.itStandardBand.toLocaleString()}, 40% above; tax credits −€${totalCredits.toLocaleString()}` },
+  ];
+
+  return build(
+    grossAnnual, grossAnnual, incomeTax, prsi + usc, bd,
+    "Indicative estimate — 2026 Irish tax. Single person, PAYE worker, Class A1 PRSI. " +
+    "Medical card holders pay reduced USC. Pension contributions not included. Not tax advice.",
+    p.medianGrossAnnual, p.medianSource,
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 14. NORWAY  (native currency: NOK)
+// Source: Skatteetaten 2025/2026
+// Flat income tax 22% on "alminnelig inntekt" (gross − minstefradrag − personfradrag)
+// Minstefradrag: 46% of gross, min NOK 31,800, max NOK 104,450
+// Personfradrag (personal allowance): NOK 73,100
+// Trinnskatt (bracket surtax) on gross:
+//   1.7 % above NOK 217,400  |  4.0 % above NOK 306,050
+//  13.6 % above NOK 697,150  | 16.6 % above NOK 942,400
+//  17.6 % above NOK 1,410,750
+// Trygdeavgift (national insurance): 7.7% on gross (no ceiling)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const noTaxParams = {
+  flatTaxRate: 0.22,
+  minstefradragRate: 0.46,
+  minstefradragMin: 31_800,
+  minstefradragMax: 104_450,
+  personfradrag: 73_100,
+  trinnskattBrackets: [
+    { upTo: 217_400,    rate: 0.000 },
+    { upTo: 306_050,    rate: 0.017 },
+    { upTo: 697_150,    rate: 0.040 },
+    { upTo: 942_400,    rate: 0.136 },
+    { upTo: 1_410_750,  rate: 0.166 },
+    { upTo: Infinity,   rate: 0.176 },
+  ] as TaxBracket[],
+  trygdeavgiftRate: 0.077,
+  medianGrossAnnual: 640_000,   // SSB 2023 median full-time ~NOK 636,000
+  medianSource: "SSB 2023",
+};
+
+function calculateNorwegianNetSalary(grossAnnual: number): SalaryBreakdown {
+  const p = noTaxParams;
+
+  // Minstefradrag (standard deduction)
+  const minstefradrag = Math.min(
+    Math.max(grossAnnual * p.minstefradragRate, p.minstefradragMin),
+    p.minstefradragMax,
+  );
+
+  // Ordinary income = basis for flat 22% tax
+  const alminneligInntekt = Math.max(0, grossAnnual - minstefradrag - p.personfradrag);
+  const flatTax = round(alminneligInntekt * p.flatTaxRate);
+
+  // Trinnskatt on gross income
+  const trinnskatt = round(applyBrackets(grossAnnual, p.trinnskattBrackets));
+
+  // Trygdeavgift (national insurance employee share)
+  const trygdeavgift = round(grossAnnual * p.trygdeavgiftRate);
+
+  const totalIncomeTax = flatTax + trinnskatt;
+
+  const bd: SalaryBreakdown["breakdown"] = [
+    { label: "Trygdeavgift",      amount: trygdeavgift, description: `${pct(p.trygdeavgiftRate)} national insurance contribution` },
+    { label: "Flat income tax",   amount: flatTax,      description: `22% on alminnelig inntekt (after minstefradrag NOK ${round(minstefradrag).toLocaleString()} + personfradrag NOK ${p.personfradrag.toLocaleString()})` },
+    { label: "Trinnskatt",        amount: trinnskatt,   description: "Bracket surtax 1.7–17.6% on gross income" },
+  ];
+
+  return build(
+    grossAnnual, round(alminneligInntekt), totalIncomeTax, trygdeavgift, bd,
+    "Indicative estimate — 2025/2026 Norwegian tax. Single taxpayer. Minstefradrag and personfradrag applied. " +
+    "Kommuneskatt (municipal, ~12.7%) included in flat 22% alminnelig inntekt rate. Not tax advice.",
+    p.medianGrossAnnual, p.medianSource,
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 15. LUXEMBOURG  (EUR)
+// Source: Administration des contributions directes (ACD) 2026
+// Employee social contributions:
+//   Pension (CNAP): 8.00%  |  Health (CNS): 3.05%  |  Dependency: 1.4%
+//   Total: 12.45% (pension ceiling ≈ €116k gross)
+// Professional expenses (frais d'obtention): 6% of gross, min €540, max €2,970
+// Income tax — Classe 1 (single), simplified from official table:
+//   0% to €11,265 | ~10% to €22,569 | ~24% to €40,065 | 38% to €100,002
+//   40% to €150,000 | 41% to €200,000 | 42% above €200,000
+// Solidarity surtax (solidarité): 7% on income tax (Classe 1)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const luTaxParams = {
+  pensionRate: 0.080,
+  pensionCeiling: 116_328,
+  healthRate: 0.0305,
+  dependencyRate: 0.014,
+  fraisRate: 0.06,
+  fraisMin: 540,
+  fraisMax: 2_970,
+  itBrackets: [
+    { upTo: 11_265,   rate: 0.00 },
+    { upTo: 22_569,   rate: 0.10 },
+    { upTo: 40_065,   rate: 0.24 },
+    { upTo: 100_002,  rate: 0.38 },
+    { upTo: 150_000,  rate: 0.40 },
+    { upTo: 200_000,  rate: 0.41 },
+    { upTo: Infinity, rate: 0.42 },
+  ] as TaxBracket[],
+  solidariteSurcharge: 0.07,   // 7% on computed tax
+  medianGrossAnnual: 64_000,   // Statec 2023 median ~€63,000
+  medianSource: "Statec 2023",
+};
+
+function calculateLuxembourgNetSalary(grossAnnual: number): SalaryBreakdown {
+  const p = luTaxParams;
+
+  // Employee social contributions
+  const pensionBase = Math.min(grossAnnual, p.pensionCeiling);
+  const pension     = round(pensionBase * p.pensionRate);
+  const health      = round(grossAnnual * p.healthRate);
+  const dependency  = round(grossAnnual * p.dependencyRate);
+  const totalSS     = pension + health + dependency;
+
+  // Professional expenses deduction
+  const frais = Math.min(Math.max(grossAnnual * p.fraisRate, p.fraisMin), p.fraisMax);
+
+  // Taxable income (simplified — Classe 1 single)
+  const taxableIncome = Math.max(0, grossAnnual - totalSS - frais);
+
+  // Income tax + solidarity surtax
+  const rawIT      = applyBrackets(taxableIncome, p.itBrackets);
+  const solidarity = rawIT * p.solidariteSurcharge;
+  const incomeTax  = round(rawIT + solidarity);
+
+  const bd: SalaryBreakdown["breakdown"] = [
+    { label: "Pension (CNAP)",         amount: pension,     description: `${pct(p.pensionRate)} up to €${p.pensionCeiling.toLocaleString()} ceiling` },
+    { label: "Health insurance (CNS)", amount: health,      description: `${pct(p.healthRate)} caisse nationale de santé` },
+    { label: "Dependency care",        amount: dependency,  description: `${pct(p.dependencyRate)} dépendance contribution` },
+    { label: "Income Tax + solidarity",amount: incomeTax,   description: `Progressive Classe 1 (0–42%) + 7% solidarity; frais d'obtention €${round(frais).toLocaleString()} deducted` },
+  ];
+
+  return build(
+    grossAnnual, round(taxableIncome), incomeTax, totalSS, bd,
+    "Indicative estimate — 2026 Luxembourg tax, Classe 1 (single). Progressive brackets simplified from ACD table. " +
+    "Communal surcharge and impatriate regimes not included. Not tax advice.",
+    p.medianGrossAnnual, p.medianSource,
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 16. POLAND  (native currency: PLN)
+// Source: Ministerstwo Finansów 2026 (Polski Ład — unchanged since 2022)
+// Employee ZUS contributions:
+//   Pension (emerytalne): 9.76%  |  Disability (rentowe): 1.50%
+//   Sickness (chorobowe): 2.45%  → total ZUS: 13.71%
+// Health insurance: 9% of (gross − ZUS) — NOT tax-deductible since 2022
+// Income tax: 12% to PLN 120,000 (tax-free PLN 30,000 → credit PLN 3,600)
+//             32% above PLN 120,000
+// ═══════════════════════════════════════════════════════════════════════════
+
+const plTaxParams = {
+  zusRates: { pension: 0.0976, disability: 0.0150, sickness: 0.0245 },
+  zusTotal: 0.1371,
+  healthRate: 0.09,
+  taxFreePlnCredit: 3_600,     // PLN 30,000 × 12%
+  itBrackets: [
+    { upTo: 120_000,  rate: 0.12 },
+    { upTo: Infinity, rate: 0.32 },
+  ] as TaxBracket[],
+  medianGrossAnnual: 90_000,   // GUS 2023 median ~PLN 7,510/mo
+  medianSource: "GUS 2023",
+};
+
+function calculatePolishNetSalary(grossAnnual: number): SalaryBreakdown {
+  const p = plTaxParams;
+
+  // Employee ZUS
+  const zus = round(grossAnnual * p.zusTotal);
+
+  // Health insurance on (gross − ZUS)
+  const healthBase = Math.max(0, grossAnnual - zus);
+  const health     = round(healthBase * p.healthRate);
+
+  // Income tax on (gross − ZUS)
+  const taxableIncome = healthBase;
+  const rawIT   = applyBrackets(taxableIncome, p.itBrackets);
+  const incomeTax = round(Math.max(0, rawIT - p.taxFreePlnCredit));
+
+  const bd: SalaryBreakdown["breakdown"] = [
+    { label: "ZUS — pension",     amount: round(grossAnnual * p.zusRates.pension),    description: `${pct(p.zusRates.pension)} emerytalne` },
+    { label: "ZUS — disability",  amount: round(grossAnnual * p.zusRates.disability), description: `${pct(p.zusRates.disability)} rentowe` },
+    { label: "ZUS — sickness",    amount: round(grossAnnual * p.zusRates.sickness),   description: `${pct(p.zusRates.sickness)} chorobowe` },
+    { label: "Health insurance",  amount: health,      description: `${pct(p.healthRate)} of gross − ZUS (not tax-deductible since Polski Ład 2022)` },
+    { label: "PIT income tax",    amount: incomeTax,   description: `12% to PLN 120k / 32% above; tax-free credit PLN ${p.taxFreePlnCredit.toLocaleString()}` },
+  ];
+
+  return build(
+    grossAnnual, round(taxableIncome), incomeTax, zus + health, bd,
+    "Indicative estimate — 2026 Polish tax (Polski Ład). Single taxpayer, standard PIT-2 filed. " +
+    "Lump-sum pension (PPK) and other deductions not included. Not tax advice.",
+    p.medianGrossAnnual, p.medianSource,
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 17. CZECH REPUBLIC  (native currency: CZK)
+// Source: Czech Tax Administration 2026
+// Employee social: pension 6.5% + health 4.5% = 11% (no ceiling for health;
+//   pension ceiling: 48× avg monthly wage ≈ CZK 2,234,736 for 2026)
+// Income tax: 15% up to 36× avg monthly wage (~CZK 1,676,400); 23% above
+// Základní sleva (basic tax credit): CZK 30,840/year
+// ═══════════════════════════════════════════════════════════════════════════
+
+const czTaxParams = {
+  pensionRate: 0.065,
+  healthRate:  0.045,
+  itBrackets: [
+    { upTo: 1_676_400, rate: 0.15 },
+    { upTo: Infinity,  rate: 0.23 },
+  ] as TaxBracket[],
+  zakladniSleva: 30_840,       // basic annual tax credit
+  medianGrossAnnual: 600_000,  // ČSÚ 2024 median ~CZK 48,900/mo
+  medianSource: "ČSÚ 2024",
+};
+
+function calculateCzechNetSalary(grossAnnual: number): SalaryBreakdown {
+  const p = czTaxParams;
+
+  const pension = round(grossAnnual * p.pensionRate);
+  const health  = round(grossAnnual * p.healthRate);
+  const totalSS = pension + health;
+
+  // Taxable income = gross (super-gross abolished 2021)
+  const taxableIncome = grossAnnual;
+  const rawIT     = applyBrackets(taxableIncome, p.itBrackets);
+  const incomeTax = round(Math.max(0, rawIT - p.zakladniSleva));
+
+  const bd: SalaryBreakdown["breakdown"] = [
+    { label: "Pension insurance",    amount: pension,    description: `${pct(p.pensionRate)} důchodové pojištění` },
+    { label: "Health insurance",     amount: health,     description: `${pct(p.healthRate)} zdravotní pojištění` },
+    { label: "Income tax (daň)",     amount: incomeTax,  description: `15% / 23% on gross; základní sleva −CZK ${p.zakladniSleva.toLocaleString()}` },
+  ];
+
+  return build(
+    grossAnnual, taxableIncome, incomeTax, totalSS, bd,
+    "Indicative estimate — 2026 Czech Republic tax. Single taxpayer, základní sleva applied. " +
+    "Sleva na poplatníka is the only credit modelled; child/spouse credits excluded. Not tax advice.",
+    p.medianGrossAnnual, p.medianSource,
+  );
+}
+
 // ── Build helper ──────────────────────────────────────────────────────────────
 
 function build(
@@ -934,16 +1235,24 @@ export function calculateSalary(input: SalaryInput): SalaryBreakdown {
     case "ch": return calculateSwissNetSalary(g);
     case "se": return calculateSwedishNetSalary(g);
     case "dk": return calculateDanishNetSalary(g);
+    case "ie": return calculateIrishNetSalary(g);
+    case "no": return calculateNorwegianNetSalary(g);
+    case "lu": return calculateLuxembourgNetSalary(g);
+    case "pl": return calculatePolishNetSalary(g);
+    case "cz": return calculateCzechNetSalary(g);
   }
 }
 
 // ── Exchange rates (non-EUR countries) ───────────────────────────────────────
 // Update rate + lastUpdated monthly. Source: ECB reference rates.
 
-export const hufEurRate  = { rate: 395,   lastUpdated: "Apr 2026" }; // 1 EUR = 395 HUF
-export const chfEurRate  = { rate: 0.93,  lastUpdated: "Apr 2026" }; // 1 EUR = 0.93 CHF
-export const sekEurRate  = { rate: 11.45, lastUpdated: "Apr 2026" }; // 1 EUR = 11.45 SEK
-export const dkkEurRate  = { rate: 7.46,  lastUpdated: "Apr 2026" }; // 1 EUR = 7.46 DKK
+export const hufEurRate  = { rate: 395,    lastUpdated: "Apr 2026" }; // 1 EUR = 395 HUF
+export const chfEurRate  = { rate: 0.93,   lastUpdated: "Apr 2026" }; // 1 EUR = 0.93 CHF
+export const sekEurRate  = { rate: 11.45,  lastUpdated: "Apr 2026" }; // 1 EUR = 11.45 SEK
+export const dkkEurRate  = { rate: 7.46,   lastUpdated: "Apr 2026" }; // 1 EUR = 7.46 DKK
+export const nokEurRate  = { rate: 11.85,  lastUpdated: "Apr 2026" }; // 1 EUR = 11.85 NOK
+export const plnEurRate  = { rate: 4.28,   lastUpdated: "Apr 2026" }; // 1 EUR = 4.28 PLN
+export const czkEurRate  = { rate: 25.30,  lastUpdated: "Apr 2026" }; // 1 EUR = 25.30 CZK
 
 /** Countries whose native currency is not EUR */
 export const NON_EUR_COUNTRIES: Record<string, { currency: string; rate: number; lastUpdated: string }> = {
@@ -951,6 +1260,9 @@ export const NON_EUR_COUNTRIES: Record<string, { currency: string; rate: number;
   ch: { currency: "CHF", ...chfEurRate },
   se: { currency: "SEK", ...sekEurRate },
   dk: { currency: "DKK", ...dkkEurRate },
+  no: { currency: "NOK", ...nokEurRate },
+  pl: { currency: "PLN", ...plnEurRate },
+  cz: { currency: "CZK", ...czkEurRate },
 };
 
 export const monthNames = [
