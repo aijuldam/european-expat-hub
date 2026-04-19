@@ -12,10 +12,6 @@ vi.mock("wouter", () => ({
   useLocation: () => ["/quiz", () => {}],
 }));
 
-// Stub HeaderCitySelector — it needs LocationProvider context
-vi.mock("./HeaderCitySelector", () => ({
-  HeaderCitySelector: () => <div data-testid="city-selector" />,
-}));
 
 describe("TopNav", () => {
   it("renders all 5 nav item labels in the DOM", () => {

@@ -2,7 +2,6 @@ import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { LocationProvider } from "@/context/location-context";
 import { SeoHead } from "@/components/SeoHead";
 import { expandRoutes } from "@/routes";
 import { countries } from "@/data/countries";
@@ -63,8 +62,6 @@ function App({ locationHook }: { locationHook?: (...args: unknown[]) => unknown 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        {/* LocationProvider wraps the router so Navbar + all pages share context */}
-        <LocationProvider>
           <WouterRouter
             base={import.meta.env.BASE_URL.replace(/\/$/, "")}
             hook={locationHook as never}
@@ -72,7 +69,6 @@ function App({ locationHook }: { locationHook?: (...args: unknown[]) => unknown 
             <RouteHead />
             <Router />
           </WouterRouter>
-        </LocationProvider>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, ChevronDown } from "lucide-react";
 import { NAV_ITEMS } from "@/nav";
-import { HeaderCitySelector } from "./HeaderCitySelector";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -75,11 +74,8 @@ export function TopNav() {
           )}
         </nav>
 
-        {/* Right slot: city selector (sm+) + hamburger (mobile) */}
+        {/* Right slot: hamburger (mobile) */}
         <div className="flex items-center gap-3 shrink-0">
-          <div className="hidden sm:block">
-            <HeaderCitySelector />
-          </div>
           <Sheet>
             <SheetTrigger className="sm:hidden rounded-md p-2 hover:bg-muted" aria-label="Open menu">
               <Menu className="w-5 h-5" />
@@ -93,9 +89,6 @@ export function TopNav() {
                   >{item.label}</Link>
                 ))}
               </nav>
-              <div className="mt-6 pb-4">
-                <HeaderCitySelector />
-              </div>
             </SheetContent>
           </Sheet>
         </div>
