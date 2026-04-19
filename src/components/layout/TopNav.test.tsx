@@ -9,7 +9,7 @@ vi.mock("wouter", () => ({
   Link: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => (
     <a href={href} {...props}>{children}</a>
   ),
-  useLocation: () => ["/guides/visas", () => {}],
+  useLocation: () => ["/quiz", () => {}],
 }));
 
 // Stub HeaderCitySelector — it needs LocationProvider context
@@ -18,7 +18,7 @@ vi.mock("./HeaderCitySelector", () => ({
 }));
 
 describe("TopNav", () => {
-  it("renders all 7 guide vertical labels in the DOM", () => {
+  it("renders all 5 nav item labels in the DOM", () => {
     render(<TopNav />);
     for (const item of NAV_ITEMS) {
       // Each label may appear in multiple responsive variants
@@ -27,16 +27,16 @@ describe("TopNav", () => {
   });
 
   it("marks the active route with aria-current=page", () => {
-    // useLocation returns "/guides/visas" → Visas links should be aria-current
+    // useLocation returns "/quiz" → "Where to Move" links should be aria-current
     render(<TopNav />);
-    const visasLinks = screen.getAllByRole("link", { name: "Visas" });
-    expect(visasLinks.some((el) => el.getAttribute("aria-current") === "page")).toBe(true);
+    const links = screen.getAllByRole("link", { name: "Where to Move" });
+    expect(links.some((el) => el.getAttribute("aria-current") === "page")).toBe(true);
   });
 
   it("does not mark an inactive link as aria-current", () => {
     render(<TopNav />);
-    const housingLinks = screen.getAllByRole("link", { name: "Housing" });
-    expect(housingLinks.every((el) => el.getAttribute("aria-current") === null)).toBe(true);
+    const links = screen.getAllByRole("link", { name: "Compare Cities" });
+    expect(links.every((el) => el.getAttribute("aria-current") === null)).toBe(true);
   });
 
   it("renders the mobile hamburger button", () => {

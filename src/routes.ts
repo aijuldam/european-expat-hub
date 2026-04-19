@@ -83,6 +83,20 @@ export const staticRoutes: RouteConfig[] = [
     },
   },
   {
+    path: "/guides/settle-down",
+    seo: {
+      title: "Settle Down in Europe | European Expat Hub",
+      description: "Guides on housing, banking, visas, and settling into your new European city. Coming soon.",
+    },
+  },
+  {
+    path: "/guides/schools-family",
+    seo: {
+      title: "Schools & Family in Europe | European Expat Hub",
+      description: "International schools, childcare, and family life guides for European expats. Coming soon.",
+    },
+  },
+  {
     path: "/guides/cost-of-living",
     seo: {
       title: "Cost of Living in Europe 2026 | European Expat Hub",
