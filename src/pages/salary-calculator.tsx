@@ -7,19 +7,27 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { calculateSalary, hufEurRate, type SalaryBreakdown } from "@/data/salary-calculator";
+import { calculateSalary, NON_EUR_COUNTRIES, type CountryCode, type SalaryBreakdown } from "@/data/salary-calculator";
 import { Calculator, AlertTriangle, Info, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
-// Default gross inputs per country
-const DEFAULT_GROSS: Record<string, string> = {
+// Default gross inputs per country (native currency)
+const DEFAULT_GROSS: Record<CountryCode, string> = {
   nl: "50000",
   fr: "50000",
   de: "50000",
-  hu: "12000000",   // ~1 M HUF/month, representative Budapest tech salary
+  hu: "12000000",   // ~30k EUR/year in HUF, representative Budapest tech salary
+  be: "50000",
+  at: "50000",
+  es: "40000",
+  pt: "35000",
+  it: "40000",
+  ch: "120000",     // CHF — representative Zurich tech salary
+  se: "600000",     // SEK — representative Stockholm tech salary
+  dk: "550000",     // DKK — representative Copenhagen tech salary
 };
 
 export default function SalaryCalculator() {
-  const [country, setCountry] = useState<"nl" | "fr" | "hu" | "de">("nl");
+  const [country, setCountry] = useState<CountryCode>("nl");
   const [grossInput, setGrossInput] = useState<string>(DEFAULT_GROSS.nl);
   const [thirtyPercentRuling, setThirtyPercentRuling] = useState(false);
   const [cadreStatus, setCadreStatus] = useState(false);
@@ -28,8 +36,8 @@ export default function SalaryCalculator() {
   // Read ?country= URL param on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const c = params.get("country");
-    if (c === "nl" || c === "fr" || c === "hu" || c === "de") {
+    const c = params.get("country") as CountryCode | null;
+    if (c && c in DEFAULT_GROSS) {
       setCountry(c);
       setGrossInput(DEFAULT_GROSS[c]);
     }
@@ -37,13 +45,15 @@ export default function SalaryCalculator() {
 
   // Reset gross input and EUR toggle when country changes
   const handleCountryChange = (v: string) => {
-    const c = v as "nl" | "fr" | "hu" | "de";
+    const c = v as CountryCode;
     setCountry(c);
     setGrossInput(DEFAULT_GROSS[c]);
     setShowInEur(false);
   };
 
-  const isHungary = country === "hu";
+  const nonEurInfo = NON_EUR_COUNTRIES[country] ?? null;   // null for EUR countries
+  const isNonEur = nonEurInfo !== null;
+  const localCurrency = nonEurInfo?.currency ?? "EUR";
   const grossAnnual = parseInt(grossInput) || 0;
 
   const result: SalaryBreakdown | null = useMemo(() => {
@@ -56,18 +66,15 @@ export default function SalaryCalculator() {
     });
   }, [grossAnnual, country, thirtyPercentRuling, cadreStatus]);
 
-  // Currency formatter — all raw values are in the country's native currency
-  // (HUF for Hungary, EUR for NL/FR). showInEur converts HUF→EUR for display.
+  // Currency formatter — all raw values are in the country's native currency.
+  // showInEur converts non-EUR amounts → EUR for display.
   function formatAmt(amount: number): string {
     const abs = Math.abs(amount);
-    if (isHungary && showInEur) {
-      return `${Math.round(abs / hufEurRate.rate).toLocaleString()} EUR`;
+    if (isNonEur && showInEur) {
+      return `${Math.round(abs / nonEurInfo!.rate).toLocaleString()} EUR`;
     }
-    const currency = isHungary ? "HUF" : "EUR";
-    return `${abs.toLocaleString()} ${currency}`;
+    return `${abs.toLocaleString()} ${localCurrency}`;
   }
-
-  const localCurrency = isHungary ? "HUF" : "EUR";
 
   return (
     <Layout>
@@ -98,10 +105,18 @@ export default function SalaryCalculator() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="nl">Netherlands</SelectItem>
+                      <SelectItem value="at">Austria</SelectItem>
+                      <SelectItem value="be">Belgium</SelectItem>
+                      <SelectItem value="dk">Denmark (DKK)</SelectItem>
                       <SelectItem value="fr">France</SelectItem>
                       <SelectItem value="de">Germany</SelectItem>
-                      <SelectItem value="hu">Hungary</SelectItem>
+                      <SelectItem value="hu">Hungary (HUF)</SelectItem>
+                      <SelectItem value="it">Italy</SelectItem>
+                      <SelectItem value="nl">Netherlands</SelectItem>
+                      <SelectItem value="pt">Portugal</SelectItem>
+                      <SelectItem value="es">Spain</SelectItem>
+                      <SelectItem value="se">Sweden (SEK)</SelectItem>
+                      <SelectItem value="ch">Switzerland (CHF)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -115,7 +130,7 @@ export default function SalaryCalculator() {
                     type="number"
                     value={grossInput}
                     onChange={(e) => setGrossInput(e.target.value)}
-                    placeholder={isHungary ? "e.g. 12000000" : "e.g. 50000"}
+                    placeholder={`e.g. ${DEFAULT_GROSS[country]}`}
                     min={0}
                     data-testid="input-gross"
                   />
@@ -155,22 +170,22 @@ export default function SalaryCalculator() {
                   </div>
                 )}
 
-                {/* HU: currency display toggle */}
-                {isHungary && (
+                {/* Non-EUR countries: currency display toggle */}
+                {isNonEur && (
                   <div className="flex items-center justify-between bg-muted/30 rounded-lg p-4">
                     <div>
                       <Label className="text-sm font-medium">Display currency</Label>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        Results are calculated in HUF — switch to see EUR equivalents
+                        Results are calculated in {localCurrency} — switch to see EUR equivalents
                       </p>
                     </div>
                     <div className="flex rounded-md border border-input overflow-hidden text-sm font-medium">
                       <button
                         onClick={() => setShowInEur(false)}
                         className={`px-3 py-1.5 transition-colors ${!showInEur ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted/50"}`}
-                        data-testid="toggle-huf"
+                        data-testid="toggle-local"
                       >
-                        HUF
+                        {localCurrency}
                       </button>
                       <button
                         onClick={() => setShowInEur(true)}
@@ -194,14 +209,12 @@ export default function SalaryCalculator() {
                   <CardContent className="p-6 text-center">
                     <div className="text-xs text-muted-foreground mb-1">Net Annual</div>
                     <div className="text-3xl font-bold text-accent" data-testid="text-net-annual">
-                      {isHungary && !showInEur
-                        ? result.netAnnual.toLocaleString()
-                        : isHungary && showInEur
-                        ? Math.round(result.netAnnual / hufEurRate.rate).toLocaleString()
+                      {isNonEur && showInEur
+                        ? Math.round(result.netAnnual / nonEurInfo!.rate).toLocaleString()
                         : result.netAnnual.toLocaleString()}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {isHungary && showInEur ? "EUR" : localCurrency}
+                      {isNonEur && showInEur ? "EUR" : localCurrency}
                     </div>
                   </CardContent>
                 </Card>
@@ -209,12 +222,12 @@ export default function SalaryCalculator() {
                   <CardContent className="p-6 text-center">
                     <div className="text-xs text-muted-foreground mb-1">Net Monthly</div>
                     <div className="text-3xl font-bold text-foreground" data-testid="text-net-monthly">
-                      {isHungary && showInEur
-                        ? Math.round(result.netMonthly / hufEurRate.rate).toLocaleString()
+                      {isNonEur && showInEur
+                        ? Math.round(result.netMonthly / nonEurInfo!.rate).toLocaleString()
                         : result.netMonthly.toLocaleString()}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {isHungary && showInEur ? "EUR" : localCurrency}
+                      {isNonEur && showInEur ? "EUR" : localCurrency}
                     </div>
                   </CardContent>
                 </Card>
@@ -236,10 +249,10 @@ export default function SalaryCalculator() {
                 const isAbove = pct > 0;
                 const isAt = absPct <= 3; // within ±3% → "around median"
 
-                // Display values — respect HUF/EUR toggle
-                const fmtMedian = isHungary && showInEur
-                  ? `${Math.round(median / hufEurRate.rate).toLocaleString()} EUR`
-                  : `${median.toLocaleString()} ${isHungary ? "HUF" : "EUR"}`;
+                // Display values — respect non-EUR toggle
+                const fmtMedian = isNonEur && showInEur
+                  ? `${Math.round(median / nonEurInfo!.rate).toLocaleString()} EUR`
+                  : `${median.toLocaleString()} ${localCurrency}`;
 
                 const Icon = isAt ? Minus : isAbove ? TrendingUp : TrendingDown;
                 const colorClass = isAt
@@ -295,14 +308,14 @@ export default function SalaryCalculator() {
                 );
               })()}
 
-              {/* Exchange rate helper — Hungary only */}
-              {isHungary && (
+              {/* Exchange rate helper — non-EUR countries only */}
+              {isNonEur && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground mb-8 px-1">
                   <Info className="w-3.5 h-3.5 flex-shrink-0" />
                   <span>
-                    Reference rate: 1 EUR = {hufEurRate.rate.toLocaleString()} HUF
+                    Reference rate: 1 EUR = {nonEurInfo!.rate.toLocaleString()} {localCurrency}
                     &nbsp;·&nbsp;
-                    Last updated: {hufEurRate.lastUpdated}
+                    Last updated: {nonEurInfo!.lastUpdated}
                     &nbsp;·&nbsp;
                     Approx. monthly reference rate
                   </span>
