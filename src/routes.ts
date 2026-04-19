@@ -83,6 +83,14 @@ export const staticRoutes: RouteConfig[] = [
     },
   },
   {
+    path: "/guides/cost-of-living",
+    seo: {
+      title: "Cost of Living in Europe 2026 | European Expat Hub",
+      description:
+        "Compare rent, groceries, transport, and dining costs across 35+ European cities. Side-by-side city cost-of-living comparison tool.",
+    },
+  },
+  {
     path: "/tools/compare",
     seo: {
       title: "European City Cost Comparison Tool | European Expat Hub",
