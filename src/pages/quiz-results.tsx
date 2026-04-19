@@ -21,6 +21,7 @@ export default function QuizResults() {
   }, []);
 
   const topResults = results.slice(0, 3);
+  const otherResults = results.slice(3);
 
   return (
     <Layout>
@@ -114,6 +115,32 @@ export default function QuizResults() {
             );
           })}
         </div>
+
+        {otherResults.length > 0 && (
+          <div className="max-w-3xl mx-auto mt-10">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+              Other matches
+            </h3>
+            <div className="grid sm:grid-cols-2 gap-2">
+              {otherResults.map((result) => {
+                const city = getCityById(result.cityId);
+                const country = city ? getCountryById(city.countryId) : undefined;
+                return (
+                  <Link key={result.cityId} href={`/countries/${country?.slug}/${city?.slug}`}>
+                    <div className="flex items-center justify-between px-4 py-3 rounded-lg border border-border/50 hover:border-accent/40 hover:bg-accent/5 transition-all cursor-pointer group">
+                      <div className="flex items-center gap-2 text-sm text-foreground group-hover:text-accent transition-colors">
+                        <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="font-medium">{result.cityName}</span>
+                        <span className="text-muted-foreground text-xs">{result.countryName}</span>
+                      </div>
+                      <span className="text-sm font-semibold text-muted-foreground">{result.matchPercentage}%</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="text-center mt-10">
           <Link href="/quiz">

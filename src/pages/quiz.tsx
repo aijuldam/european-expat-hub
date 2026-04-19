@@ -1,12 +1,13 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { quizQuestions, categoryConfig } from "@/data/quiz";
-import { ArrowLeft, ArrowRight, Check, Compass } from "lucide-react";
+import { quizQuestions, categoryConfig, calculateQuizResults } from "@/data/quiz";
+import { ArrowLeft, ArrowRight, Check, Compass, Mail, ShieldCheck } from "lucide-react";
 import { Shield, Coins, Sun, Banknote, Heart, Languages, Globe, Zap, Train, Palette } from "lucide-react";
+import { saveLead, getClientIp, CONSENT_TEXT, CONSENT_VERSION } from "@/lib/leads";
 
 const categoryIcons: Record<string, React.ElementType> = {
   safety: Shield,
@@ -33,6 +34,14 @@ export default function Quiz() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [, setLocation] = useLocation();
+
+  // Email gate state
+  const [showEmailGate, setShowEmailGate] = useState(false);
+  const [email, setEmail] = useState("");
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   const question = quizQuestions[currentStep];
   const isMulti = question.multiSelect === true;
@@ -81,13 +90,44 @@ export default function Quiz() {
     if (currentStep < quizQuestions.length - 1) {
       setCurrentStep((s) => s + 1);
     } else {
-      const params = new URLSearchParams();
-      for (const [k, v] of Object.entries(answers)) {
-        params.set(k, Array.isArray(v) ? v.join(",") : v);
-      }
-      setLocation(`/quiz/results?${params.toString()}`);
+      // Show email gate instead of navigating directly
+      setShowEmailGate(true);
+      setTimeout(() => emailInputRef.current?.focus(), 100);
     }
-  }, [currentStep, answers, question.id, setLocation]);
+  }, [currentStep, answers, question.id]);
+
+  const handleEmailSubmit = useCallback(async () => {
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+    setEmailError("");
+    setIsSubmitting(true);
+
+    const ipAddress = await getClientIp();
+    const results = calculateQuizResults(answers);
+    const topResult = results[0];
+
+    saveLead({
+      email: trimmed,
+      ipAddress,
+      consentTimestamp: new Date().toISOString(),
+      sourceUrl: window.location.href,
+      marketingOptIn,
+      consentText: CONSENT_TEXT,
+      consentVersion: CONSENT_VERSION,
+      quizTopMatch: topResult?.cityName ?? "",
+      quizTopMatchPct: topResult?.matchPercentage ?? 0,
+      quizAnswers: answers,
+    });
+
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(answers)) {
+      params.set(k, Array.isArray(v) ? v.join(",") : v);
+    }
+    setLocation(`/quiz/results?${params.toString()}`);
+  }, [email, marketingOptIn, answers, setLocation]);
 
   const handleBack = useCallback(() => {
     // If we're one step past language_skills and it was skipped, jump back to language_env
@@ -99,6 +139,99 @@ export default function Quiz() {
   }, [currentStep, answers]);
 
   const isNextDisabled = isMulti ? selectedValues.length === 0 : !selectedValue;
+
+  // Email gate screen
+  if (showEmailGate) {
+    return (
+      <Layout>
+        <div className="min-h-[calc(100dvh-8rem)] flex items-center justify-center px-4 py-12">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
+                <Mail className="w-8 h-8 text-accent" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-2">
+                Your results are ready!
+              </h2>
+              <p className="text-muted-foreground">
+                Enter your email to unlock your personalised city matches and receive tailored expat tips.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email-input" className="block text-sm font-medium text-foreground mb-1.5">
+                  Email address
+                </label>
+                <input
+                  ref={emailInputRef}
+                  id="email-input"
+                  type="email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
+                  onKeyDown={(e) => e.key === "Enter" && !isSubmitting && handleEmailSubmit()}
+                  placeholder="you@example.com"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                  data-testid="input-email"
+                />
+                {emailError && (
+                  <p className="mt-1.5 text-xs text-destructive">{emailError}</p>
+                )}
+              </div>
+
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="mt-0.5 relative flex-shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={marketingOptIn}
+                    onChange={(e) => setMarketingOptIn(e.target.checked)}
+                    className="sr-only peer"
+                    data-testid="checkbox-marketing"
+                  />
+                  <div className="w-5 h-5 rounded border-2 border-muted-foreground/40 peer-checked:border-accent peer-checked:bg-accent flex items-center justify-center transition-colors group-hover:border-accent/60">
+                    {marketingOptIn && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                  </div>
+                </div>
+                <span className="text-sm text-muted-foreground leading-relaxed">{CONSENT_TEXT}</span>
+              </label>
+
+              <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 rounded-md px-3 py-2">
+                <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>We never share your data. Unsubscribe anytime. GDPR compliant.</span>
+              </div>
+
+              <Button
+                onClick={handleEmailSubmit}
+                disabled={isSubmitting}
+                className="w-full gap-2"
+                size="lg"
+                data-testid="button-see-results"
+              >
+                {isSubmitting ? "Loading…" : "See My Results"}
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  // Skip email gate — still navigate, just no lead stored
+                  const params = new URLSearchParams();
+                  for (const [k, v] of Object.entries(answers)) {
+                    params.set(k, Array.isArray(v) ? v.join(",") : v);
+                  }
+                  setLocation(`/quiz/results?${params.toString()}`);
+                }}
+                className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2 pt-1"
+                data-testid="button-skip-email"
+              >
+                Skip — show results without saving my email
+              </button>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
