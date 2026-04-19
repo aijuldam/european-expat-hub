@@ -58,6 +58,12 @@ export interface Lead {
   // ── Lawful basis for result processing ────────────────────
   result_processing_lawful_basis: "legitimate_interests";
 
+  // ── Result delivery ────────────────────────────────────────
+  // true when user explicitly requested results be sent by email.
+  // Lawful basis for the transactional email: legitimate_interests
+  // (delivering what was actively requested by the user).
+  result_delivery_requested: boolean;
+
   // ── Marketing consent — SEPARATE from result processing ───
   // Only set when user explicitly opts in via an unchecked checkbox.
   marketing_consent: boolean;
