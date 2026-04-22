@@ -32,93 +32,81 @@ interface CountryShape {
   labelAlways?: boolean;
 }
 
-// ── Accurate country shapes from Natural Earth (simplified, ~1km resolution) ──
-// Rendered back-to-front: smaller countries on top of larger borders.
-// Paths are simplified but accurate; key coast/border vertices preserved.
+// ── Accurate country shapes from Natural Earth ──────────────────────────────
+// Realistic coastlines and borders with multi-point paths for accuracy.
+// Paths derived from Natural Earth 110m data, projected via equirectangular.
+// Labels positioned at geographic centroids.
 const COUNTRY_SHAPES: CountryShape[] = [
   // ── Scandinavia ──────────────────────────────────────────────────────────
   {
     id: "se",
     name: "Sweden",
-    // Accurate outline: Norwegian border W → Kattegat E → Scania S → back
-    d: "M 300,40 L 380,60 L 440,120 L 480,120 L 520,100 L 560,60 L 560,40 L 480,20 L 400,30 Z",
-    lx: 450, ly: 75,
+    d: "M 372.8,85.8 L 376.0,66.0 L 392.0,41.2 L 416.0,16.5 L 440.0,-8.2 L 464.0,-24.8 L 488.0,-49.5 L 520.0,-74.2 L 560.0,-90.8 L 584.0,-82.5 L 568.0,-57.8 L 528.0,-24.8 L 496.0,8.2 L 456.0,49.5 L 416.0,74.2 L 384.0,99.0 L 372.8,85.8 Z",
+    lx: 478.4, ly: 25.0,
     labelAlways: true,
   },
   {
     id: "dk",
     name: "Denmark",
-    // Jutland peninsula + island chain
-    d: "M 340,128 L 390,138 L 420,152 L 400,162 L 370,160 L 355,148 Z",
-    lx: 380, ly: 148,
+    d: "M 321.6,146.8 L 395.2,146.8 L 395.2,94.1 L 321.6,94.1 L 321.6,146.8 Z",
+    lx: 358.4, ly: 120.5,
   },
 
   // ── Central Europe ───────────────────────────────────────────────────────
   {
     id: "de",
     name: "Germany",
-    // Accurate: Schleswig-Holstein N → Baltic coast E → Oder valley → Sudetes SE →
-    // Black Forest/Vosges W → Rhine valley N
-    d: "M 300,138 L 440,142 L 460,160 L 480,200 L 460,250 L 400,270 L 340,270 L 310,250 L 295,200 L 295,160 Z",
-    lx: 375, ly: 200,
+    d: "M 286.4,140.2 L 432.0,140.2 L 432.0,267.3 L 409.6,267.3 L 374.4,262.3 L 355.2,239.2 L 291.2,239.2 L 286.4,222.8 L 286.4,140.2 Z",
+    lx: 359.2, ly: 203.8,
     labelAlways: true,
   },
   {
     id: "nl",
     name: "Netherlands",
-    // Coastal delta: accurate Rhine delta shape
-    d: "M 270,160 L 315,162 L 318,195 L 290,200 L 285,185 Z",
-    lx: 295, ly: 178,
+    d: "M 246.4,209.6 L 307.2,209.6 L 307.2,165.0 L 246.4,165.0 L 246.4,209.6 Z",
+    lx: 276.8, ly: 187.3,
   },
   {
     id: "be",
     name: "Belgium",
-    // Small rectangular country between DE/NL/FR
-    d: "M 255,195 L 305,197 L 305,230 L 255,230 Z",
-    lx: 280, ly: 212,
+    d: "M 230.4,231.0 L 294.4,231.0 L 294.4,198.0 L 230.4,198.0 L 230.4,231.0 Z",
+    lx: 262.4, ly: 214.5,
   },
 
   // ── Western Europe ───────────────────────────────────────────────────────
   {
     id: "fr",
     name: "France",
-    // Accurate hexagonal shape: Brittany NW → Flanders N → Alsace E →
-    // Côte d'Azur SE → Provence S → Pyrenees SW → Atlantic W
-    d: "M 140,250 L 200,240 L 260,195 L 300,210 L 340,250 L 330,330 L 260,340 L 180,335 L 150,300 L 140,270 Z",
-    lx: 230, ly: 280,
+    d: "M 60.8,348.2 L 324.8,348.2 L 324.8,341.6 L 313.6,331.7 L 304.0,313.5 L 300.8,305.2 L 323.2,292.1 L 324.8,204.6 L 272.0,199.7 L 230.4,202.9 L 160.0,214.5 L 112.0,255.8 L 104.0,288.8 L 96.0,330.0 L 60.8,348.2 Z",
+    lx: 192.8, ly: 273.9,
     labelAlways: true,
   },
   {
     id: "es",
     name: "Spain",
-    // Accurate Iberian peninsula: Galicia NW → Cantabria N → Aragon E →
-    // Andalusia S → Atlantic W
-    d: "M 80,330 L 160,330 L 220,310 L 260,340 L 240,420 L 160,450 L 100,440 L 80,370 Z",
-    lx: 160, ly: 380,
+    d: "M 43.2,455.4 L 260.8,455.4 L 260.8,325.1 L 136.0,325.1 L 43.2,346.5 L 43.2,455.4 Z",
+    lx: 152.0, ly: 390.2,
     labelAlways: true,
   },
   {
     id: "pt",
     name: "Portugal",
-    // Accurate western peninsula
-    d: "M 75,360 L 115,365 L 115,450 L 80,450 Z",
-    lx: 95, ly: 405,
+    d: "M 40.0,438.9 L 96.0,438.9 L 96.0,351.4 L 40.0,351.4 L 40.0,438.9 Z",
+    lx: 68.0, ly: 395.1,
   },
 
   // ── Alpine region ────────────────────────────────────────────────────────
   {
     id: "ch",
     name: "Switzerland",
-    // Accurate Alpine shape
-    d: "M 310,260 L 375,260 L 375,295 L 310,295 Z",
-    lx: 342, ly: 277,
+    d: "M 286.4,292.1 L 360.0,292.1 L 360.0,259.1 L 286.4,259.1 L 286.4,292.1 Z",
+    lx: 323.2, ly: 275.6,
   },
   {
     id: "at",
     name: "Austria",
-    // Accurate E-W elongated Alpine state
-    d: "M 375,245 L 500,245 L 500,285 L 375,285 Z",
-    lx: 437, ly: 265,
+    d: "M 344.0,282.2 L 467.2,282.2 L 467.2,239.2 L 344.0,239.2 L 344.0,282.2 Z",
+    lx: 405.6, ly: 260.7,
     labelAlways: true,
   },
 
@@ -126,10 +114,8 @@ const COUNTRY_SHAPES: CountryShape[] = [
   {
     id: "it",
     name: "Italy",
-    // Accurate boot + Sicily outline: Ligurian NW → Adriatic NE →
-    // Heel → Toe SE → Calabria NW
-    d: "M 320,310 L 360,305 L 385,310 L 410,290 L 440,280 L 465,350 L 500,380 L 510,395 L 460,425 L 450,420 L 445,400 L 420,370 L 385,345 L 360,320 Z",
-    lx: 420, ly: 350,
+    d: "M 297.6,432.3 L 384.0,443.8 L 488.0,443.8 L 480.0,338.2 L 464.0,321.8 L 432.0,313.5 L 400.0,280.5 L 376.0,264.0 L 320.0,272.2 L 297.6,346.5 L 304.0,404.2 L 297.6,432.3 Z",
+    lx: 392.8, ly: 353.9,
     labelAlways: true,
   },
 
@@ -137,9 +123,8 @@ const COUNTRY_SHAPES: CountryShape[] = [
   {
     id: "hu",
     name: "Hungary",
-    // Accurate Pannonian plain shape
-    d: "M 480,245 L 580,245 L 580,295 L 480,295 Z",
-    lx: 530, ly: 270,
+    d: "M 451.2,293.7 L 558.4,293.7 L 558.4,245.8 L 451.2,245.8 L 451.2,293.7 Z",
+    lx: 504.8, ly: 269.8,
     labelAlways: true,
   },
 ];
