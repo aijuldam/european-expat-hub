@@ -36,12 +36,12 @@ export default function CountriesOverview() {
               </p>
             </div>
 
-            {/* Right: interactive Europe map */}
-            <div className="w-full md:w-[340px] lg:w-[400px] flex-shrink-0">
+            {/* Right: interactive Europe map — seamless integration */}
+            <div className="w-full md:w-[380px] lg:w-[440px] flex-shrink-0">
               <EuropeMap
                 supportedIds={SUPPORTED_IDS}
                 onCountryClick={scrollToCountry}
-                className="max-h-[220px] md:max-h-[240px]"
+                className="max-h-[240px] md:max-h-[280px]"
               />
             </div>
           </div>

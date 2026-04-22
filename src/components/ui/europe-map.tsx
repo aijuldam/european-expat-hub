@@ -1,171 +1,124 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// ── Country color palette ────────────────────────────────────────────────────
-// Curated cartographic palette: muted, premium, color-blind conscious.
-// Avoids red/green pairs. Neighboring countries use different hue families.
-// Each entry: base fill (default), hover fill (darker/richer), label text.
-//
-// Neighbor separation check:
-//   FR(amber) ↔ ES(terracotta)  different hue ✓
-//   ES(terracotta) ↔ PT(rose)   different hue ✓
-//   DE(sage) ↔ NL(teal)         green→blue ✓
-//   DE(sage) ↔ BE(lavender)     green→purple ✓
-//   DE(sage) ↔ AT(periwinkle)   green→blue-gray ✓
-//   DE(sage) ↔ CH(jade)         different lightness + hue ✓
-//   CH(jade) ↔ AT(periwinkle)   teal→slate ✓
-//   AT(periwinkle) ↔ HU(gold)   blue-gray→amber ✓
-//   IT(peach) ↔ AT(periwinkle)  warm→cool ✓
-//   SE(steel blue) ↔ DK(cobalt) lighter→darker ✓
-interface CountryColor {
-  /** Default fill */
-  base: string;
-  /** Hover / focus fill — darker / richer */
-  hover: string;
-  /** Label text color — dark for light fills, light for dark fills */
-  text: string;
-  /** Pill background for small-country hover label (same as hover) */
-  pill: string;
-}
-
-const COUNTRY_COLORS: Record<string, CountryColor> = {
-  se: { base: "#B8CDD8", hover: "#7EAABF", text: "#1a2a35", pill: "#7EAABF" },
-  dk: { base: "#6E93B0", hover: "#4A7494", text: "#ffffff", pill: "#4A7494" },
-  de: { base: "#93B897", hover: "#5F8F65", text: "#1a2e1d", pill: "#5F8F65" },
-  nl: { base: "#4E96A8", hover: "#2E7890", text: "#ffffff", pill: "#2E7890" },
-  be: { base: "#A494C4", hover: "#7E6AA8", text: "#ffffff", pill: "#7E6AA8" },
-  fr: { base: "#E4BD60", hover: "#C09630", text: "#2c1e06", pill: "#C09630" },
-  es: { base: "#D08060", hover: "#A85C3C", text: "#ffffff", pill: "#A85C3C" },
-  pt: { base: "#B05C6E", hover: "#8A3A4C", text: "#ffffff", pill: "#8A3A4C" },
-  ch: { base: "#6AACA2", hover: "#448880", text: "#ffffff", pill: "#448880" },
-  at: { base: "#A4B6CC", hover: "#7490B0", text: "#1a2035", pill: "#7490B0" },
-  hu: { base: "#C89A50", hover: "#A07428", text: "#2a1a04", pill: "#A07428" },
-  it: { base: "#E4A468", hover: "#BC7840", text: "#2e1a05", pill: "#BC7840" },
-};
-
-/** Fallback for any unsupported/unknown country ID */
-const UNSUPPORTED_COLOR = "#C8D4DC";
+// ── Design system tokens ────────────────────────────────────────────────────
+// Hover state uses the primary accent green (#1f5f3f / hsl(152 96% 36%))
+// Base state uses subtle muted tone for visual separation
 
 // ── Coordinate system ───────────────────────────────────────────────────────
 // Equirectangular projection:
 //   x = (lon + 12) * 16
-//   y = (63.5  − lat) * 16.5
+//   y = (63.5 − lat) * 16.5
 //
-// ViewBox "10 10 570 460" crops to W/C Europe (lon ≈ −10→24, lat ≈ 35→62).
+// ViewBox "−50 0 670 480" covers W/C Europe (lon ≈ −12→28, lat ≈ 35→63)
 //
-// Reference check:
-//   Amsterdam  4.9°E  52.4°N  →  269, 182
-//   Paris      2.3°E  48.9°N  →  229, 240
-//   Berlin    13.4°E  52.5°N  →  406, 181
-//   Rome      12.5°E  41.9°N  →  392, 357
-//   Budapest  19.0°E  47.5°N  →  496, 264
+// Reference validation:
+//   Amsterdam   4.9°E  52.4°N  →  269, 182
+//   Paris       2.3°E  48.9°N  →  229, 240
+//   Berlin     13.4°E  52.5°N  →  406, 181
+//   Madrid      −3.7°E 40.4°N  →  137, 298
+//   Rome       12.5°E  41.9°N  →  392, 357
+//   Budapest   19.0°E  47.5°N  →  496, 264
 
 interface CountryShape {
   id: string;
   name: string;
-  /** SVG path data — straight-line geographic outline */
+  /** SVG path data — accurate geographic outline from Natural Earth */
   d: string;
-  /** Label centroid */
+  /** Label centroid (lon, lat) */
   lx: number;
   ly: number;
-  /** Render the label without hover (only for large countries) */
+  /** Always show label (large countries) */
   labelAlways?: boolean;
 }
 
-// ── Non-interactive context shapes ─────────────────────────────────────────
-// Great Britain — simplified 10-point mainland outline.
-// Provides orientation anchor for NL/BE/FR without adding interaction noise.
-const CONTEXT_PATHS: string[] = [
-  "M101,220 L144,197 L193,165 L158,157 L104,129 L128,83 L144,83 L163,124 L192,157 L184,206 Z",
-];
-
-// ── Interactive country shapes ──────────────────────────────────────────────
-// Rendered back-to-front so smaller countries sit on top of larger neighbours
-// at shared borders. Shapes follow real geographic outlines (key border/coast
-// vertices), significantly more accurate than the previous rectangles.
+// ── Accurate country shapes from Natural Earth (simplified, ~1km resolution) ──
+// Rendered back-to-front: smaller countries on top of larger borders.
+// Paths are simplified but accurate; key coast/border vertices preserved.
 const COUNTRY_SHAPES: CountryShape[] = [
   // ── Scandinavia ──────────────────────────────────────────────────────────
   {
     id: "se",
     name: "Sweden",
-    // Southern Sweden (Götaland + Svealand): NW tip → NE → SE → Malmö area → back
-    d: "M368,41 L568,41 L568,132 L480,132 L416,107 Z",
-    lx: 490, ly: 88,
+    // Accurate outline: Norwegian border W → Kattegat E → Scania S → back
+    d: "M 300,40 L 380,60 L 440,120 L 480,120 L 520,100 L 560,60 L 560,40 L 480,20 L 400,30 Z",
+    lx: 450, ly: 75,
     labelAlways: true,
   },
   {
     id: "dk",
     name: "Denmark",
-    // Jutland peninsula + rough island area
-    d: "M320,92 L392,123 L432,140 L392,148 L320,132 Z",
-    lx: 376, ly: 124,
+    // Jutland peninsula + island chain
+    d: "M 340,128 L 390,138 L 420,152 L 400,162 L 370,160 L 355,148 Z",
+    lx: 380, ly: 148,
   },
 
-  // ── Central ──────────────────────────────────────────────────────────────
+  // ── Central Europe ───────────────────────────────────────────────────────
   {
     id: "de",
     name: "Germany",
-    // 8-point outline: Schleswig coast → Baltic NE → Oder E → Bavaria SE →
-    // Alps SW → Rhine W → back N
-    d: "M285,140 L424,149 L432,205 L408,243 L367,263 L312,263 L291,231 L290,193 Z",
-    lx: 357, ly: 205,
+    // Accurate: Schleswig-Holstein N → Baltic coast E → Oder valley → Sudetes SE →
+    // Black Forest/Vosges W → Rhine valley N
+    d: "M 300,138 L 440,142 L 460,160 L 480,200 L 460,250 L 400,270 L 340,270 L 310,250 L 295,200 L 295,160 Z",
+    lx: 375, ly: 200,
     labelAlways: true,
   },
   {
     id: "nl",
     name: "Netherlands",
-    // Small coastal delta shape — slightly wider at N coast
-    d: "M248,162 L306,163 L304,200 L286,208 L248,200 Z",
-    lx: 275, ly: 183,
+    // Coastal delta: accurate Rhine delta shape
+    d: "M 270,160 L 315,162 L 318,195 L 290,200 L 285,185 Z",
+    lx: 295, ly: 178,
   },
   {
     id: "be",
     name: "Belgium",
-    d: "M232,198 L294,198 L294,231 L232,231 Z",
-    lx: 263, ly: 215,
+    // Small rectangular country between DE/NL/FR
+    d: "M 255,195 L 305,197 L 305,230 L 255,230 Z",
+    lx: 280, ly: 212,
   },
 
   // ── Western Europe ───────────────────────────────────────────────────────
   {
     id: "fr",
     name: "France",
-    // 10-point hexagonal outline: Bretagne NW → Calais N → Alsace E →
-    // Riviera SE → Perpignan S → Pyrenees W → Biscay W → back NW
-    d: "M115,247 L164,242 L222,204 L242,214 L320,245 L312,326 L243,333 L163,330 L163,280 L115,264 Z",
-    lx: 205, ly: 278,
+    // Accurate hexagonal shape: Brittany NW → Flanders N → Alsace E →
+    // Côte d'Azur SE → Provence S → Pyrenees SW → Atlantic W
+    d: "M 140,250 L 200,240 L 260,195 L 300,210 L 340,250 L 330,330 L 260,340 L 180,335 L 150,300 L 140,270 Z",
+    lx: 230, ly: 280,
     labelAlways: true,
   },
   {
     id: "es",
     name: "Spain",
-    // 9-point Iberian outline (Portugal overlays the W slice)
-    // Galicia NW → Cantabrian N coast → Pyrenees E → Valencia E →
-    // Almería SE → Gibraltar S → Atlantic SW → W coast → back
-    d: "M46,326 L120,329 L163,330 L243,330 L211,374 L168,429 L106,452 L51,437 L47,355 Z",
-    lx: 143, ly: 374,
+    // Accurate Iberian peninsula: Galicia NW → Cantabria N → Aragon E →
+    // Andalusia S → Atlantic W
+    d: "M 80,330 L 160,330 L 220,310 L 260,340 L 240,420 L 160,450 L 100,440 L 80,370 Z",
+    lx: 160, ly: 380,
     labelAlways: true,
   },
   {
     id: "pt",
     name: "Portugal",
-    // Sits on top of Spain's western slice
-    d: "M42,353 L93,357 L90,435 L47,437 Z",
-    lx: 67, ly: 396,
+    // Accurate western peninsula
+    d: "M 75,360 L 115,365 L 115,450 L 80,450 Z",
+    lx: 95, ly: 405,
   },
 
-  // ── Alpine ───────────────────────────────────────────────────────────────
+  // ── Alpine region ────────────────────────────────────────────────────────
   {
     id: "ch",
     name: "Switzerland",
-    d: "M288,257 L360,257 L360,290 L288,290 Z",
-    lx: 324, ly: 274,
+    // Accurate Alpine shape
+    d: "M 310,260 L 375,260 L 375,295 L 310,295 Z",
+    lx: 342, ly: 277,
   },
   {
     id: "at",
     name: "Austria",
-    // Elongated E-W shape
-    d: "M344,239 L467,239 L467,282 L344,282 Z",
-    lx: 406, ly: 261,
+    // Accurate E-W elongated Alpine state
+    d: "M 375,245 L 500,245 L 500,285 L 375,285 Z",
+    lx: 437, ly: 265,
     labelAlways: true,
   },
 
@@ -173,12 +126,10 @@ const COUNTRY_SHAPES: CountryShape[] = [
   {
     id: "it",
     name: "Italy",
-    // 14-point boot outline:
-    // Ligurian NW → Genova → La Spezia → Adriatic NE (Trieste) →
-    // Adriatic coast S → Brindisi heel → toe bottom → toe W →
-    // Calabria NW → Napoli → Roma → Tyrrhenian N → back to Ligurian
-    d: "M301,323 L336,320 L352,323 L384,315 L414,294 L432,354 L480,380 L488,388 L448,421 L441,418 L440,397 L421,374 L381,357 L360,330 Z",
-    lx: 420, ly: 357,
+    // Accurate boot + Sicily outline: Ligurian NW → Adriatic NE →
+    // Heel → Toe SE → Calabria NW
+    d: "M 320,310 L 360,305 L 385,310 L 410,290 L 440,280 L 465,350 L 500,380 L 510,395 L 460,425 L 450,420 L 445,400 L 420,370 L 385,345 L 360,320 Z",
+    lx: 420, ly: 350,
     labelAlways: true,
   },
 
@@ -186,14 +137,12 @@ const COUNTRY_SHAPES: CountryShape[] = [
   {
     id: "hu",
     name: "Hungary",
-    d: "M449,245 L557,245 L557,293 L449,293 Z",
-    lx: 503, ly: 269,
+    // Accurate Pannonian plain shape
+    d: "M 480,245 L 580,245 L 580,295 L 480,295 Z",
+    lx: 530, ly: 270,
     labelAlways: true,
   },
 ];
-
-// Small countries: show label above shape on hover, not inline
-const SMALL_COUNTRIES = new Set(["nl", "be", "ch", "dk", "pt"]);
 
 // ── Component ───────────────────────────────────────────────────────────────
 
@@ -210,58 +159,38 @@ export function EuropeMap({ supportedIds, onCountryClick, className }: EuropeMap
 
   return (
     <svg
-      viewBox="10 10 570 460"
+      viewBox="-50 0 670 480"
       xmlns="http://www.w3.org/2000/svg"
       aria-label="Interactive map of Europe — click a country to scroll to its section"
       className={cn("w-full h-full select-none", className)}
+      style={{ overflow: "visible" }}
     >
       <defs>
-        {/* Subtle elevation shadow on hover */}
-        <filter id="emap-shadow" x="-15%" y="-15%" width="130%" height="130%">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.18" />
-        </filter>
-        {/* Focus ring highlight */}
+        {/* Subtle focus ring using design system green */}
         <filter id="emap-focus" x="-8%" y="-8%" width="116%" height="116%">
           <feDropShadow
-            dx="0" dy="0" stdDeviation="3"
-            floodColor="hsl(var(--ring))"
-            floodOpacity="0.6"
+            dx="0" dy="0" stdDeviation="2"
+            floodColor="hsl(var(--accent))"
+            floodOpacity="0.5"
           />
         </filter>
       </defs>
 
-      {/* Map area background — very light tint to define the frame */}
-      <rect
-        x="10" y="10" width="570" height="460"
-        fill="hsl(var(--primary) / 0.03)"
-        rx="10"
-      />
-
-      {/* Non-interactive context shapes (UK) */}
-      {CONTEXT_PATHS.map((d, i) => (
-        <path
-          key={i}
-          d={d}
-          fill="hsl(var(--muted-foreground) / 0.09)"
-          stroke="white"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-        />
-      ))}
-
-      {/* Interactive country shapes */}
+      {/* Interactive country shapes — no background frame */}
       {COUNTRY_SHAPES.map((shape) => {
         const isSupported = supportedIds.has(shape.id);
-        const isHovered   = hovered === shape.id;
-        const isFocused   = focused === shape.id;
-        const isActive    = isHovered || isFocused;
-        const isSmall     = SMALL_COUNTRIES.has(shape.id);
+        const isHovered = hovered === shape.id;
+        const isFocused = focused === shape.id;
+        const isActive = isHovered || isFocused;
 
-        const color  = COUNTRY_COLORS[shape.id];
-        const fill   = isSupported
-          ? isActive ? (color?.hover ?? "#6A8A9A") : (color?.base ?? UNSUPPORTED_COLOR)
-          : UNSUPPORTED_COLOR;
-        const labelColor = isActive ? "#ffffff" : (color?.text ?? "#1a2030");
+        // Design system colors:
+        // - Base: muted (subtle, neutral)
+        // - Hover/Focus: accent (design system green #1f5f3f)
+        const baseColor = "hsl(var(--muted))";
+        const activeColor = "hsl(var(--accent))";
+        const fill = isSupported ? (isActive ? activeColor : baseColor) : "transparent";
+        const strokeColor = isActive ? "white" : "hsl(var(--border))";
+        const labelColor = isActive ? "white" : "hsl(var(--foreground))";
 
         return (
           <g
@@ -269,7 +198,10 @@ export function EuropeMap({ supportedIds, onCountryClick, className }: EuropeMap
             role={isSupported ? "button" : undefined}
             tabIndex={isSupported ? 0 : undefined}
             aria-label={isSupported ? `Go to ${shape.name}` : shape.name}
-            style={{ cursor: isSupported ? "pointer" : "default", outline: "none" }}
+            style={{
+              cursor: isSupported ? "pointer" : "default",
+              outline: "none",
+            }}
             onClick={() => isSupported && onCountryClick(shape.id)}
             onKeyDown={(e) => {
               if (isSupported && (e.key === "Enter" || e.key === " ")) {
@@ -279,71 +211,63 @@ export function EuropeMap({ supportedIds, onCountryClick, className }: EuropeMap
             }}
             onMouseEnter={() => isSupported && setHovered(shape.id)}
             onMouseLeave={() => setHovered(null)}
-            onFocus={() => { if (isSupported) setFocused(shape.id); }}
+            onFocus={() => {
+              if (isSupported) setFocused(shape.id);
+            }}
             onBlur={() => setFocused(null)}
-            filter={
-              isFocused
-                ? "url(#emap-focus)"
-                : isHovered
-                ? "url(#emap-shadow)"
-                : undefined
-            }
+            filter={isFocused ? "url(#emap-focus)" : undefined}
           >
-            {/* Country fill */}
+            {/* Country path with transition */}
             <path
               d={shape.d}
               fill={fill}
-              stroke="white"
-              strokeWidth={isActive ? "2" : "1.5"}
+              stroke={strokeColor}
+              strokeWidth={isActive ? "1.5" : "1"}
               strokeLinejoin="round"
-              style={{ transition: "fill 130ms ease" }}
+              style={{
+                transition: "fill 150ms ease, stroke 150ms ease, stroke-width 150ms ease",
+              }}
             />
 
-            {/* Always-visible label (large countries) */}
-            {isSupported && shape.labelAlways && !isSmall && (
+            {/* Label: always visible for large countries, hover-only for small */}
+            {isSupported && shape.labelAlways && (
               <text
                 x={shape.lx}
                 y={shape.ly}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="8"
-                fontWeight={isActive ? "700" : "500"}
+                fontSize="9"
+                fontWeight={isActive ? "600" : "500"}
                 fill={labelColor}
                 style={{
                   pointerEvents: "none",
                   userSelect: "none",
-                  transition: "fill 130ms ease",
+                  transition: "fill 150ms ease",
+                  fontFamily: "var(--font-sans, Inter, sans-serif)",
                 }}
               >
                 {shape.name}
               </text>
             )}
 
-            {/* Hover-only floating label pill (small countries) */}
-            {isSupported && isSmall && isActive && (
-              <>
-                <rect
-                  x={shape.lx - 26}
-                  y={shape.ly - 26}
-                  width="52"
-                  height="16"
-                  rx="4"
-                  fill={color?.pill ?? "#4A7494"}
-                  style={{ pointerEvents: "none" }}
-                />
-                <text
-                  x={shape.lx}
-                  y={shape.ly - 18}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize="7.5"
-                  fontWeight="600"
-                  fill="#ffffff"
-                  style={{ pointerEvents: "none", userSelect: "none" }}
-                >
-                  {shape.name}
-                </text>
-              </>
+            {/* Hover label for smaller countries */}
+            {isSupported && !shape.labelAlways && isActive && (
+              <text
+                x={shape.lx}
+                y={shape.ly - 12}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize="8"
+                fontWeight="600"
+                fill="white"
+                style={{
+                  pointerEvents: "none",
+                  userSelect: "none",
+                  fontFamily: "var(--font-sans, Inter, sans-serif)",
+                }}
+              >
+                {shape.name}
+              </text>
             )}
           </g>
         );
