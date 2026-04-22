@@ -80,6 +80,7 @@ export function CityCombobox({
           ref={triggerRef}
           role="combobox"
           aria-expanded={open}
+          aria-haspopup="listbox"
           aria-label={label}
           data-testid={testId}
           className={cn(
@@ -96,8 +97,8 @@ export function CityCombobox({
 
           <span className="ml-2 flex items-center gap-1 flex-shrink-0">
             {selectedCity && (
-              <span
-                role="button"
+              <button
+                type="button"
                 tabIndex={0}
                 aria-label={`Clear ${label}`}
                 onClick={handleClear}
@@ -107,10 +108,11 @@ export function CityCombobox({
                     onChange("");
                   }
                 }}
+                onPointerDown={(e) => e.stopPropagation()}
                 className="rounded p-0.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
               >
-                <X className="h-3.5 w-3.5" />
-              </span>
+                <X className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
             )}
             <ChevronsUpDown className="h-4 w-4 text-muted-foreground opacity-60" />
           </span>

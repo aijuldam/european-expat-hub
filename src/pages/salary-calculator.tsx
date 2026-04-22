@@ -1,14 +1,35 @@
 import { useState, useMemo, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AppCombobox, type ComboboxOption } from "@/components/ui/app-combobox";
 import { Separator } from "@/components/ui/separator";
 import { calculateSalary, NON_EUR_COUNTRIES, type CountryCode, type SalaryBreakdown } from "@/data/salary-calculator";
 import { Calculator, AlertTriangle, Info, TrendingUp, TrendingDown, Minus } from "lucide-react";
+
+// Ordered country list — label includes currency suffix for non-EUR countries
+// so users can search by currency code (e.g. "CZK" finds Czech Republic).
+const COUNTRY_OPTIONS: ComboboxOption[] = [
+  { value: "at", label: "Austria" },
+  { value: "be", label: "Belgium" },
+  { value: "cz", label: "Czech Republic", sublabel: "CZK" },
+  { value: "dk", label: "Denmark", sublabel: "DKK" },
+  { value: "fr", label: "France" },
+  { value: "de", label: "Germany" },
+  { value: "hu", label: "Hungary", sublabel: "HUF" },
+  { value: "ie", label: "Ireland" },
+  { value: "it", label: "Italy" },
+  { value: "lu", label: "Luxembourg" },
+  { value: "nl", label: "Netherlands" },
+  { value: "no", label: "Norway", sublabel: "NOK" },
+  { value: "pl", label: "Poland", sublabel: "PLN" },
+  { value: "pt", label: "Portugal" },
+  { value: "es", label: "Spain" },
+  { value: "se", label: "Sweden", sublabel: "SEK" },
+  { value: "ch", label: "Switzerland", sublabel: "CHF" },
+];
 
 // Default gross inputs per country (native currency)
 const DEFAULT_GROSS: Record<CountryCode, string> = {
@@ -102,33 +123,20 @@ export default function SalaryCalculator() {
           <Card className="mb-8">
             <CardContent className="p-6">
               <div className="space-y-6">
-                {/* Country selector */}
+                {/* Country selector — AppCombobox with search (17 options) */}
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Country</Label>
-                  <Select value={country} onValueChange={handleCountryChange}>
-                    <SelectTrigger data-testid="select-country">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="at">Austria</SelectItem>
-                      <SelectItem value="be">Belgium</SelectItem>
-                      <SelectItem value="cz">Czech Republic (CZK)</SelectItem>
-                      <SelectItem value="dk">Denmark (DKK)</SelectItem>
-                      <SelectItem value="fr">France</SelectItem>
-                      <SelectItem value="de">Germany</SelectItem>
-                      <SelectItem value="hu">Hungary (HUF)</SelectItem>
-                      <SelectItem value="ie">Ireland</SelectItem>
-                      <SelectItem value="it">Italy</SelectItem>
-                      <SelectItem value="lu">Luxembourg</SelectItem>
-                      <SelectItem value="nl">Netherlands</SelectItem>
-                      <SelectItem value="no">Norway (NOK)</SelectItem>
-                      <SelectItem value="pl">Poland (PLN)</SelectItem>
-                      <SelectItem value="pt">Portugal</SelectItem>
-                      <SelectItem value="es">Spain</SelectItem>
-                      <SelectItem value="se">Sweden (SEK)</SelectItem>
-                      <SelectItem value="ch">Switzerland (CHF)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="country-combobox" className="text-sm font-medium mb-2 block">
+                    Country
+                  </Label>
+                  <AppCombobox
+                    value={country}
+                    onChange={handleCountryChange}
+                    options={COUNTRY_OPTIONS}
+                    placeholder="Select a country…"
+                    searchPlaceholder="Search countries…"
+                    aria-label="Select country"
+                    data-testid="select-country"
+                  />
                 </div>
 
                 {/* Gross salary input — label and placeholder adapt to country */}
