@@ -14,7 +14,7 @@
 import type { Country } from "./data/countries";
 import type { City } from "./data/cities";
 
-export const SITE = "https://aijuldam.github.io/european-expat-hub";
+export const SITE = "https://expatlix.com";
 
 export interface RouteSeo {
   title: string;

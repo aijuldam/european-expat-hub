@@ -299,7 +299,7 @@ export function CityCompare({
   onSlugAChange,
   onSlugBChange,
   embed = false,
-  siteBase = "https://aijuldam.github.io/european-expat-hub",
+  siteBase = "https://expatlix.com",
 }: CityCompareProps) {
   const dataA = useMemo(() => getCityMetrics(slugA), [slugA]);
   const dataB = useMemo(() => getCityMetrics(slugB), [slugB]);
