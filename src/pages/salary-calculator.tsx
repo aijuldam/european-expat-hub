@@ -7,57 +7,93 @@ import { Label } from "@/components/ui/label";
 import { AppCombobox, type ComboboxOption } from "@/components/ui/app-combobox";
 import { Separator } from "@/components/ui/separator";
 import { calculateSalary, NON_EUR_COUNTRIES, type CountryCode, type SalaryBreakdown } from "@/data/salary-calculator";
-import { Calculator, AlertTriangle, Info, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Calculator, AlertTriangle, Info, TrendingUp, TrendingDown, Minus, RefreshCw } from "lucide-react";
 
-// Ordered country list — label includes currency suffix for non-EUR countries
-// so users can search by currency code (e.g. "CZK" finds Czech Republic).
+// ── Country list ──────────────────────────────────────────────────────────────
+// sublabel lets users search by currency code (e.g. "HUF" → Hungary)
 const COUNTRY_OPTIONS: ComboboxOption[] = [
   { value: "at", label: "Austria" },
   { value: "be", label: "Belgium" },
   { value: "cz", label: "Czech Republic", sublabel: "CZK" },
-  { value: "dk", label: "Denmark", sublabel: "DKK" },
+  { value: "dk", label: "Denmark",        sublabel: "DKK" },
   { value: "fr", label: "France" },
   { value: "de", label: "Germany" },
-  { value: "hu", label: "Hungary", sublabel: "HUF" },
+  { value: "hu", label: "Hungary",        sublabel: "HUF" },
   { value: "ie", label: "Ireland" },
   { value: "it", label: "Italy" },
   { value: "lu", label: "Luxembourg" },
   { value: "nl", label: "Netherlands" },
-  { value: "no", label: "Norway", sublabel: "NOK" },
-  { value: "pl", label: "Poland", sublabel: "PLN" },
+  { value: "no", label: "Norway",         sublabel: "NOK" },
+  { value: "pl", label: "Poland",         sublabel: "PLN" },
   { value: "pt", label: "Portugal" },
   { value: "es", label: "Spain" },
-  { value: "se", label: "Sweden", sublabel: "SEK" },
-  { value: "ch", label: "Switzerland", sublabel: "CHF" },
+  { value: "se", label: "Sweden",         sublabel: "SEK" },
+  { value: "ch", label: "Switzerland",   sublabel: "CHF" },
 ];
 
-// Default gross inputs per country (native currency)
+// Default gross amounts per country (native currency)
 const DEFAULT_GROSS: Record<CountryCode, string> = {
   nl: "50000",
   fr: "50000",
   de: "50000",
-  hu: "12000000",   // ~30k EUR/year in HUF
+  hu: "12000000",
   be: "50000",
   at: "50000",
   es: "40000",
   pt: "35000",
   it: "40000",
-  ch: "120000",     // CHF — Zurich reference
-  se: "600000",     // SEK — Stockholm reference
-  dk: "550000",     // DKK — Copenhagen reference
-  ie: "55000",      // EUR — Dublin tech salary
-  lu: "70000",      // EUR — Luxembourg finance salary
-  no: "700000",     // NOK — Oslo reference
-  pl: "100000",     // PLN — Warsaw tech salary
-  cz: "700000",     // CZK — Prague tech salary
+  ch: "120000",
+  se: "600000",
+  dk: "550000",
+  ie: "55000",
+  lu: "70000",
+  no: "700000",
+  pl: "100000",
+  cz: "700000",
 };
 
+// ── Exchange-rate cache (localStorage, 7-day TTL) ─────────────────────────────
+// Source: frankfurter.app — free, no key, ECB-backed.
+// Refresh: client-side on page load if cache is stale; falls back to static rates.
+
+const CACHE_KEY = "expatlix_fx_rates_v1";
+const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+
+interface FxCache {
+  /** API rates object: { HUF: 395.12, CHF: 0.93, … } (1 EUR = X local) */
+  rates: Record<string, number>;
+  /** fetchedAt epoch ms */
+  ts: number;
+  /** ISO date from API, e.g. "2026-04-22" */
+  date: string;
+}
+
+function readCache(): FxCache | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cache = JSON.parse(raw) as FxCache;
+    if (Date.now() - cache.ts > CACHE_TTL) return null; // stale
+    return cache;
+  } catch { return null; }
+}
+
+function writeCache(cache: FxCache) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch { /* quota */ }
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function SalaryCalculator() {
-  const [country, setCountry] = useState<CountryCode>("nl");
-  const [grossInput, setGrossInput] = useState<string>(DEFAULT_GROSS.nl);
-  const [thirtyPercentRuling, setThirtyPercentRuling] = useState(false);
-  const [cadreStatus, setCadreStatus] = useState(false);
-  const [showInEur, setShowInEur] = useState(false);   // Hungary only: toggle EUR display
+  const [country, setCountry]                 = useState<CountryCode>("nl");
+  const [grossInput, setGrossInput]           = useState<string>(DEFAULT_GROSS.nl);
+  const [thirtyPercentRuling, setThirtyPct]   = useState(false);
+  const [cadreStatus, setCadreStatus]         = useState(false);
+  const [showInEur, setShowInEur]             = useState(false);
+
+  // Live exchange rates — null until loaded; falls back to static NON_EUR_COUNTRIES
+  const [fxCache, setFxCache] = useState<FxCache | null>(null);
+  const [fxStatus, setFxStatus] = useState<"loading" | "live" | "cached" | "static">("loading");
 
   // Read ?country= URL param on mount
   useEffect(() => {
@@ -69,7 +105,82 @@ export default function SalaryCalculator() {
     }
   }, []);
 
-  // Reset gross input and EUR toggle when country changes
+  // Fetch exchange rates (frankfurter.app → localStorage cache → static fallback)
+  useEffect(() => {
+    async function refresh() {
+      // 1. Try cache
+      const cached = readCache();
+      if (cached) {
+        setFxCache(cached);
+        setFxStatus("cached");
+        return;
+      }
+      // 2. Fetch live
+      try {
+        const currencies = Object.values(NON_EUR_COUNTRIES)
+          .map((v) => v.currency)
+          .join(",");
+        const res = await fetch(
+          `https://api.frankfurter.app/latest?from=EUR&to=${currencies}`,
+          { signal: AbortSignal.timeout(6_000) },
+        );
+        if (!res.ok) throw new Error("non-2xx");
+        const json = await res.json() as { rates: Record<string, number>; date: string };
+        const cache: FxCache = { rates: json.rates, ts: Date.now(), date: json.date };
+        writeCache(cache);
+        setFxCache(cache);
+        setFxStatus("live");
+      } catch {
+        // 3. Static fallback
+        setFxStatus("static");
+      }
+    }
+    refresh();
+  }, []);
+
+  // Resolve effective rate for the current country
+  // Priority: live/cached API rate → static hardcoded rate
+  const nonEurStatic   = NON_EUR_COUNTRIES[country] ?? null;
+  const isNonEur       = nonEurStatic !== null;
+  const localCurrency  = nonEurStatic?.currency ?? "EUR";
+
+  const effectiveRate: { rate: number; date: string } | null = useMemo(() => {
+    if (!nonEurStatic) return null;
+    const liveRate = fxCache?.rates[nonEurStatic.currency];
+    if (liveRate) {
+      return { rate: liveRate, date: fxCache!.date };
+    }
+    return { rate: nonEurStatic.rate, date: nonEurStatic.lastUpdated };
+  }, [nonEurStatic, fxCache]);
+
+  // ── Display helpers ────────────────────────────────────────────────────────
+  // Single source of truth for currency display. All monetary values are stored
+  // in native currency; conversion to EUR happens only at render time.
+
+  const displayCurrency = isNonEur && showInEur ? "EUR" : localCurrency;
+
+  /**
+   * Convert a native-currency amount to the display currency.
+   * Always returns a positive integer (sign handled separately in breakdown).
+   */
+  function toDisplayNum(amount: number): number {
+    const abs = Math.abs(amount);
+    if (isNonEur && showInEur && effectiveRate) {
+      return Math.round(abs / effectiveRate.rate);
+    }
+    return Math.round(abs);
+  }
+
+  /** Format with thousands separator + currency code. */
+  function formatAmt(amount: number): string {
+    return `${toDisplayNum(amount).toLocaleString()} ${displayCurrency}`;
+  }
+
+  // ── Input parsing ──────────────────────────────────────────────────────────
+  // Number() handles scientific notation; Math.round removes decimals.
+  const grossAnnual = Math.round(Number(grossInput)) || 0;
+
+  // ── Country change ─────────────────────────────────────────────────────────
   const handleCountryChange = (v: string) => {
     const c = v as CountryCode;
     setCountry(c);
@@ -77,11 +188,7 @@ export default function SalaryCalculator() {
     setShowInEur(false);
   };
 
-  const nonEurInfo = NON_EUR_COUNTRIES[country] ?? null;   // null for EUR countries
-  const isNonEur = nonEurInfo !== null;
-  const localCurrency = nonEurInfo?.currency ?? "EUR";
-  const grossAnnual = parseInt(grossInput) || 0;
-
+  // ── Calculation ────────────────────────────────────────────────────────────
   const result: SalaryBreakdown | null = useMemo(() => {
     if (grossAnnual <= 0) return null;
     return calculateSalary({
@@ -92,16 +199,7 @@ export default function SalaryCalculator() {
     });
   }, [grossAnnual, country, thirtyPercentRuling, cadreStatus]);
 
-  // Currency formatter — all raw values are in the country's native currency.
-  // showInEur converts non-EUR amounts → EUR for display.
-  function formatAmt(amount: number): string {
-    const abs = Math.abs(amount);
-    if (isNonEur && showInEur) {
-      return `${Math.round(abs / nonEurInfo!.rate).toLocaleString()} EUR`;
-    }
-    return `${abs.toLocaleString()} ${localCurrency}`;
-  }
-
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <Layout>
       <div className="bg-primary/5 py-12 md:py-16">
@@ -123,7 +221,8 @@ export default function SalaryCalculator() {
           <Card className="mb-8">
             <CardContent className="p-6">
               <div className="space-y-6">
-                {/* Country selector — AppCombobox with search (17 options) */}
+
+                {/* Country selector */}
                 <div>
                   <Label htmlFor="country-combobox" className="text-sm font-medium mb-2 block">
                     Country
@@ -139,18 +238,19 @@ export default function SalaryCalculator() {
                   />
                 </div>
 
-                {/* Gross salary input — label and placeholder adapt to country */}
+                {/* Gross salary input */}
                 <div>
                   <Label className="text-sm font-medium mb-2 block">
                     Gross Annual Salary ({localCurrency})
                   </Label>
                   <Input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     value={grossInput}
                     onChange={(e) => setGrossInput(e.target.value)}
                     placeholder={`e.g. ${DEFAULT_GROSS[country]}`}
-                    min={0}
                     data-testid="input-gross"
+                    className="text-base"   /* prevent iOS zoom on focus */
                   />
                 </div>
 
@@ -165,7 +265,7 @@ export default function SalaryCalculator() {
                     </div>
                     <Switch
                       checked={thirtyPercentRuling}
-                      onCheckedChange={setThirtyPercentRuling}
+                      onCheckedChange={setThirtyPct}
                       data-testid="switch-30percent"
                     />
                   </div>
@@ -177,7 +277,7 @@ export default function SalaryCalculator() {
                     <div>
                       <Label className="text-sm font-medium">Cadre Status</Label>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        Cadre employees have higher social contributions but better benefits
+                        Higher social contributions but better benefits
                       </p>
                     </div>
                     <Switch
@@ -188,65 +288,77 @@ export default function SalaryCalculator() {
                   </div>
                 )}
 
-                {/* Non-EUR countries: currency display toggle */}
+                {/* Non-EUR: currency display toggle */}
                 {isNonEur && (
-                  <div className="flex items-center justify-between bg-muted/30 rounded-lg p-4">
-                    <div>
-                      <Label className="text-sm font-medium">Display currency</Label>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Results are calculated in {localCurrency} — switch to see EUR equivalents
-                      </p>
-                    </div>
-                    <div className="flex rounded-md border border-input overflow-hidden text-sm font-medium">
-                      <button
-                        onClick={() => setShowInEur(false)}
-                        className={`px-3 py-1.5 transition-colors ${!showInEur ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted/50"}`}
-                        data-testid="toggle-local"
+                  <div className="bg-muted/30 rounded-lg p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="min-w-0">
+                        <Label className="text-sm font-medium">Display currency</Label>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Calculated in {localCurrency} — switch to see EUR equivalents
+                        </p>
+                      </div>
+                      {/* Touch-friendly toggle — min 44 px height */}
+                      <div
+                        className="flex rounded-md border border-input overflow-hidden text-sm font-semibold shrink-0 self-start sm:self-auto"
+                        role="group"
+                        aria-label="Currency display toggle"
                       >
-                        {localCurrency}
-                      </button>
-                      <button
-                        onClick={() => setShowInEur(true)}
-                        className={`px-3 py-1.5 transition-colors ${showInEur ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted/50"}`}
-                        data-testid="toggle-eur"
-                      >
-                        EUR
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowInEur(false)}
+                          className={`px-5 py-2.5 min-h-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                            !showInEur
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-background text-muted-foreground hover:bg-muted/50"
+                          }`}
+                          data-testid="toggle-local"
+                          aria-pressed={!showInEur}
+                        >
+                          {localCurrency}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowInEur(true)}
+                          className={`px-5 py-2.5 min-h-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                            showInEur
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-background text-muted-foreground hover:bg-muted/50"
+                          }`}
+                          data-testid="toggle-eur"
+                          aria-pressed={showInEur}
+                        >
+                          EUR
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
+
               </div>
             </CardContent>
           </Card>
 
           {result && (
             <>
-              {/* Summary cards */}
+              {/* ── Summary cards ───────────────────────────────────────────── */}
               <div className="grid sm:grid-cols-3 gap-4 mb-4">
                 <Card className="border-accent/30 bg-accent/5">
                   <CardContent className="p-6 text-center">
                     <div className="text-xs text-muted-foreground mb-1">Net Annual</div>
                     <div className="text-3xl font-bold text-accent" data-testid="text-net-annual">
-                      {isNonEur && showInEur
-                        ? Math.round(result.netAnnual / nonEurInfo!.rate).toLocaleString()
-                        : result.netAnnual.toLocaleString()}
+                      {toDisplayNum(result.netAnnual).toLocaleString()}
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {isNonEur && showInEur ? "EUR" : localCurrency}
-                    </div>
+                    <div className="text-xs font-medium text-muted-foreground">{displayCurrency}</div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-6 text-center">
                     <div className="text-xs text-muted-foreground mb-1">Net Monthly</div>
                     <div className="text-3xl font-bold text-foreground" data-testid="text-net-monthly">
-                      {isNonEur && showInEur
-                        ? Math.round(result.netMonthly / nonEurInfo!.rate).toLocaleString()
-                        : result.netMonthly.toLocaleString()}
+                      {toDisplayNum(result.netMonthly).toLocaleString()}
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {isNonEur && showInEur ? "EUR" : localCurrency}
-                    </div>
+                    <div className="text-xs font-medium text-muted-foreground">{displayCurrency}</div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -259,26 +371,17 @@ export default function SalaryCalculator() {
                 </Card>
               </div>
 
-              {/* Median income benchmark */}
+              {/* ── Income benchmark ─────────────────────────────────────────── */}
               {(() => {
-                const median = result.medianGrossAnnual;
-                const pct = Math.round(((grossAnnual - median) / median) * 100);
-                const absPct = Math.abs(pct);
-                const isAbove = pct > 0;
-                const isAt = absPct <= 3; // within ±3% → "around median"
+                const median   = result.medianGrossAnnual;
+                const pct      = Math.round(((grossAnnual - median) / median) * 100);
+                const absPct   = Math.abs(pct);
+                const isAbove  = pct > 0;
+                const isAt     = absPct <= 3;
 
-                // Display values — respect non-EUR toggle
-                const fmtMedian = isNonEur && showInEur
-                  ? `${Math.round(median / nonEurInfo!.rate).toLocaleString()} EUR`
-                  : `${median.toLocaleString()} ${localCurrency}`;
-
-                const Icon = isAt ? Minus : isAbove ? TrendingUp : TrendingDown;
-                const colorClass = isAt
-                  ? "text-muted-foreground"
-                  : isAbove
-                  ? "text-emerald-600"
-                  : "text-amber-600";
-                const bgClass = isAt
+                const Icon       = isAt ? Minus : isAbove ? TrendingUp : TrendingDown;
+                const colorClass = isAt ? "text-muted-foreground" : isAbove ? "text-emerald-600" : "text-amber-600";
+                const bgClass    = isAt
                   ? "bg-muted/40"
                   : isAbove
                   ? "bg-emerald-50 border-emerald-200"
@@ -290,9 +393,7 @@ export default function SalaryCalculator() {
                   ? `${absPct}% above the country median`
                   : `${absPct}% below the country median`;
 
-                // Progress bar: median anchored at 50%; salary fills proportionally
-                // Clamp displayed bar between 10% and 90% of width
-                const barPct = Math.min(90, Math.max(10, 50 + (pct / 2)));
+                const barPct = Math.min(90, Math.max(10, 50 + pct / 2));
 
                 return (
                   <div className={`rounded-lg border px-4 py-3 mb-4 ${bgClass}`} data-testid="benchmark-block">
@@ -308,58 +409,66 @@ export default function SalaryCalculator() {
                       <Icon className={`w-4 h-4 flex-shrink-0 ${colorClass}`} />
                       <span className={`text-sm font-semibold ${colorClass}`}>{label}</span>
                     </div>
-                    {/* Visual bar */}
                     <div className="relative h-2 bg-muted rounded-full overflow-hidden mb-2">
-                      {/* Median marker */}
                       <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/30 z-10" style={{ left: "50%" }} />
-                      {/* User salary fill */}
                       <div
-                        className={`absolute top-0 left-0 h-full rounded-full transition-all ${isAt ? "bg-muted-foreground/50" : isAbove ? "bg-emerald-500" : "bg-amber-500"}`}
+                        className={`absolute top-0 left-0 h-full rounded-full transition-all ${
+                          isAt ? "bg-muted-foreground/50" : isAbove ? "bg-emerald-500" : "bg-amber-500"
+                        }`}
                         style={{ width: `${barPct}%` }}
                       />
                     </div>
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>Your salary: <span className="font-medium text-foreground">{formatAmt(grossAnnual)}</span></span>
-                      <span>Median: <span className="font-medium text-foreground">{fmtMedian}</span></span>
+                      <span>Median: <span className="font-medium text-foreground">{formatAmt(median)}</span></span>
                     </div>
                   </div>
                 );
               })()}
 
-              {/* Exchange rate helper — non-EUR countries only */}
-              {isNonEur && (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-8 px-1">
-                  <Info className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>
-                    Reference rate: 1 EUR = {nonEurInfo!.rate.toLocaleString()} {localCurrency}
-                    &nbsp;·&nbsp;
-                    Last updated: {nonEurInfo!.lastUpdated}
-                    &nbsp;·&nbsp;
-                    Approx. monthly reference rate
-                  </span>
+              {/* ── Exchange-rate info — non-EUR countries ────────────────────── */}
+              {isNonEur && effectiveRate && (
+                <div className="flex items-start gap-2 text-xs text-muted-foreground mb-8 px-1">
+                  <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span>
+                      1 EUR&nbsp;=&nbsp;{effectiveRate.rate.toLocaleString(undefined, { maximumFractionDigits: 4 })}&nbsp;{localCurrency}
+                    </span>
+                    <span aria-hidden>·</span>
+                    {/* Prominent "last updated" badge */}
+                    <span
+                      className="inline-flex items-center gap-1 bg-accent/10 text-accent font-semibold px-2 py-0.5 rounded-full border border-accent/20 text-[11px]"
+                      title={`Exchange rate last refreshed: ${effectiveRate.date}`}
+                    >
+                      <RefreshCw className="w-2.5 h-2.5" />
+                      Updated&nbsp;{effectiveRate.date}
+                      {fxStatus === "static" && " (fallback)"}
+                    </span>
+                    <span aria-hidden>·</span>
+                    <span>ECB via frankfurter.app · refreshed weekly</span>
+                  </div>
                 </div>
               )}
 
-              {/* Detailed breakdown */}
+              {/* ── Detailed breakdown ───────────────────────────────────────── */}
               <Card className="mb-8">
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-foreground mb-4">Detailed Breakdown</h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-foreground font-medium">Gross Annual Salary</span>
-                      <span className="font-semibold text-foreground">
-                        {formatAmt(result.grossAnnual)}
-                      </span>
+                      <span className="font-semibold text-foreground">{formatAmt(result.grossAnnual)}</span>
                     </div>
                     <Separator />
                     {result.breakdown.map((item, i) => (
                       <div key={i} className="flex items-center justify-between text-sm">
-                        <div>
+                        <div className="min-w-0 mr-4">
                           <span className="text-muted-foreground">{item.label}</span>
                           <p className="text-xs text-muted-foreground/70">{item.description}</p>
                         </div>
-                        <span className={`font-medium ${item.amount < 0 ? "text-emerald-600" : "text-red-500"}`}>
-                          {item.amount < 0 ? "+" : "-"}{formatAmt(item.amount)}
+                        {/* item.amount > 0 = deduction (red "-"), < 0 = credit (green "+") */}
+                        <span className={`font-medium shrink-0 ${item.amount < 0 ? "text-emerald-600" : "text-red-500"}`}>
+                          {item.amount < 0 ? "+" : "−"}{formatAmt(item.amount)}
                         </span>
                       </div>
                     ))}
@@ -372,7 +481,7 @@ export default function SalaryCalculator() {
                 </CardContent>
               </Card>
 
-              {/* Disclaimer */}
+              {/* ── Disclaimer ───────────────────────────────────────────────── */}
               <Card className="bg-amber-50 border-amber-200">
                 <CardContent className="p-4 flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
