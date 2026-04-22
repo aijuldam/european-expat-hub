@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: var(--bg-2); }
+  body { padding: 20px 24px; display: flex; flex-direction: column; gap: 6px; }
+  .r { display: grid; grid-template-columns: 60px 1fr 80px; gap: 16px; align-items: baseline; border-bottom: 1px dashed var(--border-1); padding: 4px 0; }
+  .sz { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); }
+  .sample { font-family: var(--font-sans); color: var(--fg-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .token { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); text-align: right; }
+</style>
+</head>
+<body>
+  <div class="r"><span class="sz">64 px</span><span class="sample" style="font-family:var(--font-display); font-size:64px; font-weight:600; letter-spacing:-0.02em">Relocate</span><span class="token">--text-5xl</span></div>
+  <div class="r"><span class="sz">52 px</span><span class="sample" style="font-family:var(--font-display); font-size:52px; font-weight:600; letter-spacing:-0.02em">Find your city</span><span class="token">--text-4xl</span></div>
+  <div class="r"><span class="sz">40 px</span><span class="sample" style="font-family:var(--font-display); font-size:40px; font-weight:600">Explore countries</span><span class="token">--text-3xl</span></div>
+  <div class="r"><span class="sz">32 px</span><span class="sample" style="font-family:var(--font-display); font-size:32px; font-weight:600">How it works</span><span class="token">--text-2xl</span></div>
+  <div class="r"><span class="sz">24 px</span><span class="sample" style="font-size:24px; font-weight:600">City profiles</span><span class="token">--text-xl</span></div>
+  <div class="r"><span class="sz">20 px</span><span class="sample" style="font-size:20px; font-weight:500">Section heading</span><span class="token">--text-lg</span></div>
+  <div class="r"><span class="sz">18 px</span><span class="sample" style="font-size:18px; font-weight:500">Card title</span><span class="token">--text-md</span></div>
+  <div class="r"><span class="sz">16 px</span><span class="sample" style="font-size:16px">Body paragraph</span><span class="token">--text-base</span></div>
+  <div class="r"><span class="sz">14 px</span><span class="sample" style="font-size:14px; color:var(--fg-2)">Meta / supporting</span><span class="token">--text-sm</span></div>
+  <div class="r"><span class="sz">12 px</span><span class="sample" style="font-size:12px; color:var(--fg-3); text-transform:uppercase; letter-spacing:0.04em; font-weight:600">UPPERCASE LABEL</span><span class="token">--text-xs</span></div>
+</body>
+</html>

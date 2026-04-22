@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  
+  <circle cx="32" cy="32" r="30" fill="#1e3a5f"></circle>
+
+  
+  <g stroke="#2d5a8e" stroke-width="0.7" fill="none" opacity="0.7">
+    <ellipse cx="32" cy="32" rx="30" ry="4.5"></ellipse>
+    <ellipse cx="32" cy="25" rx="27.5" ry="4"></ellipse>
+    <ellipse cx="32" cy="18" rx="21" ry="3"></ellipse>
+    <ellipse cx="32" cy="13" rx="13" ry="2"></ellipse>
+  </g>
+
+  
+  <g stroke="#2d5a8e" stroke-width="0.7" fill="none" opacity="0.7">
+    <line x1="32" y1="2" x2="32" y2="62"></line>
+    <path d="M 32 2 Q 40 32 32 62"></path>
+    <path d="M 32 2 Q 24 32 32 62"></path>
+    <path d="M 32 2 Q 50 32 32 62"></path>
+    <path d="M 32 2 Q 14 32 32 62"></path>
+  </g>
+
+  
+  <path d="&#xA;    M 28 15&#xA;    L 30 13&#xA;    L 33 13&#xA;    L 35 15&#xA;    L 37 14&#xA;    L 39 16&#xA;    L 38 18&#xA;    L 40 20&#xA;    L 39 22&#xA;    L 41 23&#xA;    L 40 25&#xA;    L 38 24&#xA;    L 36 26&#xA;    L 34 27&#xA;    L 33 29&#xA;    L 31 28&#xA;    L 29 30&#xA;    L 27 29&#xA;    L 25 27&#xA;    L 24 25&#xA;    L 25 23&#xA;    L 23 21&#xA;    L 24 19&#xA;    L 26 18&#xA;    L 27 16&#xA;    Z&#xA;  " fill="#3a9b5c" opacity="0.9"></path>
+
+  
+  <path d="M 24 25 L 22 26 L 21 28 L 23 30 L 25 29 L 25 27 Z" fill="#3a9b5c" opacity="0.9"></path>
+
+  
+  <path d="M 33 13 L 34 10 L 36 9 L 37 11 L 36 13 L 35 15 Z" fill="#3a9b5c" opacity="0.9"></path>
+
+  
+  <circle cx="32" cy="32" r="30" fill="none" stroke="#4a90d9" stroke-width="1.5"></circle>
+</svg>

@@ -1,0 +1,217 @@
+/* Expatflix — Design Tokens
+ * -----------------------------------
+ * Rethemed from the repo's navy+amber scheme to the brand's requested
+ * green + black palette (trusted, simple). All HSL triplets kept
+ * compatible with the Tailwind/shadcn setup in the source codebase
+ * (see src/index.css in aijuldam/european-expat-hub).
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  /* -------- Brand palette (deep forest, matte ink) -------- */
+  --brand-green-50:  #edf4ef;
+  --brand-green-100: #d6e5db;
+  --brand-green-200: #a7c4b1;
+  --brand-green-300: #6f9a7f;
+  --brand-green-400: #3f7558;
+  --brand-green-500: #1f5f3f;  /* primary accent — deep forest */
+  --brand-green-600: #164d33;  /* hover */
+  --brand-green-700: #103a27;  /* pressed / emphasis */
+  --brand-green-800: #0b2a1c;
+  --brand-green-900: #081d13;
+
+  --brand-ink-900: #0b0f0d;    /* matte near-black */
+  --brand-ink-800: #141916;
+  --brand-ink-700: #1e241f;
+  --brand-ink-600: #303834;
+  --brand-ink-500: #505853;
+  --brand-ink-400: #737b76;
+  --brand-ink-300: #9ea4a0;
+  --brand-ink-200: #c6cbc7;
+  --brand-ink-100: #e5e8e6;
+  --brand-ink-50:  #f2f3f2;
+
+  --brand-paper:   #fafaf7;    /* off-white page ground */
+  --brand-white:   #ffffff;
+
+  /* Semantic — functional */
+  --brand-warning: #f59e0b;
+  --brand-danger:  #dc2626;
+  --brand-info:    #0ea5e9;
+
+  /* -------- Foreground / background tokens -------- */
+  --fg-1: var(--brand-ink-900);   /* primary text */
+  --fg-2: var(--brand-ink-600);   /* body text */
+  --fg-3: var(--brand-ink-400);   /* muted / meta */
+  --fg-inverse: var(--brand-white);
+
+  --bg-1: var(--brand-paper);     /* page ground */
+  --bg-2: var(--brand-white);     /* cards, surfaces */
+  --bg-3: var(--brand-ink-50);    /* subtle sections */
+  --bg-inverse: var(--brand-ink-900);
+
+  --border-1: var(--brand-ink-100);
+  --border-2: var(--brand-ink-200);
+  --border-strong: var(--brand-ink-900);
+
+  /* -------- shadcn-compatible HSL variables (used by imported UI) -------- */
+  --background: 80 14% 97%;        /* brand-paper */
+  --foreground: 150 16% 5%;        /* brand-ink-900 */
+  --border: 150 8% 91%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 150 16% 5%;
+  --card-border: 150 8% 91%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 150 16% 5%;
+  --popover-border: 150 8% 91%;
+
+  --primary: 150 16% 5%;           /* primary = near-black ink */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 150 6% 95%;
+  --secondary-foreground: 150 16% 5%;
+
+  --muted: 150 6% 95%;
+  --muted-foreground: 150 8% 43%;
+
+  --accent: 152 96% 36%;           /* brand green-500/600 */
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 73% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --input: 150 8% 91%;
+  --ring: 152 96% 36%;
+
+  /* -------- Typography -------- */
+  --font-display: "Fraunces", "Georgia", "Times New Roman", serif;
+  --font-sans: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  --text-xs:   12px;
+  --text-sm:   14px;
+  --text-base: 16px;
+  --text-md:   18px;
+  --text-lg:   20px;
+  --text-xl:   24px;
+  --text-2xl:  32px;
+  --text-3xl:  40px;
+  --text-4xl:  52px;
+  --text-5xl:  64px;
+
+  --lh-tight: 1.1;
+  --lh-snug:  1.25;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.65;
+
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;
+
+  /* -------- Spacing -------- */
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* -------- Radius -------- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* -------- Shadows (subtle; brand is trusted/understated) -------- */
+  --shadow-xs: 0 1px 2px hsl(150 16% 5% / 0.04);
+  --shadow-sm: 0 1px 2px hsl(150 16% 5% / 0.05), 0 1px 1px hsl(150 16% 5% / 0.04);
+  --shadow-md: 0 4px 10px -2px hsl(150 16% 5% / 0.08), 0 2px 4px -2px hsl(150 16% 5% / 0.04);
+  --shadow-lg: 0 12px 24px -8px hsl(150 16% 5% / 0.10), 0 4px 8px -4px hsl(150 16% 5% / 0.05);
+  --shadow-focus: 0 0 0 3px hsl(152 96% 36% / 0.25);
+}
+
+/* ----- Semantic element styles ----- */
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--lh-normal);
+  color: var(--fg-1);
+  background: var(--bg-1);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, .h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-4xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-1);
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-3xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-1);
+}
+
+h3, .h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-xl);
+  line-height: var(--lh-snug);
+  color: var(--fg-1);
+}
+
+h4, .h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-md);
+  line-height: var(--lh-snug);
+  color: var(--fg-1);
+}
+
+p, .p {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-2);
+}
+
+.small, small {
+  font-size: var(--text-sm);
+  color: var(--fg-2);
+}
+
+.meta {
+  font-size: var(--text-xs);
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  font-weight: 600;
+}
+
+code, .code {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  background: var(--bg-3);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+}

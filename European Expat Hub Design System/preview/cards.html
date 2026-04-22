@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: var(--bg-3); }
+  body { padding: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; font-family: var(--font-sans); }
+  .card { background: var(--bg-2); border: 1px solid var(--border-1); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); }
+  .meta { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--fg-3); margin-bottom: 10px; }
+  .title { font-size: 16px; font-weight: 600; color: var(--fg-1); margin-bottom: 6px; }
+  .desc { font-size: 13px; color: var(--fg-2); line-height: 1.5; margin-bottom: 12px; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat { background: #f4f6f5; border-radius: 6px; padding: 6px 8px; }
+  .stat-lbl { font-size: 10px; color: var(--fg-3); }
+  .stat-val { font-size: 13px; font-weight: 600; color: var(--fg-1); }
+  .flag { width: 32px; height: 32px; border-radius: 8px; background: rgba(18,183,106,.08); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .country-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .arrow { font-size: 12px; color: #039855; font-weight: 500; }
+  svg { width: 12px; height: 12px; vertical-align: -1px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg> Netherlands</div>
+    <div class="title">Amsterdam</div>
+    <div class="desc">Best for young professionals and bike-friendly urbanites who value English-speaking workplaces.</div>
+    <div class="stats">
+      <div class="stat"><div class="stat-lbl">Safety</div><div class="stat-val">82/100</div></div>
+      <div class="stat"><div class="stat-lbl">Sunny days</div><div class="stat-val">63</div></div>
+      <div class="stat"><div class="stat-lbl">CoL Index</div><div class="stat-val">78/100</div></div>
+      <div class="stat"><div class="stat-lbl">Median salary</div><div class="stat-val">58k</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="country-row">
+      <div class="flag">🇳🇱</div>
+      <div class="title" style="margin:0">Netherlands</div>
+    </div>
+    <div class="desc">Flat, efficient, English-ready. Strong public services, compressed housing market, and excellent international schools in the Randstad.</div>
+    <div class="arrow">Explore →</div>
+  </div>
+</body>
+</html>

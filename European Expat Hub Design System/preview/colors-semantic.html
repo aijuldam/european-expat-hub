@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #fafaf7; }
+  body { padding: 24px 28px; font-family: var(--font-sans); }
+  .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+  .title { font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--fg-1); }
+  .sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); }
+
+  .group { margin-bottom: 18px; }
+  .group-lbl { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 8px; }
+  .row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(11,15,13,.08); border: 1px solid rgba(11,15,13,.08); border-radius: 4px; overflow: hidden; }
+  .tok { background: #fff; display: grid; grid-template-columns: 48px 1fr; gap: 10px; padding: 10px 12px; align-items: center; }
+  .chip { width: 40px; height: 40px; border-radius: 3px; flex-shrink: 0; }
+  .chip.bd { border: 1px solid rgba(11,15,13,.08); }
+  .name { font-size: 12px; font-weight: 600; color: var(--fg-1); letter-spacing: -0.005em; line-height: 1.2; }
+  .role { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); margin-top: 2px; letter-spacing: 0.01em; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div class="title">Semantic tokens</div>
+    <div class="sub">Surface · Content · Functional</div>
+  </div>
+
+  <div class="group">
+    <div class="group-lbl">Surface</div>
+    <div class="row">
+      <div class="tok"><div class="chip bd" style="background:#fafaf7"></div><div><div class="name">Paper</div><div class="role">--bg-1</div></div></div>
+      <div class="tok"><div class="chip bd" style="background:#ffffff"></div><div><div class="name">Surface</div><div class="role">--bg-2</div></div></div>
+      <div class="tok"><div class="chip bd" style="background:#f2f3f2"></div><div><div class="name">Subtle</div><div class="role">--bg-3</div></div></div>
+      <div class="tok"><div class="chip" style="background:#0b0f0d"></div><div><div class="name">Inverse</div><div class="role">--bg-inverse</div></div></div>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-lbl">Content</div>
+    <div class="row">
+      <div class="tok"><div class="chip" style="background:#0b0f0d"></div><div><div class="name">Primary</div><div class="role">--fg-1</div></div></div>
+      <div class="tok"><div class="chip" style="background:#303834"></div><div><div class="name">Body</div><div class="role">--fg-2</div></div></div>
+      <div class="tok"><div class="chip" style="background:#737b76"></div><div><div class="name">Muted</div><div class="role">--fg-3</div></div></div>
+      <div class="tok"><div class="chip" style="background:#1f5f3f"></div><div><div class="name">Accent</div><div class="role">--accent</div></div></div>
+    </div>
+  </div>
+
+  <div class="group" style="margin-bottom:0">
+    <div class="group-lbl">Functional</div>
+    <div class="row">
+      <div class="tok"><div class="chip" style="background:#1f5f3f"></div><div><div class="name">Success</div><div class="role">forest 500</div></div></div>
+      <div class="tok"><div class="chip" style="background:#b8860b"></div><div><div class="name">Warning</div><div class="role">--brand-warning</div></div></div>
+      <div class="tok"><div class="chip" style="background:#9b2c2c"></div><div><div class="name">Danger</div><div class="role">--brand-danger</div></div></div>
+      <div class="tok"><div class="chip" style="background:#1e4e73"></div><div><div class="name">Info</div><div class="role">--brand-info</div></div></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -66,7 +67,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* LIGHT MODE */
+/* LIGHT MODE — Expatlix Design System */
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
@@ -76,54 +77,55 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --background: 210 40% 98%;
-  --foreground: 215 60% 11%;
-  --border: 214 32% 91%;
-  
+  /* Expatlix palette: matte ink + forest green */
+  --background: 80 14% 97%;
+  --foreground: 150 16% 5%;
+  --border: 150 8% 91%;
+
   --card: 0 0% 100%;
-  --card-foreground: 215 60% 11%;
-  --card-border: 214 32% 91%;
-  
-  --sidebar: 210 40% 96%;
-  --sidebar-foreground: 215 60% 11%;
-  --sidebar-border: 214 32% 91%;
-  --sidebar-primary: 215 60% 11%;
+  --card-foreground: 150 16% 5%;
+  --card-border: 150 8% 91%;
+
+  --sidebar: 80 14% 97%;
+  --sidebar-foreground: 150 16% 5%;
+  --sidebar-border: 150 8% 91%;
+  --sidebar-primary: 150 16% 5%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 214 32% 91%;
-  --sidebar-accent-foreground: 215 60% 11%;
-  --sidebar-ring: 215 60% 11%;
+  --sidebar-accent: 152 96% 36%;
+  --sidebar-accent-foreground: 150 16% 5%;
+  --sidebar-ring: 152 96% 36%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 215 60% 11%;
-  --popover-border: 214 32% 91%;
+  --popover-foreground: 150 16% 5%;
+  --popover-border: 150 8% 91%;
 
-  --primary: 215 60% 11%;
+  --primary: 150 16% 5%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 214 32% 91%;
-  --secondary-foreground: 215 60% 11%;
+  --secondary: 150 6% 95%;
+  --secondary-foreground: 150 16% 5%;
 
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
+  --muted: 150 6% 95%;
+  --muted-foreground: 150 8% 43%;
 
-  --accent: 38 92% 50%;
+  --accent: 152 96% 36%;
   --accent-foreground: 0 0% 100%;
 
-  --destructive: 0 84% 60%;
+  --destructive: 0 73% 51%;
   --destructive-foreground: 0 0% 100%;
 
-  --input: 214 32% 91%;
-  --ring: 215 60% 11%;
+  --input: 150 8% 91%;
+  --ring: 152 96% 36%;
 
-  --chart-1: 38 92% 50%;
-  --chart-2: 215 60% 11%;
+  --chart-1: 152 96% 36%;
+  --chart-2: 150 16% 5%;
   --chart-3: 199 89% 48%;
   --chart-4: 142 71% 45%;
   --chart-5: 28 99% 54%;
 
   --app-font-sans: 'Inter', sans-serif;
-  --app-font-serif: Georgia, serif;
-  --app-font-mono: Menlo, monospace;
+  --app-font-serif: 'Fraunces', serif;
+  --app-font-mono: 'JetBrains Mono', monospace;
   --radius: 0.375rem; 
 
   --shadow-2xs: 0px 2px 0px 0px hsl(215 60% 11% / 0.05);
@@ -288,5 +290,53 @@
   .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
+  }
+}
+
+/* Expatlix design system overrides */
+@layer components {
+  /* Sharp button corners (2px) — editorial aesthetic */
+  button {
+    border-radius: 2px !important;
+  }
+
+  /* Form inputs: sharp corners, proper height */
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  textarea,
+  select {
+    border-radius: 2px !important;
+    height: 44px;
+  }
+
+  /* Override Tailwind rounded classes for buttons/inputs */
+  .rounded-md button,
+  .rounded-lg button {
+    border-radius: 2px !important;
+  }
+
+  /* Focus ring: green, 3px, 25% alpha */
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [role="combobox"]:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 3px hsl(152 96% 36% / 0.25) !important;
+  }
+
+  /* Container max-width: 1240px hard limit */
+  .container {
+    max-width: 1240px !important;
+  }
+
+  /* Hairline borders on cards instead of shadows */
+  .card {
+    border: 1px solid hsl(var(--border)) !important;
+    box-shadow: none !important;
   }
 }

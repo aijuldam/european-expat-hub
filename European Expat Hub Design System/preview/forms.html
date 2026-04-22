@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: var(--bg-2); }
+  body { padding: 18px 20px; font-family: var(--font-sans); display: flex; flex-direction: column; gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .lbl { font-size: 13px; font-weight: 500; color: var(--fg-1); }
+  .input, .select {
+    height: 36px; padding: 0 12px; font-size: 14px; font-family: inherit;
+    border-radius: 6px; border: 1px solid var(--border-1); background: #fff; color: var(--fg-1);
+    outline: none;
+  }
+  .input:focus { border-color: #12b76a; box-shadow: 0 0 0 3px hsl(152 96% 36% / 0.25); }
+  .input.filled { border-color: var(--border-1); }
+  .select { background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%239aa7a1" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 10px center / 14px 14px; appearance: none; padding-right: 32px; }
+  .help { font-size: 12px; color: var(--fg-3); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .chk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--fg-1); }
+  .chk input { accent-color: #12b76a; width: 16px; height: 16px; }
+</style>
+</head>
+<body>
+  <div class="two">
+    <div class="field">
+      <label class="lbl">First city</label>
+      <input class="input filled" value="Amsterdam, NL">
+    </div>
+    <div class="field">
+      <label class="lbl">Second city</label>
+      <select class="select"><option>Select a city…</option></select>
+    </div>
+  </div>
+  <div class="field">
+    <label class="lbl">Annual gross salary</label>
+    <input class="input" placeholder="€ 65,000">
+    <div class="help">Enter your pre-tax salary in local currency.</div>
+  </div>
+  <label class="chk"><input type="checkbox" checked> Apply 30% ruling (Netherlands)</label>
+</body>
+</html>

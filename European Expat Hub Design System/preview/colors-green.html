@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #fafaf7; }
+  body { padding: 26px 28px; font-family: var(--font-sans); }
+  .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+  .title { font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--fg-1); }
+  .title em { font-style: italic; font-weight: 500; color: var(--fg-3); font-family: var(--font-display); }
+  .sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); }
+  .hero { display: grid; grid-template-columns: 200px 1fr; gap: 14px; }
+  .feat { background: #1f5f3f; color: #fff; border-radius: 4px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 140px; }
+  .feat .badge { align-self: flex-start; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; padding: 3px 7px; border: 1px solid rgba(255,255,255,.3); border-radius: 2px; }
+  .feat .name { font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.1; margin-top: 10px; }
+  .feat .hex { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; opacity: 0.85; margin-top: 6px; }
+  .ramp { display: grid; grid-template-columns: repeat(9, 1fr); border-radius: 4px; overflow: hidden; border: 1px solid rgba(11,15,13,.08); }
+  .sw { aspect-ratio: 1/1.1; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; }
+  .sw .step { font-family: var(--font-mono); font-size: 9.5px; opacity: 0.7; }
+  .sw .hex { font-family: var(--font-mono); font-size: 9.5px; opacity: 0.82; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div class="title">Forest <em>— primary accent, used sparingly</em></div>
+    <div class="sub">9 stops · 900 → 50</div>
+  </div>
+  <div class="hero">
+    <div class="feat">
+      <span class="badge">500 · default</span>
+      <div>
+        <div class="name">Forest</div>
+        <div class="hex">#1F5F3F</div>
+      </div>
+    </div>
+    <div class="ramp">
+      <div class="sw" style="background:#081d13;color:#fff"><span class="step">900</span><span class="hex">081D13</span></div>
+      <div class="sw" style="background:#0b2a1c;color:#fff"><span class="step">800</span><span class="hex">0B2A1C</span></div>
+      <div class="sw" style="background:#103a27;color:#fff"><span class="step">700</span><span class="hex">103A27</span></div>
+      <div class="sw" style="background:#164d33;color:#fff"><span class="step">600</span><span class="hex">164D33</span></div>
+      <div class="sw" style="background:#1f5f3f;color:#fff"><span class="step">500</span><span class="hex">1F5F3F</span></div>
+      <div class="sw" style="background:#3f7558;color:#fff"><span class="step">400</span><span class="hex">3F7558</span></div>
+      <div class="sw" style="background:#6f9a7f;color:#081d13"><span class="step">300</span><span class="hex">6F9A7F</span></div>
+      <div class="sw" style="background:#a7c4b1;color:#081d13"><span class="step">200</span><span class="hex">A7C4B1</span></div>
+      <div class="sw" style="background:#d6e5db;color:#081d13"><span class="step">100</span><span class="hex">D6E5DB</span></div>
+    </div>
+  </div>
+</body>
+</html>

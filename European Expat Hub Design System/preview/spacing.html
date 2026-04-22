@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: var(--bg-2); }
+  body { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; align-items: flex-end; gap: 10px; }
+  .bar { background: #12b76a; border-radius: 2px; }
+  .tok { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); min-width: 70px; }
+  .val { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); }
+</style>
+</head>
+<body>
+  <div class="row"><span class="tok">--space-1</span><span class="bar" style="width:4px;height:18px"></span><span class="val">4 px</span></div>
+  <div class="row"><span class="tok">--space-2</span><span class="bar" style="width:8px;height:18px"></span><span class="val">8 px</span></div>
+  <div class="row"><span class="tok">--space-3</span><span class="bar" style="width:12px;height:18px"></span><span class="val">12 px</span></div>
+  <div class="row"><span class="tok">--space-4</span><span class="bar" style="width:16px;height:18px"></span><span class="val">16 px — default inner</span></div>
+  <div class="row"><span class="tok">--space-6</span><span class="bar" style="width:24px;height:18px"></span><span class="val">24 px — card padding</span></div>
+  <div class="row"><span class="tok">--space-8</span><span class="bar" style="width:32px;height:18px"></span><span class="val">32 px</span></div>
+  <div class="row"><span class="tok">--space-12</span><span class="bar" style="width:48px;height:18px"></span><span class="val">48 px</span></div>
+  <div class="row"><span class="tok">--space-16</span><span class="bar" style="width:64px;height:18px"></span><span class="val">64 px — py-16 section</span></div>
+  <div class="row"><span class="tok">--space-24</span><span class="bar" style="width:96px;height:18px"></span><span class="val">96 px — hero</span></div>
+</body>
+</html>

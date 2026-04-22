@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: var(--bg-2); }
+  body { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; font-family: var(--font-sans); }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .lbl { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); min-width: 78px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600;
+    border-radius: 6px; padding: 2px 10px;
+    border: 1px solid transparent;
+  }
+  .b-primary { background: var(--fg-1); color: #fff; }
+  .b-accent { background: #ecfdf3; color: #027a48; border-color: #a6f4c5; }
+  .b-outline { color: var(--fg-1); border-color: rgba(0,0,0,.08); }
+  .b-secondary { background: #f4f6f5; color: var(--fg-1); }
+  .b-danger { background: #dc2626; color: #fff; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 500;
+  }
+  .p-ink { background: rgba(0,0,0,.06); color: var(--fg-1); }
+  .p-white-on-dark { background: rgba(255,255,255,.1); color: #fff; padding: 6px 14px; }
+  .dot { width: 6px; height: 6px; border-radius: 99px; background: #12b76a; }
+</style>
+</head>
+<body>
+  <div class="row"><span class="lbl">Badges</span>
+    <span class="badge b-primary">Featured</span>
+    <span class="badge b-accent">★ Better</span>
+    <span class="badge b-secondary">Coming soon</span>
+    <span class="badge b-outline">Beta</span>
+    <span class="badge b-danger">3</span>
+  </div>
+  <div class="row"><span class="lbl">Pills</span>
+    <span class="pill p-ink"><span class="dot"></span>12 countries available now</span>
+    <span class="pill p-ink">€ Netherlands</span>
+    <span class="pill p-ink">Family-friendly</span>
+  </div>
+  <div class="row" style="background:var(--fg-1); padding:10px 14px; border-radius:10px; margin-top:4px"><span class="lbl" style="color:#9aa7a1">On ink</span>
+    <span class="pill p-white-on-dark"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg> 12 countries available now</span>
+  </div>
+</body>
+</html>

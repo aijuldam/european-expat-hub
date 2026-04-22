@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: var(--bg-2); }
+  body { padding: 18px 20px; font-family: var(--font-sans); }
+  .compare { border: 1px solid var(--border-1); border-radius: 12px; overflow: hidden; }
+  .row { display: grid; grid-template-columns: 1fr 160px 1fr; }
+  .side { padding: 14px 16px; text-align: center; }
+  .side.win { background: #ecfdf3; }
+  .val { font-size: 17px; font-weight: 600; color: var(--fg-1); }
+  .better { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 4px; font-size: 11px; color: #027a48; font-weight: 500; }
+  .mid { border-left: 1px solid var(--border-1); border-right: 1px solid var(--border-1); background: rgba(0,0,0,.02); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; }
+  .mid-lbl { font-size: 12px; font-weight: 500; color: var(--fg-1); }
+  .mid-sub { font-size: 11px; color: var(--fg-3); margin-top: 2px; }
+  svg { width: 12px; height: 12px; }
+  .heading { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; margin-bottom: 10px; }
+  .h-name { font-family: var(--font-display); font-weight: 600; font-size: 18px; text-align: center; color: var(--fg-1); }
+  .h-vs { color: var(--fg-3); font-size: 12px; align-self: center; }
+</style>
+</head>
+<body>
+  <div class="heading">
+    <div class="h-name">Amsterdam</div>
+    <div class="h-vs">vs</div>
+    <div class="h-name">Lisbon</div>
+  </div>
+  <div class="compare">
+    <div class="row">
+      <div class="side win"><div class="val">82/100</div><div class="better"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg> Better</div></div>
+      <div class="mid"><div class="mid-lbl">Safety index</div><div class="mid-sub">+11 points</div></div>
+      <div class="side"><div class="val">71/100</div></div>
+    </div>
+    <div class="row" style="border-top:1px solid var(--border-1)">
+      <div class="side"><div class="val">€58,000</div></div>
+      <div class="mid"><div class="mid-lbl">Median salary</div><div class="mid-sub">+€23k</div></div>
+      <div class="side win"><div class="val">€35,000</div><div class="better"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg> vs CoL</div></div>
+    </div>
+  </div>
+</body>
+</html>

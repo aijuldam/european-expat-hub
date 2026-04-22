@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #fafaf7; }
+  body { padding: 26px 28px; font-family: var(--font-sans); }
+
+  .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+  .title { font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: #0b0f0d; }
+  .sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #737b76; }
+
+  .group { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid rgba(11,15,13,.08); }
+  .group:last-of-type { border-bottom: 1px solid rgba(11,15,13,.08); }
+  .lbl { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: #737b76; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  /* --- Base button: sharp corners, precise optical padding, no heavy shadows --- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: var(--font-sans);
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 0 22px; height: 40px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 200ms cubic-bezier(.2,.6,.2,1),
+                color 200ms cubic-bezier(.2,.6,.2,1),
+                border-color 200ms cubic-bezier(.2,.6,.2,1),
+                transform 200ms cubic-bezier(.2,.6,.2,1);
+    position: relative;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn svg { width: 13px; height: 13px; }
+
+  /* Primary — matte ink, thin hairline stroke for depth, no gradient */
+  .btn-primary {
+    background: #0b0f0d; color: #fafaf7;
+    border-color: #0b0f0d;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .btn-primary:hover { background: #1e241f; border-color: #1e241f; }
+  .btn-primary:disabled { background: #c6cbc7; border-color: #c6cbc7; color: #fff; cursor: not-allowed; }
+
+  /* Accent — deep forest, same sharpness */
+  .btn-accent { background: #1f5f3f; color: #fafaf7; border-color: #1f5f3f; }
+  .btn-accent:hover { background: #164d33; border-color: #164d33; }
+
+  /* Secondary — hairline outline on paper, feels engraved */
+  .btn-outline { background: transparent; color: #0b0f0d; border-color: #0b0f0d; }
+  .btn-outline:hover { background: #0b0f0d; color: #fafaf7; }
+
+  .btn-ghost { background: transparent; color: #0b0f0d; border-color: transparent; padding: 0 8px; letter-spacing: 0.08em; }
+  .btn-ghost .arrow { width: 20px; height: 1px; background: currentColor; transition: width 200ms; }
+  .btn-ghost:hover .arrow { width: 30px; }
+
+  /* Sizes */
+  .btn-sm { height: 30px; padding: 0 14px; font-size: 10.5px; letter-spacing: 0.16em; }
+  .btn-lg { height: 48px; padding: 0 32px; font-size: 12.5px; letter-spacing: 0.16em; }
+
+  /* Destructive — restrained oxblood, only for truly destructive actions */
+  .btn-danger { background: transparent; color: #7a1f1f; border-color: rgba(122,31,31,.35); }
+  .btn-danger:hover { background: #7a1f1f; color: #fff; border-color: #7a1f1f; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div class="title">Buttons</div>
+    <div class="sub">Sharp · matte · 2px radius</div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Primary</span>
+    <div class="row">
+      <button class="btn btn-primary btn-lg">Take the Quiz</button>
+      <button class="btn btn-primary">Continue</button>
+      <button class="btn btn-primary btn-sm">Save</button>
+      <button class="btn btn-primary" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Accent</span>
+    <div class="row">
+      <button class="btn btn-accent btn-lg">Compare Cities</button>
+      <button class="btn btn-accent">Start a Move</button>
+      <button class="btn btn-accent btn-sm">Shortlist</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Outline</span>
+    <div class="row">
+      <button class="btn btn-outline btn-lg">Browse Countries</button>
+      <button class="btn btn-outline">View Details</button>
+      <button class="btn btn-outline btn-sm">Filter</button>
+      <button class="btn btn-danger btn-sm">Remove</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Ghost</span>
+    <div class="row">
+      <button class="btn btn-ghost">Learn more <span class="arrow"></span></button>
+      <button class="btn btn-ghost">See all 27 cities <span class="arrow"></span></button>
+    </div>
+  </div>
+</body>
+</html>
