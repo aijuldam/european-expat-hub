@@ -9,6 +9,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- GA4 Consent Mode v2 — all denied until user accepts -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        wait_for_update: 2000
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', false);
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EQPHLX3MWP"></script>
+    <script>
+      gtag('js', new Date());
+      gtag('config', 'G-EQPHLX3MWP', {
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

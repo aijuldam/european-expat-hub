@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CookieBanner } from "@/components/CookieBanner";
 import { SeoHead } from "@/components/SeoHead";
 import { expandRoutes } from "@/routes";
 import { countries } from "@/data/countries";
@@ -80,6 +81,7 @@ function App({ locationHook }: { locationHook?: (...args: unknown[]) => unknown 
             <ScrollToTop />
             <Router />
           </WouterRouter>
+        <CookieBanner />
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
