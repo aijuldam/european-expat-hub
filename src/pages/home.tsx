@@ -38,7 +38,7 @@ export default function Home() {
                 data-testid="button-start-quiz"
               >
                 <Compass className="w-5 h-5" />
-                Start your next European chapter
+                Take the Quiz
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
