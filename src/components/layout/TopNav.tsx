@@ -34,9 +34,7 @@ export function TopNav() {
       <div className="container mx-auto px-4 h-14 md:h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="font-serif font-bold text-xl text-primary flex items-center gap-2 shrink-0">
-          <div className="w-8 h-8 rounded bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-sans text-sm">EH</span>
-          </div>
+          <img src="/logo/expatlix-favicon.svg" alt="Expatlix" className="w-8 h-8 flex-shrink-0" />
           <span className="hidden sm:inline">Expatlix</span>
         </Link>
 
