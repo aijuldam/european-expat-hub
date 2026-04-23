@@ -33,9 +33,15 @@ export function TopNav() {
     <header className={`sticky top-0 z-50 bg-background border-b transition-shadow${scrolled ? " shadow-sm" : ""}`}>
       <div className="container mx-auto px-4 h-14 md:h-16 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="font-serif font-bold text-xl text-primary flex items-center gap-2 shrink-0">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
           <img src="/logo/expatlix-favicon.svg" alt="Expatlix" className="w-8 h-8 flex-shrink-0" />
-          <span className="hidden sm:inline">Expatlix</span>
+          {/* Mobile: name + tagline stacked */}
+          <div className="flex flex-col sm:hidden leading-none">
+            <span className="font-serif font-bold text-base text-primary tracking-tight">Expatlix</span>
+            <span className="text-[9px] font-semibold text-muted-foreground tracking-[0.12em] uppercase mt-0.5">Relocation Intelligence</span>
+          </div>
+          {/* Tablet+: name only */}
+          <span className="hidden sm:inline font-serif font-bold text-xl text-primary">Expatlix</span>
         </Link>
 
         {/* Desktop ≥1024px: all items */}
@@ -78,8 +84,16 @@ export function TopNav() {
             <SheetTrigger className="sm:hidden rounded-md p-2 hover:bg-muted" aria-label="Open menu">
               <Menu className="w-5 h-5" />
             </SheetTrigger>
-            <SheetContent side="left" className="w-full max-w-full flex flex-col pt-12">
-              <nav className="flex flex-col flex-1 gap-1" aria-label="Guides">
+            <SheetContent side="left" className="w-full max-w-full flex flex-col pt-6">
+              {/* Drawer header with logo lockup */}
+              <div className="flex items-center gap-3 px-2 pb-6 border-b border-border/50">
+                <img src="/logo/expatlix-favicon.svg" alt="Expatlix" className="w-10 h-10 flex-shrink-0" />
+                <div className="flex flex-col leading-none">
+                  <span className="font-serif font-bold text-xl text-primary tracking-tight">Expatlix</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground tracking-[0.12em] uppercase mt-1">Relocation Intelligence</span>
+                </div>
+              </div>
+              <nav className="flex flex-col flex-1 gap-1 mt-4" aria-label="Guides">
                 {NAV_ITEMS.map((item) => (
                   <Link key={item.href} href={item.href}
                     aria-current={active(item.href) ? "page" : undefined}
