@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" aria-label="Expatlix horizontal lockup">
+  <rect width="1200" height="320" fill="#0b0f0d"></rect>
+  <g transform="translate(80 40) scale(0.47)">
+    <rect width="512" height="512" rx="64" fill="#ffffff"></rect>
+    <g transform="translate(256 256)">
+      <mask id="lockup-e">
+        <rect x="-256" y="-256" width="512" height="512" fill="white"></rect>
+        <path d="M 0 -62 C -38 -62 -62 -36 -62 -4 C -62 26 -38 52 0 92 C 38 52 62 26 62 -4 C 62 -36 38 -62 0 -62 Z" fill="black"></path>
+        <rect x="-180" y="-8" width="360" height="18" fill="white"></rect>
+        <rect x="46" y="10" width="180" height="180" fill="black"></rect>
+      </mask>
+      <circle cx="0" cy="0" r="176" fill="#0b0f0d" mask="url(#lockup-e)"></circle>
+      <circle cx="0" cy="-18" r="16" fill="#ffffff"></circle>
+    </g>
+  </g>
+  <text x="360" y="190" fill="#ffffff" font-family="&#39;Fraunces&#39;, &#39;Times New Roman&#39;, serif" font-size="128" font-weight="500" font-style="italic" letter-spacing="-2">expatlix</text>
+  <text x="362" y="230" fill="#ffffff" fill-opacity="0.5" font-family="Inter, sans-serif" font-size="15" font-weight="600" letter-spacing="6">RELOCATION INTELLIGENCE</text>
+</svg>

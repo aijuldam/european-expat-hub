@@ -162,6 +162,39 @@ export default function SalaryCalculatorCountry({ params }: Props) {
           </section>
         )}
 
+        {/* ── Median salary benchmark ───────────────────────────────────── */}
+        {lp.medianSalary && (
+          <section className="mb-12">
+            <Card className="border-border bg-muted/30">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                      Median Annual Salary — {lp.name}
+                    </p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {lp.medianSalary.currency !== "EUR"
+                        ? `${lp.medianSalary.currency} ${lp.medianSalary.gross.toLocaleString("en-EU")}`
+                        : `€${lp.medianSalary.gross.toLocaleString("en-EU")}`}
+                      {lp.medianSalary.grossEur && lp.medianSalary.currency !== "EUR" && (
+                        <span className="text-base font-normal text-muted-foreground ml-2">
+                          ≈ €{lp.medianSalary.grossEur.toLocaleString("en-EU")}
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Gross, full-time adjusted · {lp.medianSalary.source} · {lp.medianSalary.year}
+                    </p>
+                  </div>
+                  <div className="text-xs text-muted-foreground sm:text-right sm:max-w-[220px] leading-relaxed">
+                    Use this as a benchmark when evaluating job offers. Salaries in tech, finance, and consulting typically run 30–60% above the national median.
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+        )}
+
         {/* ── Example calculations ─────────────────────────────────────── */}
         {lp.examples.length > 0 && (
           <section className="mb-12">

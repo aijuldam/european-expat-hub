@@ -15,6 +15,14 @@ export interface SalaryExample {
   note?: string;
 }
 
+export interface MedianSalary {
+  gross: number;          // annual gross in local currency
+  currency: string;       // EUR, CHF, GBP, SGD…
+  grossEur?: number;      // EUR equivalent if non-EUR
+  source: string;         // citation label
+  year: number;
+}
+
 export interface CountrySalaryLPData {
   slug: string;                  // URL slug: /salary-calculator/[slug]
   countryCode: CountryCode | null;  // null = no calculator support yet (UK, UAE, SG)
@@ -24,6 +32,7 @@ export interface CountrySalaryLPData {
   intro: string;                 // 60–80 words, unique angle
   taxHighlights: string[];       // 3 bullets shown in trust strip
   specialRegime: { name: string; description: string } | null;
+  medianSalary?: MedianSalary;   // shown in the benchmark card; omitted for UAE/Singapore (no Eurostat data)
   examples: SalaryExample[];     // computed at module load
   faq: { q: string; a: string }[];
   relatedCountrySlugs: string[];
@@ -62,15 +71,21 @@ export const countryLPData: CountrySalaryLPData[] = [
       "30% ruling: 30% of salary becomes tax-free for qualifying expats (max 5 years)",
     ],
     specialRegime: {
-      name: "30% Ruling",
+      name: "Expat Scheme (30% Facility) — 2026 conditions",
       description:
-        "Employers can pay 30% of a qualifying expat's salary tax-free as compensation for extraterritorial costs. The employee must have been recruited from abroad, meet a salary threshold (€46,107 gross in 2025), and have expertise scarce in the Dutch labour market. Apply within 4 months of starting.",
+        "The 30% facility lets employers pay up to 30% of salary tax-free as compensation for extraterritorial costs. 2026 conditions: (1) employed under a Dutch payroll; (2) gross salary excluding the allowance must exceed €48,013 (€36,497 for under-30s with a Dutch master's or equivalent); (3) recruited from abroad — you must have lived more than 150 km from the Dutch border for at least 16 of the 24 months before your first working day in the Netherlands (the exclusion zone covers Belgium, Luxembourg, and adjacent parts of Germany, France, and the UK); (4) maximum untaxed allowance is capped at €78,600 per year in 2026. Duration: up to 5 years. Apply within 4 months of your start date; your employer submits to the Belastingdienst.",
+    },
+    medianSalary: {
+      gross: 54000,
+      currency: "EUR",
+      source: "Eurostat nama_10_fte, annual full-time adjusted salary",
+      year: 2024,
     },
     examples: examples("nl"),
     faq: [
       {
-        q: "Do I qualify for the 30% ruling?",
-        a: "You likely qualify if you were recruited from outside the Netherlands, earn above the 2025 threshold (€46,107 gross), and have specific expertise. Masters graduates under 30 have a lower threshold (€35,048). Your employer applies on your behalf via the Dutch Tax Authority (Belastingdienst).",
+        q: "Do I qualify for the 30% facility (Expat Scheme) in 2026?",
+        a: "You qualify if: (1) you work in paid employment under a Dutch payroll; (2) your gross salary excluding the allowance exceeds €48,013 in 2026 (€36,497 for under-30s with a Dutch master's or equivalent); (3) you were recruited from outside the Netherlands and lived more than 150 km from the Dutch border for at least 16 of the 24 months before your start date — note that adjacent parts of Belgium, Luxembourg, Germany, France, and the UK fall within the exclusion zone; (4) your employer applies to the Belastingdienst within 4 months of your start date. The untaxed allowance is capped at €78,600/year in 2026.",
       },
       {
         q: "Are social contributions included in the calculation?",
@@ -115,6 +130,12 @@ export const countryLPData: CountrySalaryLPData[] = [
       "Employee social contributions (KV + RV + AV + PV): ~19.65% of gross up to contribution ceilings",
     ],
     specialRegime: null,
+    medianSalary: {
+      gross: 50400,
+      currency: "EUR",
+      source: "Eurostat nama_10_fte, annual full-time adjusted salary (est.)",
+      year: 2024,
+    },
     examples: examples("de"),
     faq: [
       {
@@ -168,6 +189,12 @@ export const countryLPData: CountrySalaryLPData[] = [
       description:
         "Belgium offers a special tax regime for qualifying foreign executives and specialists. From 2022, it applies to employees earning ≥€75,000 gross, granting a 30% flat expense allowance (capped at €90,000) plus reimbursement of certain relocation and school costs tax-free. Requires employer application within 3 months of arrival.",
     },
+    medianSalary: {
+      gross: 57900,
+      currency: "EUR",
+      source: "Eurostat nama_10_fte, annual full-time adjusted salary (est.)",
+      year: 2024,
+    },
     examples: examples("be"),
     faq: [
       {
@@ -219,11 +246,17 @@ export const countryLPData: CountrySalaryLPData[] = [
       description:
         "Employees recruited abroad or seconded to France may qualify for a 30% salary exemption plus full exemption of foreign-sourced passive income. Available for 8 years, since the 2022 reform. Requires the employee to not have been a French tax resident in the 5 years prior to assignment.",
     },
+    medianSalary: {
+      gross: 44900,
+      currency: "EUR",
+      source: "Eurostat nama_10_fte, annual full-time adjusted salary (est.)",
+      year: 2024,
+    },
     examples: examples("fr"),
     faq: [
       {
         q: "What is cadre status in France and does it matter for tax?",
-        a: "Cadre (executive) status is a professional classification in French labour law, not a tax category. It affects supplementary pension (AGIRC) and unemployment (APEC) contribution rates. Cadres pay slightly higher contributions in some brackets but gain better pension coverage and certain legal protections. This calculator lets you toggle it.",
+        a: "Cadre (executive/managerial) status is a professional classification defined by collective agreements (conventions collectives), not by tax law. It is typically granted to engineers, managers, and senior professionals based on their role and the applicable industry agreement. Practically: (1) cadres contribute to the AGIRC-ARRCO supplementary pension scheme at a higher rate on Tranche 2 earnings (above the Social Security ceiling of ~€46,368), generating better pension rights; (2) cadres pay a mandatory APEC contribution (0.024% employee, 0.036% employer) for their dedicated employment agency; (3) most cadres are on a 'forfait jours' working time arrangement — typically 218 days/year — rather than the 35-hour week, giving flexibility but removing overtime pay; (4) cadres benefit from longer statutory notice periods and stronger severance protections under labour law. The net cash impact on take-home pay is modest (a few hundred euros/year difference in contributions), but the structural benefits in pensions and working conditions are significant.",
       },
       {
         q: "What is the 'impatriates regime' for expats arriving in France?",
@@ -271,6 +304,12 @@ export const countryLPData: CountrySalaryLPData[] = [
       name: "Beckham Law (Régimen de Impatriados)",
       description:
         "Officially the Special Tax Regime for Impatriates (Art. 93 LIRPF). Expats who move to Spain to work can opt for a flat 24% income tax rate on Spanish-sourced income up to €600k, regardless of general IRPF brackets. Must apply within 6 months of starting work in Spain. Available for the tax year of arrival plus the following 5 years.",
+    },
+    medianSalary: {
+      gross: 31600,
+      currency: "EUR",
+      source: "Eurostat nama_10_fte, annual full-time adjusted salary (est.)",
+      year: 2024,
     },
     examples: examples("es"),
     faq: [
@@ -325,6 +364,12 @@ export const countryLPData: CountrySalaryLPData[] = [
       description:
         "Replaced the NHR in 2024. Offers a 20% flat income tax rate on Portuguese-source employment income for qualifying categories: researchers, highly qualified professionals, and certain tech/startup workers. Available for 10 years. Foreign-source income may be exempt. Existing NHR holders keep their regime until expiry.",
     },
+    medianSalary: {
+      gross: 22600,
+      currency: "EUR",
+      source: "Eurostat nama_10_fte, annual full-time adjusted salary (est.)",
+      year: 2024,
+    },
     examples: examples("pt"),
     faq: [
       {
@@ -376,6 +421,12 @@ export const countryLPData: CountrySalaryLPData[] = [
       name: "Impatriates Regime (Regime degli Impatriati)",
       description:
         "From 2024 (revised), qualifying workers who move their tax residence to Italy receive a 50% exemption on Italian-source employment income for 5 years. Must not have been an Italian tax resident in the previous 3 years (6 years if buying a home or having children). Previously 70%, revised downward in 2024 reform.",
+    },
+    medianSalary: {
+      gross: 29800,
+      currency: "EUR",
+      source: "Eurostat nama_10_fte, annual full-time adjusted salary (est.)",
+      year: 2024,
     },
     examples: examples("it"),
     faq: [
@@ -429,6 +480,13 @@ export const countryLPData: CountrySalaryLPData[] = [
       description:
         "Available to wealthy foreigners without gainful employment in Switzerland. Tax is assessed on living expenses rather than actual income — typically at 7× annual rent. Not relevant for employed expats. Most expats pay normal cantonal + federal tax based on actual income.",
     },
+    medianSalary: {
+      gross: 82000,
+      currency: "CHF",
+      grossEur: 76000,
+      source: "OECD Average Annual Wages 2023",
+      year: 2023,
+    },
     examples: examples("ch"),
     faq: [
       {
@@ -481,6 +539,12 @@ export const countryLPData: CountrySalaryLPData[] = [
       description:
         "Employees assigned to Ireland from a foreign employer earning over €100,000 may qualify for SARP: 30% of income above €100,000 is exempt from PAYE (but USC and PRSI still apply). Available for up to 5 years. Must be applied for in year 1. Limited to employment income from the Irish employer.",
     },
+    medianSalary: {
+      gross: 61100,
+      currency: "EUR",
+      source: "Eurostat nama_10_fte, annual full-time adjusted salary",
+      year: 2024,
+    },
     examples: examples("ie"),
     faq: [
       {
@@ -529,6 +593,13 @@ export const countryLPData: CountrySalaryLPData[] = [
       name: "Remittance Basis (Non-Domiciled Status)",
       description:
         "Non-domiciled UK residents may elect to pay UK tax only on UK-source income and on foreign income remitted to the UK. This has been significantly restricted since April 2025 — the non-dom regime is being phased out and replaced with a 4-year foreign income exemption for new UK tax residents. This calculator covers employment income on normal domicile rules.",
+    },
+    medianSalary: {
+      gross: 37800,
+      currency: "GBP",
+      grossEur: 44200,
+      source: "ONS Annual Survey of Hours and Earnings (ASHE) / Eurostat (est.)",
+      year: 2024,
     },
     examples: [],
     faq: [

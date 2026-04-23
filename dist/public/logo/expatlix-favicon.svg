@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-label="Expatlix favicon">
+  <rect width="512" height="512" rx="96" fill="#0b0f0d"></rect>
+  <g transform="translate(256 256)">
+    <mask id="e-mask">
+      <rect x="-256" y="-256" width="512" height="512" fill="white"></rect>
+      <path d="M 0 -62 C -38 -62 -62 -36 -62 -4 C -62 26 -38 52 0 92 C 38 52 62 26 62 -4 C 62 -36 38 -62 0 -62 Z" fill="black"></path>
+      <rect x="-180" y="-8" width="360" height="18" fill="white"></rect>
+      <rect x="46" y="10" width="180" height="180" fill="black"></rect>
+    </mask>
+    <circle cx="0" cy="0" r="176" fill="#ffffff" mask="url(#e-mask)"></circle>
+    <circle cx="0" cy="-18" r="16" fill="#0b0f0d"></circle>
+  </g>
+</svg>
