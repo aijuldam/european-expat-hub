@@ -13,6 +13,8 @@
 
 import type { Country } from "./data/countries";
 import type { City } from "./data/cities";
+import { countryLPData } from "./data/salary-lp-data";
+import { cityComparisonData } from "./data/city-comparison-lp-data";
 
 export const SITE = "https://expatlix.com";
 
@@ -142,5 +144,29 @@ export function expandRoutes(countries: Country[], cities: City[]): RouteConfig[
     };
   });
 
-  return [...staticRoutes, ...countryRoutes, ...cityRoutes];
+  // SEO landing pages: /salary-calculator/[country]
+  const salaryLPRoutes: RouteConfig[] = countryLPData.map((lp) => ({
+    path: `/salary-calculator/${lp.slug}`,
+    seo: {
+      title: lp.seoTitle,
+      description: lp.seoDescription,
+    },
+  }));
+
+  // SEO landing pages: /compare/[city1]-vs-[city2]
+  const cityComparisonRoutes: RouteConfig[] = cityComparisonData.map((lp) => ({
+    path: `/compare/${lp.slug}`,
+    seo: {
+      title: lp.seoTitle,
+      description: lp.seoDescription,
+    },
+  }));
+
+  return [
+    ...staticRoutes,
+    ...countryRoutes,
+    ...cityRoutes,
+    ...salaryLPRoutes,
+    ...cityComparisonRoutes,
+  ];
 }

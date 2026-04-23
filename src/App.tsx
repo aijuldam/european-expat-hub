@@ -23,6 +23,8 @@ import EmbedCompare from "@/pages/embed-compare";
 import GuideCostOfLiving from "@/pages/guide-cost-of-living";
 import GuideSettleDown from "@/pages/guide-settle-down";
 import GuideSchoolsFamily from "@/pages/guide-schools-family";
+import SalaryCalculatorCountry from "@/pages/salary-calculator-country";
+import CityComparison from "@/pages/city-comparison";
 
 // Computed once — includes static routes + every country + every city path.
 const allRoutes = expandRoutes(countries, cities);
@@ -55,7 +57,9 @@ function Router() {
       <Route path="/countries/:slug" component={CountryDetail} />
       <Route path="/countries/:countrySlug/:citySlug" component={CityDetail} />
       <Route path="/compare" component={Compare} />
+      <Route path="/salary-calculator/:country" component={SalaryCalculatorCountry} />
       <Route path="/salary-calculator" component={SalaryCalculator} />
+      <Route path="/compare/:slug" component={CityComparison} />
       <Route path="/methodology" component={Methodology} />
       <Route path="/guides/cost-of-living" component={GuideCostOfLiving} />
       <Route path="/guides/settle-down" component={GuideSettleDown} />
