@@ -518,7 +518,7 @@ export function CityCompare({
                 href="/"
                 className="text-xs text-muted-foreground hover:text-accent transition-colors"
               >
-                Powered by <span className="font-semibold">European Expat Hub</span>
+                Powered by <span className="font-semibold">Expatlix</span>
               </Link>
             </div>
           )}

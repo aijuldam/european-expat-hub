@@ -1,4 +1,5 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,6 +31,15 @@ function RouteHead() {
   const [loc] = useLocation();
   const route = allRoutes.find((r) => r.path === loc) ?? allRoutes[0];
   return <SeoHead seo={route.seo} path={loc} />;
+}
+
+/** Scrolls to the top of the page on every route change. */
+function ScrollToTop() {
+  const [loc] = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [loc]);
+  return null;
 }
 
 const queryClient = new QueryClient();
@@ -67,6 +77,7 @@ function App({ locationHook }: { locationHook?: (...args: unknown[]) => unknown 
             hook={locationHook as never}
           >
             <RouteHead />
+            <ScrollToTop />
             <Router />
           </WouterRouter>
         <Toaster />

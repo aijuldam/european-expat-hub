@@ -29,7 +29,7 @@ export default function Methodology() {
               <div className="text-sm text-amber-800">
                 <p className="font-medium mb-1">Important Disclaimer</p>
                 <p className="leading-relaxed">
-                  European Expat Hub provides indicative estimates and comparative data for informational purposes only.
+                  Expatlix provides indicative estimates and comparative data for informational purposes only.
                   It does not constitute financial, tax, legal, or immigration advice. Always consult qualified
                   professionals for decisions about relocation, taxation, and employment.
                 </p>

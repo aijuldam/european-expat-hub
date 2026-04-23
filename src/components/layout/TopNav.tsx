@@ -37,7 +37,7 @@ export function TopNav() {
           <div className="w-8 h-8 rounded bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-sans text-sm">EH</span>
           </div>
-          <span className="hidden sm:inline">European Expat Hub</span>
+          <span className="hidden sm:inline">Expatlix</span>
         </Link>
 
         {/* Desktop ≥1024px: all items */}

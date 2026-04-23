@@ -11,7 +11,7 @@ export function Footer() {
           <Link href="/compare" className="hover:text-foreground transition-colors">Compare</Link>
           <Link href="/methodology" className="hover:text-foreground transition-colors">Methodology</Link>
         </div>
-        <p className="mb-2">&copy; {new Date().getFullYear()} European Expat Hub. A relocation intelligence tool.</p>
+        <p className="mb-2">&copy; {new Date().getFullYear()} Expatlix. A relocation intelligence tool.</p>
         <p className="text-xs">Data provided for informational purposes only. Not financial or legal advice.</p>
       </div>
     </footer>

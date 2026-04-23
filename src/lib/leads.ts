@@ -23,7 +23,7 @@ export const PRIVACY_NOTICE_URL = "/privacy";
  * Must match what is stored in marketing_consent_text for audit trail integrity.
  */
 export const MARKETING_CONSENT_TEXT =
-  "I'd like to receive relocation tips, updates, and promotional emails from European Expat Hub.";
+  "I'd like to receive relocation tips, updates, and promotional emails from Expatlix.";
 
 /** Retention period in months — align with your published privacy notice. */
 const RETENTION_MONTHS = 24;
