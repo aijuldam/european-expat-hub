@@ -31,9 +31,9 @@ export const staticRoutes: RouteConfig[] = [
   {
     path: "/",
     seo: {
-      title: "European Expat Hub | Find Your Perfect European City",
+      title: "Expatlix — Build your best life in Europe",
       description:
-        "Compare European cities for cost of living, salaries, safety, and quality of life. Find your perfect expat destination.",
+        "Compare destinations, understand local systems, and move faster, safer, and fully prepared for your new life in Europe.",
     },
   },
   {
