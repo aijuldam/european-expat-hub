@@ -6,7 +6,7 @@ export function Footer() {
       <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
         {/* Logo mark */}
         <Link href="/" className="inline-flex flex-col items-center gap-2 mb-6 group">
-          <img src="/logo/expatlix-mark-inverse.svg" alt="Expatlix" className="w-12 h-12 opacity-80 group-hover:opacity-100 transition-opacity" />
+          <img src="/logo/expatlix-favicon.svg" alt="Expatlix" className="w-12 h-12 opacity-80 group-hover:opacity-100 transition-opacity" />
           <div className="flex flex-col items-center leading-none">
             <span className="font-serif font-bold text-base text-foreground">Expatlix</span>
             <span className="text-[9px] font-semibold tracking-[0.14em] uppercase mt-0.5">Relocation Intelligence</span>

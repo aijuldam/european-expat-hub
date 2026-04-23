@@ -35,13 +35,10 @@ export function TopNav() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <img src="/logo/expatlix-favicon.svg" alt="Expatlix" className="w-8 h-8 flex-shrink-0" />
-          {/* Mobile: name + tagline stacked */}
-          <div className="flex flex-col sm:hidden leading-none">
+          <div className="flex flex-col leading-none">
             <span className="font-serif font-bold text-base text-primary tracking-tight">Expatlix</span>
             <span className="text-[9px] font-semibold text-muted-foreground tracking-[0.12em] uppercase mt-0.5">Relocation Intelligence</span>
           </div>
-          {/* Tablet+: name only */}
-          <span className="hidden sm:inline font-serif font-bold text-xl text-primary">Expatlix</span>
         </Link>
 
         {/* Desktop ≥1024px: all items */}
