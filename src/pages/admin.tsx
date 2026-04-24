@@ -50,15 +50,17 @@ function exportCSV(leads: Lead[]) {
 
 // ── Login screen ─────────────────────────────────────────────────────────────
 function LoginScreen() {
+  const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handleLogin() {
+    if (!email.trim()) { setError("Please enter your email."); return; }
     setLoading(true);
     setError("");
     const { error } = await supabase.auth.signInWithOtp({
-      email: ADMIN_EMAIL,
+      email: email.trim(),
       options: { emailRedirectTo: "https://expatlix.com/admin" },
     });
     if (error) { setError(error.message); setLoading(false); return; }
@@ -71,17 +73,25 @@ function LoginScreen() {
       <Card className="w-full max-w-sm">
         <CardContent className="p-8 text-center">
           <h1 className="text-xl font-serif font-bold text-foreground mb-2">Expatlix Admin</h1>
-          <p className="text-sm text-muted-foreground mb-6">Send a magic link to {ADMIN_EMAIL}</p>
+          <p className="text-sm text-muted-foreground mb-6">Enter your email to receive a magic link.</p>
           {sent ? (
             <p className="text-sm text-accent font-medium">✅ Check your inbox for the login link.</p>
           ) : (
-            <>
+            <div className="space-y-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                onKeyDown={(e) => e.key === "Enter" && !loading && handleLogin()}
+                placeholder="you@example.com"
+                className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+              />
               <Button onClick={handleLogin} disabled={loading} className="w-full gap-2">
                 {loading ? "Sending…" : "Send magic link"}
                 <ArrowRight className="w-4 h-4" />
               </Button>
-              {error && <p className="mt-3 text-xs text-destructive">{error}</p>}
-            </>
+              {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+            </div>
           )}
         </CardContent>
       </Card>
