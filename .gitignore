@@ -1,1 +1,7 @@
 .vercel
+node_modules
+dist
+
+# GA4 credentials — never commit these
+.ga4-credentials.json
+.ga4-property
