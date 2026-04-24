@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,13 @@ import {
   PRIVACY_NOTICE_VERSION,
   PRIVACY_NOTICE_URL,
 } from "@/lib/leads";
+import {
+  trackQuizStart,
+  trackQuizStep,
+  trackQuizComplete,
+  trackEmailCapture,
+  trackQuizSkip,
+} from "@/lib/analytics";
 
 // ── Category icons (quiz question UI) ────────────────────────────
 const categoryIcons: Record<string, React.ElementType> = {
@@ -62,6 +69,9 @@ export default function Quiz() {
   const [isSubmitting, setIsSubmitting]   = useState(false);
   const emailRef                          = useRef<HTMLInputElement>(null);
 
+  // ── Fire quiz_start once on mount ───────────────────────
+  useEffect(() => { trackQuizStart(); }, []);
+
   // ── Quiz question state ──────────────────────────────────
   const question   = quizQuestions[currentStep];
   const isMulti    = question.multiSelect === true;
@@ -92,6 +102,7 @@ export default function Quiz() {
   }, [question.id]);
 
   const handleNext = useCallback(() => {
+    trackQuizStep(visibleIdx + 1, totalVisible);
     if (question.id === "language_env" && answers["language_env"] === "english_first") {
       setAnswers((prev) => { const n = { ...prev }; delete n["language_skills"]; return n; });
       setCurrentStep(langSkillsIdx + 1);
@@ -100,10 +111,11 @@ export default function Quiz() {
     if (currentStep < quizQuestions.length - 1) {
       setCurrentStep((s) => s + 1);
     } else {
+      trackQuizComplete();
       setShowGate(true);
       setTimeout(() => emailRef.current?.focus(), 80);
     }
-  }, [currentStep, answers, question.id]);
+  }, [currentStep, answers, question.id, visibleIdx, totalVisible]);
 
   const handleBack = useCallback(() => {
     if (currentStep === langSkillsIdx + 1 && shouldSkipLanguageSkills(answers)) {
@@ -123,6 +135,7 @@ export default function Quiz() {
     }
     setEmailError("");
     setIsSubmitting(true);
+    trackEmailCapture(marketingOptIn);
 
     const results   = calculateQuizResults(answers);
     const topResult = results[0];
@@ -151,6 +164,7 @@ export default function Quiz() {
 
   // Skip — navigate without storing any email
   const handleSkip = useCallback(() => {
+    trackQuizSkip();
     setLocation(buildResultsUrl(answers));
   }, [answers, setLocation]);
 
