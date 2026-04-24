@@ -59,7 +59,7 @@ function LoginScreen() {
     setError("");
     const { error } = await supabase.auth.signInWithOtp({
       email: ADMIN_EMAIL,
-      options: { emailRedirectTo: window.location.href },
+      options: { emailRedirectTo: "https://expatlix.com/admin" },
     });
     if (error) { setError(error.message); setLoading(false); return; }
     setSent(true);
