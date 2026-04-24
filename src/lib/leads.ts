@@ -135,6 +135,27 @@ function forward(lead: Lead): void {
   });
 }
 
+async function saveToSupabase(lead: Lead): Promise<void> {
+  try {
+    const { supabase } = await import("./supabase");
+    await supabase.from("leads").insert({
+      id:                   lead.lead_id,
+      email:                lead.email,
+      created_at:           lead.created_at,
+      source:               "quiz",
+      utm_source:           new URLSearchParams(window.location.search).get("utm_source") ?? null,
+      utm_medium:           new URLSearchParams(window.location.search).get("utm_medium") ?? null,
+      utm_campaign:         new URLSearchParams(window.location.search).get("utm_campaign") ?? null,
+      quiz_step:            null, // captured at gate — all steps complete
+      country_interest:     Array.isArray(lead.quiz_answers?.["destination"])
+                              ? (lead.quiz_answers["destination"] as string[]).join(",")
+                              : (lead.quiz_answers?.["destination"] as string) ?? null,
+    });
+  } catch {
+    // Fire-and-forget — localStorage is the fallback
+  }
+}
+
 // ── Public API ────────────────────────────────────────────────
 
 /**
@@ -164,6 +185,7 @@ export function saveLead(
   existing.push(full);
   writeAll(existing);
   forward(full);
+  saveToSupabase(full); // fire-and-forget to Supabase
 
   return full;
 }
