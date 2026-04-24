@@ -25,6 +25,7 @@ import GuideSettleDown from "@/pages/guide-settle-down";
 import GuideSchoolsFamily from "@/pages/guide-schools-family";
 import SalaryCalculatorCountry from "@/pages/salary-calculator-country";
 import CityComparison from "@/pages/city-comparison";
+import Admin from "@/pages/admin";
 
 // Computed once — includes static routes + every country + every city path.
 const allRoutes = expandRoutes(countries, cities);
@@ -66,6 +67,7 @@ function Router() {
       <Route path="/guides/schools-family" component={GuideSchoolsFamily} />
       <Route path="/tools/compare" component={ToolsCompare} />
       <Route path="/embed/compare" component={EmbedCompare} />
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );

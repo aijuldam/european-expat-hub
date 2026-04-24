@@ -121,6 +121,13 @@ export const staticRoutes: RouteConfig[] = [
       description: "Embeddable side-by-side city cost comparison widget.",
     },
   },
+  {
+    path: "/admin",
+    seo: {
+      title: "Admin | Expatlix",
+      description: "Protected analytics dashboard.",
+    },
+  },
 ];
 
 /** Expand static routes + one entry per country + one entry per city. */
