@@ -138,18 +138,32 @@ function forward(lead: Lead): void {
 async function saveToSupabase(lead: Lead): Promise<void> {
   try {
     const { supabase } = await import("./supabase");
+    const params = new URLSearchParams(window.location.search);
+
+    // Parse top 3 cities from result snapshot
+    let top: { cityName: string; matchPercentage: number }[] = [];
+    try { top = JSON.parse(lead.quiz_result_snapshot ?? "[]"); } catch { /* ignore */ }
+
     await supabase.from("leads").insert({
-      id:                   lead.lead_id,
-      email:                lead.email,
-      created_at:           lead.created_at,
-      source:               "quiz",
-      utm_source:           new URLSearchParams(window.location.search).get("utm_source") ?? null,
-      utm_medium:           new URLSearchParams(window.location.search).get("utm_medium") ?? null,
-      utm_campaign:         new URLSearchParams(window.location.search).get("utm_campaign") ?? null,
-      quiz_step:            null, // captured at gate — all steps complete
-      country_interest:     Array.isArray(lead.quiz_answers?.["destination"])
-                              ? (lead.quiz_answers["destination"] as string[]).join(",")
-                              : (lead.quiz_answers?.["destination"] as string) ?? null,
+      id:               lead.lead_id,
+      email:            lead.email,
+      created_at:       lead.created_at,
+      source:           "quiz",
+      utm_source:       params.get("utm_source")   ?? null,
+      utm_medium:       params.get("utm_medium")   ?? null,
+      utm_campaign:     params.get("utm_campaign") ?? null,
+      quiz_step:        null,
+      country_interest: Array.isArray(lead.quiz_answers?.["destination"])
+                          ? (lead.quiz_answers["destination"] as string[]).join(",")
+                          : (lead.quiz_answers?.["destination"] as string) ?? null,
+      quiz_answers:     lead.quiz_answers ?? null,
+      top_city_1:       top[0]?.cityName        ?? null,
+      top_city_1_pct:   top[0]?.matchPercentage ?? null,
+      top_city_2:       top[1]?.cityName        ?? null,
+      top_city_2_pct:   top[1]?.matchPercentage ?? null,
+      top_city_3:       top[2]?.cityName        ?? null,
+      top_city_3_pct:   top[2]?.matchPercentage ?? null,
+      marketing_consent: lead.marketing_consent ?? false,
     });
   } catch {
     // Fire-and-forget — localStorage is the fallback

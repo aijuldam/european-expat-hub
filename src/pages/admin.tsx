@@ -23,6 +23,14 @@ interface Lead {
   utm_medium: string | null;
   utm_campaign: string | null;
   country_interest: string | null;
+  quiz_answers: Record<string, string | string[]> | null;
+  top_city_1: string | null;
+  top_city_1_pct: number | null;
+  top_city_2: string | null;
+  top_city_2_pct: number | null;
+  top_city_3: string | null;
+  top_city_3_pct: number | null;
+  marketing_consent: boolean | null;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -39,8 +47,17 @@ function startOf(unit: "day" | "week" | "month") {
 }
 
 function exportCSV(leads: Lead[]) {
-  const cols = ["id", "email", "created_at", "source", "utm_source", "utm_medium", "utm_campaign", "country_interest"];
-  const rows = leads.map((l) => cols.map((c) => JSON.stringify((l as Record<string, unknown>)[c] ?? "")).join(","));
+  const cols = [
+    "id", "email", "created_at", "source", "utm_source", "utm_medium", "utm_campaign",
+    "country_interest", "top_city_1", "top_city_1_pct", "top_city_2", "top_city_2_pct",
+    "top_city_3", "top_city_3_pct", "marketing_consent", "quiz_answers",
+  ];
+  const rows = leads.map((l) =>
+    cols.map((c) => {
+      const v = (l as Record<string, unknown>)[c];
+      return JSON.stringify(v != null && typeof v === "object" ? JSON.stringify(v) : v ?? "");
+    }).join(",")
+  );
   const blob = new Blob([cols.join(",") + "\n" + rows.join("\n")], { type: "text/csv" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -214,19 +231,41 @@ function Dashboard({ session }: { session: Session }) {
                     <tr className="border-b border-border text-left">
                       <th className="pb-3 pr-4 font-medium text-muted-foreground text-xs">Email</th>
                       <th className="pb-3 pr-4 font-medium text-muted-foreground text-xs">Date</th>
+                      <th className="pb-3 pr-4 font-medium text-muted-foreground text-xs">Top cities</th>
                       <th className="pb-3 pr-4 font-medium text-muted-foreground text-xs">Source</th>
-                      <th className="pb-3 pr-4 font-medium text-muted-foreground text-xs">Campaign</th>
-                      <th className="pb-3 font-medium text-muted-foreground text-xs">Country interest</th>
+                      <th className="pb-3 pr-4 font-medium text-muted-foreground text-xs">Marketing</th>
+                      <th className="pb-3 font-medium text-muted-foreground text-xs">Answers</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filtered.map((lead) => (
-                      <tr key={lead.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                        <td className="py-3 pr-4 font-medium text-foreground">{lead.email}</td>
-                        <td className="py-3 pr-4 text-muted-foreground whitespace-nowrap">{fmtDate(lead.created_at)}</td>
-                        <td className="py-3 pr-4 text-muted-foreground">{lead.utm_source ?? "direct"}</td>
-                        <td className="py-3 pr-4 text-muted-foreground">{lead.utm_campaign ?? "—"}</td>
-                        <td className="py-3 text-muted-foreground">{lead.country_interest ?? "—"}</td>
+                      <tr key={lead.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors align-top">
+                        <td className="py-3 pr-4 font-medium text-foreground text-xs">{lead.email}</td>
+                        <td className="py-3 pr-4 text-muted-foreground text-xs whitespace-nowrap">{fmtDate(lead.created_at)}</td>
+                        <td className="py-3 pr-4 text-xs text-muted-foreground">
+                          {lead.top_city_1 ? (
+                            <div className="space-y-0.5">
+                              <div className="text-foreground font-medium">{lead.top_city_1} <span className="text-accent">{lead.top_city_1_pct}%</span></div>
+                              {lead.top_city_2 && <div>{lead.top_city_2} {lead.top_city_2_pct}%</div>}
+                              {lead.top_city_3 && <div>{lead.top_city_3} {lead.top_city_3_pct}%</div>}
+                            </div>
+                          ) : "—"}
+                        </td>
+                        <td className="py-3 pr-4 text-muted-foreground text-xs">{lead.utm_source ?? "direct"}</td>
+                        <td className="py-3 pr-4 text-xs">
+                          {lead.marketing_consent
+                            ? <span className="text-accent font-medium">✓ Yes</span>
+                            : <span className="text-muted-foreground">No</span>}
+                        </td>
+                        <td className="py-3 text-xs text-muted-foreground max-w-[200px]">
+                          {lead.quiz_answers
+                            ? <details><summary className="cursor-pointer hover:text-foreground">View</summary>
+                                <pre className="mt-1 text-[10px] bg-muted p-2 rounded overflow-auto max-h-40">
+                                  {JSON.stringify(lead.quiz_answers, null, 2)}
+                                </pre>
+                              </details>
+                            : "—"}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
