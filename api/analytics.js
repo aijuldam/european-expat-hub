@@ -58,8 +58,10 @@ async function ga4(token, body) {
 async function verifyAdmin(authHeader) {
   if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
   const token = authHeader.slice(7);
-  const res = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
-    headers: { Authorization: `Bearer ${token}`, apikey: process.env.SUPABASE_ANON_KEY },
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  const res = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    headers: { Authorization: `Bearer ${token}`, apikey: supabaseKey },
   });
   if (!res.ok) return false;
   const user = await res.json();
