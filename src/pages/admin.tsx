@@ -9,7 +9,7 @@ import { supabase } from "@/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, LogOut, Download, Users, Mail, TrendingUp, Calendar } from "lucide-react";
+import { ArrowRight, LogOut, Download, Users, Mail, TrendingUp, Calendar, Activity, Eye, MousePointerClick, Globe } from "lucide-react";
 
 const ADMIN_EMAIL = "aijuldam@gmail.com";
 
@@ -133,8 +133,199 @@ function KPI({ label, value, icon: Icon }: { label: string; value: string | numb
   );
 }
 
+// ── Traffic types & tab ──────────────────────────────────────────────────────
+interface Traffic {
+  days: number;
+  kpi: { sessions: number; users: number; pageviews: number; bounceRate: number; avgSessionSec: number };
+  pages: { path: string; views: number; users: number }[];
+  channels: { channel: string; sessions: number; users: number }[];
+  funnel: { quiz_start: number; quiz_step: number; quiz_complete: number; email_capture: number; quiz_skip: number };
+}
+
+function fmtDuration(sec: number) {
+  const m = Math.floor(sec / 60);
+  const s = Math.round(sec % 60);
+  return `${m}m ${s}s`;
+}
+
+function TrafficTab({ accessToken }: { accessToken: string }) {
+  const [days, setDays] = useState<1 | 7 | 30 | 365>(7);
+  const [data, setData] = useState<Traffic | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancel = false;
+    setLoading(true);
+    setError("");
+    fetch(`/api/analytics?days=${days}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then(async (r) => {
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.error ?? r.statusText);
+        return j as Traffic;
+      })
+      .then((j) => { if (!cancel) setData(j); })
+      .catch((e: Error) => { if (!cancel) setError(e.message); })
+      .finally(() => { if (!cancel) setLoading(false); });
+    return () => { cancel = true; };
+  }, [days, accessToken]);
+
+  const labels: Record<typeof days, string> = { 1: "Today", 7: "7 days", 30: "30 days", 365: "1 year" };
+  const completionRate = data && data.funnel.quiz_start > 0
+    ? ((data.funnel.quiz_complete / data.funnel.quiz_start) * 100).toFixed(1)
+    : "0";
+  const captureRate = data && data.funnel.quiz_complete > 0
+    ? ((data.funnel.email_capture / data.funnel.quiz_complete) * 100).toFixed(1)
+    : "0";
+
+  return (
+    <div className="space-y-6">
+      {/* Timeframe toggle */}
+      <div className="flex justify-end">
+        <div className="flex rounded-md border border-border overflow-hidden text-xs">
+          {([1, 7, 30, 365] as const).map((d) => (
+            <button
+              key={d}
+              onClick={() => setDays(d)}
+              className={`px-3 py-1.5 transition-colors ${
+                days === d ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              {labels[d]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {error && (
+        <Card><CardContent className="p-5 text-sm text-destructive">Failed to load: {error}</CardContent></Card>
+      )}
+
+      {loading && !data ? (
+        <p className="text-sm text-muted-foreground py-8 text-center">Loading traffic…</p>
+      ) : data ? (
+        <>
+          {/* KPIs */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <KPI label="Sessions"    value={data.kpi.sessions}              icon={Activity} />
+            <KPI label="Users"       value={data.kpi.users}                 icon={Users} />
+            <KPI label="Page views"  value={data.kpi.pageviews}             icon={Eye} />
+            <KPI label="Bounce rate" value={`${(data.kpi.bounceRate * 100).toFixed(1)}%`} icon={MousePointerClick} />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Channels */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-accent" /> Channels
+                </h3>
+                {data.channels.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No data.</p>
+                ) : (
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border text-left">
+                        <th className="pb-2 font-medium text-muted-foreground text-xs">Channel</th>
+                        <th className="pb-2 font-medium text-muted-foreground text-xs text-right">Sessions</th>
+                        <th className="pb-2 font-medium text-muted-foreground text-xs text-right">Users</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.channels.map((c) => (
+                        <tr key={c.channel} className="border-b border-border/50">
+                          <td className="py-2 text-foreground text-xs">{c.channel}</td>
+                          <td className="py-2 text-right text-xs">{fmt(c.sessions)}</td>
+                          <td className="py-2 text-right text-xs text-muted-foreground">{fmt(c.users)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Quiz funnel */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-accent" /> Quiz funnel
+                </h3>
+                <div className="space-y-3 text-sm">
+                  {[
+                    { label: "Quiz starts",     n: data.funnel.quiz_start },
+                    { label: "Quiz completes",  n: data.funnel.quiz_complete },
+                    { label: "Email captures",  n: data.funnel.email_capture },
+                    { label: "Skips",           n: data.funnel.quiz_skip },
+                  ].map((row) => {
+                    const pct = data.funnel.quiz_start > 0 ? (row.n / data.funnel.quiz_start) * 100 : 0;
+                    return (
+                      <div key={row.label}>
+                        <div className="flex justify-between mb-1">
+                          <span className="text-foreground">{row.label}</span>
+                          <span className="text-muted-foreground text-xs">{fmt(row.n)}</span>
+                        </div>
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-accent" style={{ width: `${Math.min(100, pct)}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p className="text-muted-foreground">Completion rate</p>
+                    <p className="text-lg font-bold text-foreground">{completionRate}%</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Capture rate</p>
+                    <p className="text-lg font-bold text-foreground">{captureRate}%</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Top pages */}
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="font-semibold text-foreground mb-4">Top pages</h3>
+              {data.pages.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No data.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left">
+                      <th className="pb-2 font-medium text-muted-foreground text-xs">Path</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-xs text-right">Views</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-xs text-right">Users</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.pages.map((p) => (
+                      <tr key={p.path} className="border-b border-border/50">
+                        <td className="py-2 text-foreground text-xs font-mono truncate max-w-[400px]">{p.path}</td>
+                        <td className="py-2 text-right text-xs">{fmt(p.views)}</td>
+                        <td className="py-2 text-right text-xs text-muted-foreground">{fmt(p.users)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              <p className="text-xs text-muted-foreground mt-3">
+                Avg session: {fmtDuration(data.kpi.avgSessionSec)}
+              </p>
+            </CardContent>
+          </Card>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 function Dashboard({ session }: { session: Session }) {
+  const [tab, setTab] = useState<"leads" | "traffic">("leads");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "today" | "week" | "month">("all");
@@ -175,8 +366,27 @@ function Dashboard({ session }: { session: Session }) {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-8 space-y-8">
+      <main className="max-w-6xl mx-auto px-6 py-8 space-y-6">
 
+        {/* Tabs */}
+        <div className="flex gap-1 border-b border-border">
+          {(["leads", "traffic"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-4 py-2 text-sm font-medium capitalize border-b-2 -mb-px transition-colors ${
+                tab === t ? "border-accent text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        {tab === "traffic" ? (
+          <TrafficTab accessToken={session.access_token} />
+        ) : (
+        <div className="space-y-8">
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KPI label="Total leads"   value={leads.length} icon={Users} />
@@ -275,6 +485,8 @@ function Dashboard({ session }: { session: Session }) {
             )}
           </CardContent>
         </Card>
+        </div>
+        )}
 
       </main>
     </div>
