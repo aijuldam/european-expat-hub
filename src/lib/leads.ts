@@ -29,6 +29,7 @@ export const MARKETING_CONSENT_TEXT =
 const RETENTION_MONTHS = 24;
 
 const STORAGE_KEY = "eeh_leads";
+const SUBMITTED_KEY = "eeh_submitted";
 
 // ============================================================
 // Lead — CRM-ready schema with full GDPR audit fields
@@ -201,7 +202,40 @@ export function saveLead(
   forward(full);
   saveToSupabase(full); // fire-and-forget to Supabase
 
+  // Mark email as submitted so footer form hides everywhere permanently
+  if (full.email) {
+    try { localStorage.setItem(SUBMITTED_KEY, "1"); } catch { /* ignore */ }
+  }
+
   return full;
+}
+
+/** True if the user has already submitted their email (quiz gate or footer form). */
+export function hasSubmittedEmail(): boolean {
+  try { return localStorage.getItem(SUBMITTED_KEY) === "1"; } catch { return false; }
+}
+
+/**
+ * Lightweight email capture for the footer form (no quiz data).
+ * Saves to Supabase with source="footer" and marks the user as submitted.
+ */
+export async function saveEmailLead(email: string, marketingConsent: boolean): Promise<void> {
+  try {
+    const { supabase } = await import("./supabase");
+    const params = new URLSearchParams(window.location.search);
+    await supabase.from("leads").insert({
+      email,
+      created_at: new Date().toISOString(),
+      source: "footer",
+      utm_source: params.get("utm_source") ?? null,
+      utm_medium: params.get("utm_medium") ?? null,
+      utm_campaign: params.get("utm_campaign") ?? null,
+      marketing_consent: marketingConsent,
+    });
+  } catch {
+    // Fire-and-forget — mark submitted regardless
+  }
+  try { localStorage.setItem(SUBMITTED_KEY, "1"); } catch { /* ignore */ }
 }
 
 /**

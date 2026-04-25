@@ -1,8 +1,11 @@
 import { Link } from "wouter";
+import { FooterLeadForm } from "@/components/FooterLeadForm";
 
 export function Footer() {
   return (
-    <footer className="border-t bg-muted/30 py-12 mt-auto">
+    <footer className="mt-auto">
+      <FooterLeadForm />
+      <div className="border-t bg-muted/30 py-12">
       <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
         {/* Logo mark */}
         <Link href="/" className="inline-flex flex-col items-center gap-2 mb-6 group">
@@ -21,6 +24,7 @@ export function Footer() {
         </div>
         <p className="mb-2">&copy; {new Date().getFullYear()} Expatlix. All rights reserved.</p>
         <p className="text-xs">Data provided for informational purposes only. Not financial or legal advice.</p>
+      </div>
       </div>
     </footer>
   );
