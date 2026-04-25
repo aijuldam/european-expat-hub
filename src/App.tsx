@@ -1,5 +1,5 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,7 +25,8 @@ import GuideSettleDown from "@/pages/guide-settle-down";
 import GuideSchoolsFamily from "@/pages/guide-schools-family";
 import SalaryCalculatorCountry from "@/pages/salary-calculator-country";
 import CityComparison from "@/pages/city-comparison";
-import Admin from "@/pages/admin";
+// Lazy-loaded — Supabase uses browser APIs that crash during SSR prerender
+const Admin = lazy(() => import("@/pages/admin"));
 
 // Computed once — includes static routes + every country + every city path.
 const allRoutes = expandRoutes(countries, cities);
@@ -67,7 +68,9 @@ function Router() {
       <Route path="/guides/schools-family" component={GuideSchoolsFamily} />
       <Route path="/tools/compare" component={ToolsCompare} />
       <Route path="/embed/compare" component={EmbedCompare} />
-      <Route path="/admin" component={Admin} />
+      <Route path="/admin">
+        <Suspense fallback={null}><Admin /></Suspense>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
