@@ -121,14 +121,9 @@ export const staticRoutes: RouteConfig[] = [
       description: "Embeddable side-by-side city cost comparison widget.",
     },
   },
-  {
-    path: "/admin",
-    seo: {
-      title: "Admin | Expatlix",
-      description: "Protected analytics dashboard.",
-    },
-  },
 ];
+// Note: /admin is intentionally excluded from staticRoutes — it is a
+// client-only protected page that must not be prerendered.
 
 /** Expand static routes + one entry per country + one entry per city. */
 export function expandRoutes(countries: Country[], cities: City[]): RouteConfig[] {
