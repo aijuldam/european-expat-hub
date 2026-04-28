@@ -4,6 +4,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, BookOpen, Calendar, Database, Scale } from "lucide-react";
 
+const LAST_UPDATED = "April 2026";
+
 export default function Methodology() {
   return (
     <Layout>
@@ -39,18 +41,18 @@ export default function Methodology() {
 
           <div className="flex items-center gap-2 mb-6">
             <Calendar className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Last updated: December 2024</span>
+            <span className="text-sm text-muted-foreground">Last updated: {LAST_UPDATED}</span>
             <Badge variant="secondary" className="text-xs">v1.0 MVP</Badge>
           </div>
 
           <Accordion type="multiple" className="space-y-2">
             <AccordionItem value="data-sources">
-              <AccordionTrigger className="text-left">
+              <h2><AccordionTrigger className="text-left">
                 <div className="flex items-center gap-2">
                   <Database className="w-4 h-4 text-muted-foreground" />
                   Data Sources
                 </div>
-              </AccordionTrigger>
+              </AccordionTrigger></h2>
               <AccordionContent className="text-sm text-muted-foreground leading-relaxed space-y-3">
                 <p>
                   City and country data is compiled from multiple publicly available sources including national statistics
@@ -70,19 +72,19 @@ export default function Methodology() {
             </AccordionItem>
 
             <AccordionItem value="salary-calculator">
-              <AccordionTrigger className="text-left">
+              <h2><AccordionTrigger className="text-left">
                 <div className="flex items-center gap-2">
                   <Scale className="w-4 h-4 text-muted-foreground" />
                   Salary Calculator Methodology
                 </div>
-              </AccordionTrigger>
+              </AccordionTrigger></h2>
               <AccordionContent className="text-sm text-muted-foreground leading-relaxed space-y-3">
                 <p>
-                  The salary calculator provides gross-to-net estimates based on 2024 tax parameters for each country.
+                  The salary calculator provides gross-to-net estimates based on 2026 tax parameters for each country.
                 </p>
                 <h4 className="font-medium text-foreground">Netherlands</h4>
                 <ul className="list-disc pl-6 space-y-1">
-                  <li>Uses the 2024 Dutch progressive income tax system with two brackets (36.97% and 49.50%)</li>
+                  <li>Uses the 2026 Dutch progressive income tax system with two brackets (36.97% and 49.50%)</li>
                   <li>Social security contributions are included in the tax brackets</li>
                   <li>General tax credit (algemene heffingskorting) and labour tax credit (arbeidskorting) are applied</li>
                   <li>The 30% ruling option reduces taxable income by 30% for qualifying expat knowledge workers</li>
@@ -92,7 +94,7 @@ export default function Methodology() {
                 <ul className="list-disc pl-6 space-y-1">
                   <li>Social contributions (cotisations sociales) are deducted first, at approximately 22.5% (non-cadre) or 25% (cadre)</li>
                   <li>CSG and CRDS contributions are calculated on 98.25% of gross salary</li>
-                  <li>Income tax is calculated on net social salary using 2024 brackets (0% to 45%)</li>
+                  <li>Income tax is calculated on net social salary using 2026 brackets (0% to 45%)</li>
                   <li>Calculation structure follows the approach used by French salary calculators such as salaire-brut-en-net.fr</li>
                 </ul>
                 <p className="font-medium text-amber-700 mt-4">
@@ -103,9 +105,7 @@ export default function Methodology() {
             </AccordionItem>
 
             <AccordionItem value="cost-of-living">
-              <AccordionTrigger className="text-left">
-                Cost of Living Indices
-              </AccordionTrigger>
+              <h2><AccordionTrigger className="text-left">Cost of Living Indices</AccordionTrigger></h2>
               <AccordionContent className="text-sm text-muted-foreground leading-relaxed space-y-3">
                 <p>
                   Cost of living data is presented as comparative indices on a 0-100 scale, inspired by the approach used by
@@ -126,9 +126,7 @@ export default function Methodology() {
             </AccordionItem>
 
             <AccordionItem value="quiz">
-              <AccordionTrigger className="text-left">
-                Quiz & Recommendation Engine
-              </AccordionTrigger>
+              <h2><AccordionTrigger className="text-left">Quiz &amp; Recommendation Engine</AccordionTrigger></h2>
               <AccordionContent className="text-sm text-muted-foreground leading-relaxed space-y-3">
                 <p>
                   The recommendation quiz uses a weighted scoring system across nine dimensions: affordability, safety,
@@ -150,9 +148,7 @@ export default function Methodology() {
             </AccordionItem>
 
             <AccordionItem value="safety">
-              <AccordionTrigger className="text-left">
-                Safety Index
-              </AccordionTrigger>
+              <h2><AccordionTrigger className="text-left">Safety Index</AccordionTrigger></h2>
               <AccordionContent className="text-sm text-muted-foreground leading-relaxed space-y-3">
                 <p>
                   Safety indices are composite scores on a 0-100 scale derived from crime statistics, quality of life
@@ -166,9 +162,7 @@ export default function Methodology() {
             </AccordionItem>
 
             <AccordionItem value="limitations">
-              <AccordionTrigger className="text-left">
-                Limitations & Future Updates
-              </AccordionTrigger>
+              <h2><AccordionTrigger className="text-left">Limitations &amp; Future Updates</AccordionTrigger></h2>
               <AccordionContent className="text-sm text-muted-foreground leading-relaxed space-y-3">
                 <p>
                   This MVP covers only the Netherlands and France with four cities. The platform is designed to scale

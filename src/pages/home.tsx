@@ -119,7 +119,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-3">
-              Built for confident new beginnings
+              Tools to Plan Your European Move
             </h2>
           </div>
           <ul className="grid sm:grid-cols-2 gap-x-12 gap-y-3 max-w-2xl mx-auto">
@@ -146,7 +146,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-2">Explore Cities</h2>
+              <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-2">Explore 35+ European Expat Cities</h2>
               <p className="text-muted-foreground">Discover what each city has to offer</p>
             </div>
             <Link href="/compare">
@@ -209,7 +209,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-2">
-              For people building a life across borders
+              Compare 12 Countries — Tax, Cost &amp; Quality of Life
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
               Whether you are moving for work, family, flexibility, or a better lifestyle, Expatlix helps turn a complex relocation into a clear path toward a life that fits better.
