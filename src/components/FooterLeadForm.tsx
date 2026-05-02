@@ -45,39 +45,41 @@ export function FooterLeadForm() {
         </p>
 
         <form onSubmit={handleSubmit} noValidate>
-          <div className="flex gap-2 max-w-md mx-auto">
+          {/* Email field */}
+          <div className="max-w-md mx-auto mb-3">
             <input
               type="email"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(""); }}
               placeholder="you@example.com"
               aria-label="Email address"
-              className="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-2.5 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
             />
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 disabled:opacity-60 transition-colors"
-            >
-              {loading ? "…" : "Sign me up"}
-              {!loading && <ArrowRight className="w-3.5 h-3.5" />}
-            </button>
           </div>
 
-          {error && (
-            <p className="mt-2 text-xs text-destructive" role="alert">{error}</p>
-          )}
-
-          {/* Marketing opt-in */}
-          <label className="mt-4 inline-flex items-start gap-2 text-left cursor-pointer">
+          {/* Marketing opt-in — must be ticked before submit is enabled */}
+          <label className="inline-flex items-start gap-2 text-left cursor-pointer max-w-md mx-auto mb-4">
             <input
               type="checkbox"
               checked={marketingOptIn}
-              onChange={(e) => setMarketingOptIn(e.target.checked)}
+              onChange={(e) => { setMarketingOptIn(e.target.checked); setError(""); }}
               className="mt-0.5 accent-accent"
             />
             <span className="text-xs text-muted-foreground">{MARKETING_CONSENT_TEXT}</span>
           </label>
+
+          {error && (
+            <p className="mb-3 text-xs text-destructive" role="alert">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || !marketingOptIn}
+            className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {loading ? "…" : "Sign me up"}
+            {!loading && <ArrowRight className="w-3.5 h-3.5" />}
+          </button>
 
           <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
             <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
