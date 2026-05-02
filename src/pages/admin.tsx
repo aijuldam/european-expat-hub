@@ -10,6 +10,9 @@ import type { Session } from "@supabase/supabase-js";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, LogOut, Download, Users, Mail, TrendingUp, Calendar, Activity, Eye, MousePointerClick, Globe } from "lucide-react";
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
+
+const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 const ADMIN_EMAIL = "aijuldam@gmail.com";
 
@@ -140,6 +143,170 @@ interface Traffic {
   pages: { path: string; views: number; users: number }[];
   channels: { channel: string; sessions: number; users: number }[];
   funnel: { quiz_start: number; quiz_step: number; quiz_complete: number; email_capture: number; quiz_skip: number };
+  countries: { countryId: string; country: string; users: number }[];
+  quizSteps: { step: number; count: number }[];
+}
+
+// ISO-3166 alpha-2 → numeric TopoJSON id mapping (top ~60 countries by traffic likelihood)
+// world-atlas uses numeric ISO-3166-1 codes on geometries
+const ISO2_TO_NUMERIC: Record<string, string> = {
+  AF:"004",AL:"008",DZ:"012",AD:"020",AO:"024",AG:"028",AR:"032",AM:"051",AU:"036",AT:"040",
+  AZ:"031",BS:"044",BH:"048",BD:"050",BB:"052",BY:"112",BE:"056",BZ:"084",BJ:"204",BT:"064",
+  BO:"068",BA:"070",BW:"072",BR:"076",BN:"096",BG:"100",BF:"854",BI:"108",CV:"132",KH:"116",
+  CM:"120",CA:"124",CF:"140",TD:"148",CL:"152",CN:"156",CO:"170",KM:"174",CD:"180",CG:"178",
+  CR:"188",HR:"191",CU:"192",CY:"196",CZ:"203",DK:"208",DJ:"262",DM:"212",DO:"214",EC:"218",
+  EG:"818",SV:"222",GQ:"226",ER:"232",EE:"233",SZ:"748",ET:"231",FJ:"242",FI:"246",FR:"250",
+  GA:"266",GM:"270",GE:"268",DE:"276",GH:"288",GR:"300",GD:"308",GT:"320",GN:"324",GW:"624",
+  GY:"328",HT:"332",HN:"340",HU:"348",IS:"352",IN:"356",ID:"360",IR:"364",IQ:"368",IE:"372",
+  IL:"376",IT:"380",JM:"388",JP:"392",JO:"400",KZ:"398",KE:"404",KI:"296",KW:"414",KG:"417",
+  LA:"418",LV:"428",LB:"422",LS:"426",LR:"430",LY:"434",LI:"438",LT:"440",LU:"442",MG:"450",
+  MW:"454",MY:"458",MV:"462",ML:"466",MT:"470",MH:"584",MR:"478",MU:"480",MX:"484",FM:"583",
+  MD:"498",MC:"492",MN:"496",ME:"499",MA:"504",MZ:"508",MM:"104",NA:"516",NR:"520",NP:"524",
+  NL:"528",NZ:"554",NI:"558",NE:"562",NG:"566",NO:"578",OM:"512",PK:"586",PW:"585",PA:"591",
+  PG:"598",PY:"600",PE:"604",PH:"608",PL:"616",PT:"620",QA:"634",RO:"642",RU:"643",RW:"646",
+  KN:"659",LC:"662",VC:"670",WS:"882",SM:"674",ST:"678",SA:"682",SN:"686",RS:"688",SC:"690",
+  SL:"694",SG:"702",SK:"703",SI:"705",SB:"090",SO:"706",ZA:"710",SS:"728",ES:"724",LK:"144",
+  SD:"729",SR:"740",SE:"752",CH:"756",SY:"760",TW:"158",TJ:"762",TZ:"834",TH:"764",TL:"626",
+  TG:"768",TO:"776",TT:"780",TN:"788",TR:"792",TM:"795",TV:"798",UG:"800",UA:"804",AE:"784",
+  GB:"826",US:"840",UY:"858",UZ:"860",VU:"548",VE:"862",VN:"704",YE:"887",ZM:"894",ZW:"716",
+};
+
+function CountryMap({ countries }: { countries: Traffic["countries"] }) {
+  const [tooltip, setTooltip] = useState<{ name: string; users: number } | null>(null);
+  const maxUsers = countries.reduce((m, c) => Math.max(m, c.users), 1);
+  const byCode = Object.fromEntries(countries.map((c) => [ISO2_TO_NUMERIC[c.countryId] ?? c.countryId, c]));
+
+  function fill(geoId: string) {
+    const c = byCode[geoId];
+    if (!c) return "#e5e7eb";
+    // Log scale: lightest accent at 1 user, full accent at max
+    const intensity = Math.log1p(c.users) / Math.log1p(maxUsers);
+    const opacity = 0.15 + intensity * 0.85;
+    return `rgba(16, 185, 129, ${opacity.toFixed(2)})`; // accent green
+  }
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <h3 className="font-semibold text-foreground mb-1 flex items-center gap-2">
+          <Globe className="w-4 h-4 text-accent" /> Traffic by country
+        </h3>
+        {countries.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4">No country data yet.</p>
+        ) : (
+          <>
+            <div className="relative rounded-md overflow-hidden bg-muted/30 mb-4" style={{ height: 300 }}>
+              {tooltip && (
+                <div className="absolute top-2 left-2 z-10 bg-background/95 border border-border rounded px-2 py-1 text-xs shadow">
+                  <span className="font-medium">{tooltip.name}</span>
+                  <span className="text-muted-foreground ml-2">{fmt(tooltip.users)} users</span>
+                </div>
+              )}
+              <ComposableMap projectionConfig={{ scale: 120 }} style={{ width: "100%", height: "100%" }}>
+                <ZoomableGroup zoom={1}>
+                  <Geographies geography={GEO_URL}>
+                    {({ geographies }) =>
+                      geographies.map((geo) => (
+                        <Geography
+                          key={geo.rsmKey}
+                          geography={geo}
+                          fill={fill(String(geo.id))}
+                          stroke="#fff"
+                          strokeWidth={0.3}
+                          style={{ default: { outline: "none" }, hover: { outline: "none", opacity: 0.8 }, pressed: { outline: "none" } }}
+                          onMouseEnter={() => {
+                            const c = byCode[String(geo.id)];
+                            if (c) setTooltip({ name: c.country, users: c.users });
+                          }}
+                          onMouseLeave={() => setTooltip(null)}
+                        />
+                      ))
+                    }
+                  </Geographies>
+                </ZoomableGroup>
+              </ComposableMap>
+            </div>
+
+            {/* Fallback table — top 10 */}
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border text-left">
+                  <th className="pb-2 font-medium text-muted-foreground text-xs">Country</th>
+                  <th className="pb-2 font-medium text-muted-foreground text-xs text-right">Users</th>
+                  <th className="pb-2 font-medium text-muted-foreground text-xs text-right">Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                {countries.slice(0, 10).map((c) => (
+                  <tr key={c.countryId} className="border-b border-border/50">
+                    <td className="py-2 text-foreground text-xs">{c.country}</td>
+                    <td className="py-2 text-right text-xs">{fmt(c.users)}</td>
+                    <td className="py-2 text-right text-xs text-muted-foreground">
+                      {((c.users / countries.reduce((s, x) => s + x.users, 0)) * 100).toFixed(1)}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// Quiz question labels for step-level funnel
+const QUIZ_STEP_LABELS: Record<number, string> = {
+  1: "Family status", 2: "Budget", 3: "Salary vs cost", 4: "Safety",
+  5: "Weather", 6: "International vibe", 7: "City energy", 8: "Transport",
+  9: "Language env",
+};
+
+function QuizFunnelDetail({ quizSteps, quizStart }: { quizSteps: Traffic["quizSteps"]; quizStart: number }) {
+  if (quizSteps.length === 0) {
+    return (
+      <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border">
+        Per-step breakdown unavailable.{" "}
+        <span className="text-amber-700">
+          Register <code className="bg-amber-50 px-1 rounded">step</code> as a custom dimension in GA4
+          (Admin → Custom definitions → Custom dimensions → Add: Event parameter <code className="bg-amber-50 px-1 rounded">step</code>, scope Event).
+        </span>
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-3 pt-3 border-t border-border">
+      <p className="text-xs font-medium text-muted-foreground mb-2">Per-step drop-off</p>
+      <table className="w-full text-xs">
+        <thead>
+          <tr className="border-b border-border text-left">
+            <th className="pb-1.5 font-medium text-muted-foreground">Step</th>
+            <th className="pb-1.5 font-medium text-muted-foreground text-right">Reached</th>
+            <th className="pb-1.5 font-medium text-muted-foreground text-right">vs start</th>
+            <th className="pb-1.5 font-medium text-muted-foreground text-right">drop-off</th>
+          </tr>
+        </thead>
+        <tbody>
+          {quizSteps.map((s, i) => {
+            const prev = i === 0 ? quizStart : quizSteps[i - 1].count;
+            const dropOff = prev > 0 ? (((prev - s.count) / prev) * 100).toFixed(0) : "—";
+            const vsStart = quizStart > 0 ? ((s.count / quizStart) * 100).toFixed(0) : "—";
+            return (
+              <tr key={s.step} className="border-b border-border/40">
+                <td className="py-1.5 text-foreground">{s.step}. {QUIZ_STEP_LABELS[s.step] ?? `Q${s.step}`}</td>
+                <td className="py-1.5 text-right">{fmt(s.count)}</td>
+                <td className="py-1.5 text-right text-muted-foreground">{vsStart}%</td>
+                <td className={`py-1.5 text-right font-medium ${parseInt(dropOff) > 20 ? "text-destructive" : "text-muted-foreground"}`}>
+                  {dropOff === "—" ? "—" : `-${dropOff}%`}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 function fmtDuration(sec: number) {
@@ -278,10 +445,10 @@ function TrafficTab({ accessToken }: { accessToken: string }) {
                 </h3>
                 <div className="space-y-3 text-sm">
                   {[
-                    { label: "Quiz starts",     n: data.funnel.quiz_start },
-                    { label: "Quiz completes",  n: data.funnel.quiz_complete },
-                    { label: "Email captures",  n: data.funnel.email_capture },
-                    { label: "Skips",           n: data.funnel.quiz_skip },
+                    { label: "Quiz starts",    n: data.funnel.quiz_start },
+                    { label: "Quiz completes", n: data.funnel.quiz_complete },
+                    { label: "Email captures", n: data.funnel.email_capture },
+                    { label: "Skips",          n: data.funnel.quiz_skip },
                   ].map((row) => {
                     const pct = data.funnel.quiz_start > 0 ? (row.n / data.funnel.quiz_start) * 100 : 0;
                     return (
@@ -307,9 +474,13 @@ function TrafficTab({ accessToken }: { accessToken: string }) {
                     <p className="text-lg font-bold text-foreground">{captureRate}%</p>
                   </div>
                 </div>
+                <QuizFunnelDetail quizSteps={data.quizSteps} quizStart={data.funnel.quiz_start} />
               </CardContent>
             </Card>
           </div>
+
+          {/* Country map */}
+          <CountryMap countries={data.countries} />
 
           {/* Top pages */}
           <Card>

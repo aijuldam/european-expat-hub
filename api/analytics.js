@@ -102,7 +102,7 @@ module.exports = async function handler(req, res) {
 
     const token = await getAccessToken();
 
-    const [overview, pages, channels, funnel] = await Promise.all([
+    const [overview, pages, channels, funnel, countries, quizSteps] = await Promise.all([
       ga4(token, {
         dateRanges,
         metrics: [
@@ -140,6 +140,29 @@ module.exports = async function handler(req, res) {
           },
         },
       }),
+      // Traffic by country — countryId is ISO-3166 alpha-2 (e.g. "FR")
+      ga4(token, {
+        dateRanges,
+        dimensions: [{ name: "countryId" }, { name: "country" }],
+        metrics: [{ name: "activeUsers" }],
+        orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+        limit: 50,
+      }),
+      // Per-step quiz funnel — requires "step" registered as custom dimension in GA4
+      // Returns "(not set)" rows if custom dimension not yet registered (handled gracefully)
+      ga4(token, {
+        dateRanges,
+        dimensions: [{ name: "customEvent:step" }],
+        metrics: [{ name: "eventCount" }],
+        dimensionFilter: {
+          filter: {
+            fieldName: "eventName",
+            stringFilter: { matchType: "EXACT", value: "quiz_step" },
+          },
+        },
+        orderBys: [{ dimension: { dimensionName: "customEvent:step" } }],
+        limit: 20,
+      }),
     ]);
 
     const ov = (overview.rows && overview.rows[0] && overview.rows[0].metricValues) || [];
@@ -149,6 +172,27 @@ module.exports = async function handler(req, res) {
     (funnel.rows || []).forEach((r) => {
       funnelCounts[r.dimensionValues[0].value] = parseInt(r.metricValues[0].value, 10);
     });
+
+    // Countries — filter out "(not set)" rows
+    const countriesData = (countries.rows || [])
+      .filter((r) => r.dimensionValues[0].value !== "(not set)")
+      .map((r) => ({
+        countryId: r.dimensionValues[0].value,
+        country: r.dimensionValues[1].value,
+        users: parseInt(r.metricValues[0].value, 10),
+      }));
+
+    // Per-step quiz funnel — "(not set)" means custom dimension not registered in GA4
+    const stepsRaw = (quizSteps.rows || []).filter(
+      (r) => r.dimensionValues[0].value !== "(not set)"
+    );
+    const quizStepsData = stepsRaw
+      .map((r) => ({
+        step: parseInt(r.dimensionValues[0].value, 10),
+        count: parseInt(r.metricValues[0].value, 10),
+      }))
+      .filter((r) => !isNaN(r.step))
+      .sort((a, b) => a.step - b.step);
 
     res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
     res.status(200).json({
@@ -177,6 +221,9 @@ module.exports = async function handler(req, res) {
         email_capture: funnelCounts.email_capture || 0,
         quiz_skip: funnelCounts.quiz_skip || 0,
       },
+      countries: countriesData,
+      // Empty array = custom dimension "step" not yet registered in GA4
+      quizSteps: quizStepsData,
     });
   } catch (err) {
     if (err.code === "GA4_REAUTH_REQUIRED") {
