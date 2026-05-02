@@ -127,6 +127,9 @@ function writeAll(leads: Lead[]): void {
 function forward(lead: Lead): void {
   const webhookUrl = import.meta.env.VITE_LEADS_WEBHOOK_URL as string | undefined;
   if (!webhookUrl) return;
+  // Only forward leads with explicit marketing consent — never send
+  // non-consented emails to external CRM / mailing list tools.
+  if (!lead.is_marketable) return;
   fetch(webhookUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -164,7 +167,10 @@ async function saveToSupabase(lead: Lead): Promise<void> {
       top_city_2_pct:   top[1]?.matchPercentage ?? null,
       top_city_3:       top[2]?.cityName        ?? null,
       top_city_3_pct:   top[2]?.matchPercentage ?? null,
-      marketing_consent: lead.marketing_consent ?? false,
+      marketing_consent:        lead.marketing_consent ?? false,
+      marketing_consent_at:     lead.marketing_consent ? (lead.marketing_consent_timestamp ?? null) : null,
+      marketing_consent_text:   lead.marketing_consent ? (lead.marketing_consent_text ?? null) : null,
+      marketing_consent_source: "quiz",
     });
     if (error) {
       // Surface failures to GA4 without logging PII
@@ -239,7 +245,10 @@ export async function saveEmailLead(email: string, marketingConsent: boolean): P
       utm_source: params.get("utm_source") ?? null,
       utm_medium: params.get("utm_medium") ?? null,
       utm_campaign: params.get("utm_campaign") ?? null,
-      marketing_consent: marketingConsent,
+      marketing_consent:        marketingConsent,
+      marketing_consent_at:     marketingConsent ? new Date().toISOString() : null,
+      marketing_consent_text:   marketingConsent ? MARKETING_CONSENT_TEXT : null,
+      marketing_consent_source: "footer",
     });
     if (error) {
       const { trackSubmissionFailed } = await import("./analytics");

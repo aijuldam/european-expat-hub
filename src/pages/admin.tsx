@@ -571,6 +571,7 @@ function Dashboard({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "today" | "week" | "month">("all");
   const [sourceFilter, setSourceFilter] = useState("all");
+  const [consentFilter, setConsentFilter] = useState(false);
 
   const fetchLeads = useCallback(async () => {
     setLoading(true);
@@ -584,7 +585,11 @@ function Dashboard({ session }: { session: Session }) {
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
   const sources = ["all", ...Array.from(new Set(leads.map((l) => l.utm_source ?? "direct").filter(Boolean)))];
-  const filtered = sourceFilter === "all" ? leads : leads.filter((l) => (l.utm_source ?? "direct") === sourceFilter);
+  const filtered = leads
+    .filter((l) => sourceFilter === "all" || (l.utm_source ?? "direct") === sourceFilter)
+    .filter((l) => !consentFilter || l.marketing_consent === true);
+
+  const consentedCount = leads.filter((l) => l.marketing_consent === true).length;
 
   const today     = leads.filter((l) => l.created_at >= startOf("day")).length;
   const thisWeek  = leads.filter((l) => l.created_at >= startOf("week")).length;
@@ -665,7 +670,19 @@ function Dashboard({ session }: { session: Session }) {
                 >
                   {sources.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
-                {/* Export */}
+                {/* Consent filter */}
+                <button
+                  onClick={() => setConsentFilter((v) => !v)}
+                  className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${
+                    consentFilter
+                      ? "bg-accent text-white border-accent"
+                      : "bg-background text-muted-foreground border-border hover:bg-muted"
+                  }`}
+                  title={`${consentedCount} consented leads`}
+                >
+                  ✓ Consented only {consentFilter && `(${consentedCount})`}
+                </button>
+                {/* Export — exports only the currently filtered view */}
                 <Button variant="outline" size="sm" onClick={() => exportCSV(filtered)} className="gap-1.5 text-xs">
                   <Download className="w-3.5 h-3.5" /> CSV
                 </Button>
