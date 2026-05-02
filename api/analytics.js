@@ -37,7 +37,22 @@ async function getAccessToken() {
     body,
   });
   const json = await res.json();
-  if (!res.ok) throw new Error(`GA4 auth: ${json.error_description || json.error || res.statusText}`);
+
+  if (!res.ok) {
+    // Clear stale cached token so the next request retries the exchange
+    cachedToken = null;
+    cachedTokenExpiresAt = 0;
+
+    // Google returns "invalid_grant" when the refresh token is expired or revoked
+    // (most commonly: OAuth app still in "Testing" mode — tokens expire after 7 days)
+    if (json.error === "invalid_grant") {
+      const reauth = new Error("GA4_REAUTH_REQUIRED");
+      reauth.code = "GA4_REAUTH_REQUIRED";
+      throw reauth;
+    }
+
+    throw new Error(`GA4 auth: ${json.error_description || json.error || res.statusText}`);
+  }
 
   cachedToken = json.access_token;
   cachedTokenExpiresAt = Date.now() + (json.expires_in || 3600) * 1000;
@@ -164,6 +179,13 @@ module.exports = async function handler(req, res) {
       },
     });
   } catch (err) {
+    if (err.code === "GA4_REAUTH_REQUIRED") {
+      res.status(503).json({
+        code: "GA4_REAUTH_REQUIRED",
+        error: "Google Analytics connection expired. The refresh token must be regenerated.",
+      });
+      return;
+    }
     res.status(500).json({ error: err.message || "Unknown error" });
   }
 };

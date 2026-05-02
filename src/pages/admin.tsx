@@ -153,18 +153,26 @@ function TrafficTab({ accessToken }: { accessToken: string }) {
   const [data, setData] = useState<Traffic | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [needsReauth, setNeedsReauth] = useState(false);
 
   useEffect(() => {
     let cancel = false;
     setLoading(true);
     setError("");
+    setNeedsReauth(false);
     fetch(`/api/analytics?days=${days}`, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then(async (r) => {
         const j = await r.json();
-        if (!r.ok) throw new Error(j.error ?? r.statusText);
+        if (!r.ok) {
+          if (j.code === "GA4_REAUTH_REQUIRED") {
+            if (!cancel) setNeedsReauth(true);
+            return null;
+          }
+          throw new Error(j.error ?? r.statusText);
+        }
         return j as Traffic;
       })
-      .then((j) => { if (!cancel) setData(j); })
+      .then((j) => { if (!cancel && j) setData(j); })
       .catch((e: Error) => { if (!cancel) setError(e.message); })
       .finally(() => { if (!cancel) setLoading(false); });
     return () => { cancel = true; };
@@ -196,6 +204,23 @@ function TrafficTab({ accessToken }: { accessToken: string }) {
           ))}
         </div>
       </div>
+
+      {needsReauth && (
+        <Card className="border-amber-200 bg-amber-50">
+          <CardContent className="p-5 text-sm text-amber-800 space-y-2">
+            <p className="font-semibold">⚠️ Google Analytics reconnection required</p>
+            <p>The refresh token has expired or been revoked (most likely: OAuth app is still in <strong>Testing</strong> mode — tokens expire after 7 days).</p>
+            <p className="font-medium">To fix:</p>
+            <ol className="list-decimal pl-5 space-y-1">
+              <li>Run <code className="bg-amber-100 px-1 rounded">node scripts/analytics.mjs</code> locally — it will open a browser login and save a new token to <code className="bg-amber-100 px-1 rounded">.ga4-token.json</code></li>
+              <li>Copy the new <code className="bg-amber-100 px-1 rounded">refresh_token</code> value from <code className="bg-amber-100 px-1 rounded">.ga4-token.json</code></li>
+              <li>Update <code className="bg-amber-100 px-1 rounded">GA4_REFRESH_TOKEN</code> in Vercel → Settings → Environment Variables</li>
+              <li>Redeploy (or wait for next deploy)</li>
+            </ol>
+            <p className="text-amber-600 text-xs mt-1">Permanent fix: publish the OAuth app (move from Testing → Production in Google Cloud Console) so tokens never expire.</p>
+          </CardContent>
+        </Card>
+      )}
 
       {error && (
         <Card><CardContent className="p-5 text-sm text-destructive">Failed to load: {error}</CardContent></Card>
