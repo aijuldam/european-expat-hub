@@ -346,11 +346,17 @@ function TrafficTab({ accessToken }: { accessToken: string }) {
   }, [days, accessToken]);
 
   const labels: Record<typeof days, string> = { 1: "Today", 7: "7 days", 30: "30 days", 365: "1 year" };
-  const completionRate = data && data.funnel.quiz_start > 0
+  // Gate conversion: how many who started the quiz reached the email gate
+  const gateConversionRate = data && data.funnel.quiz_start > 0
     ? ((data.funnel.quiz_complete / data.funnel.quiz_start) * 100).toFixed(1)
     : "0";
-  const captureRate = data && data.funnel.quiz_complete > 0
+  // Email/gate rate: of those who saw the gate, how many submitted email
+  const emailGateRate = data && data.funnel.quiz_complete > 0
     ? ((data.funnel.email_capture / data.funnel.quiz_complete) * 100).toFixed(1)
+    : "0";
+  // Overall capture rate: emails submitted / quiz started (true end-to-end rate)
+  const overallCaptureRate = data && data.funnel.quiz_start > 0
+    ? ((data.funnel.email_capture / data.funnel.quiz_start) * 100).toFixed(1)
     : "0";
 
   return (
@@ -464,14 +470,21 @@ function TrafficTab({ accessToken }: { accessToken: string }) {
                     );
                   })}
                 </div>
-                <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-3 text-xs">
+                <div className="mt-4 pt-4 border-t border-border grid grid-cols-3 gap-3 text-xs">
                   <div>
-                    <p className="text-muted-foreground">Completion rate</p>
-                    <p className="text-lg font-bold text-foreground">{completionRate}%</p>
+                    <p className="text-muted-foreground">Gate conversion</p>
+                    <p className="text-lg font-bold text-foreground">{gateConversionRate}%</p>
+                    <p className="text-[10px] text-muted-foreground/70">complete / start</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Capture rate</p>
-                    <p className="text-lg font-bold text-foreground">{captureRate}%</p>
+                    <p className="text-muted-foreground">Email / gate</p>
+                    <p className="text-lg font-bold text-foreground">{emailGateRate}%</p>
+                    <p className="text-[10px] text-muted-foreground/70">capture / complete</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Overall capture</p>
+                    <p className="text-lg font-bold text-accent">{overallCaptureRate}%</p>
+                    <p className="text-[10px] text-muted-foreground/70">capture / start</p>
                   </div>
                 </div>
                 <QuizFunnelDetail quizSteps={data.quizSteps} quizStart={data.funnel.quiz_start} />
@@ -516,6 +529,38 @@ function TrafficTab({ accessToken }: { accessToken: string }) {
         </>
       ) : null}
     </div>
+  );
+}
+
+// ── Storage health banner ─────────────────────────────────────────────────────
+// Compares Supabase lead count vs GA4 email_capture events over all time (365d).
+// A gap means some submissions failed to persist to the database.
+function StorageHealthBanner({ supabaseCount, accessToken }: { supabaseCount: number; accessToken: string }) {
+  const [ga4Captures, setGa4Captures] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/analytics?days=365", { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then((r) => r.ok ? r.json() : null)
+      .then((j) => { if (j?.funnel) setGa4Captures(j.funnel.email_capture); })
+      .catch(() => {});
+  }, [accessToken]);
+
+  if (ga4Captures === null) return null;
+
+  const gap = ga4Captures - supabaseCount;
+  if (gap <= 0) {
+    return (
+      <p className="text-xs text-muted-foreground">
+        ✅ Storage health: {supabaseCount} leads in DB · {ga4Captures} GA4 email_capture events — <span className="text-accent font-medium">in sync</span>
+      </p>
+    );
+  }
+  return (
+    <Card className="border-amber-200 bg-amber-50">
+      <CardContent className="p-4 text-sm text-amber-800">
+        ⚠️ <span className="font-semibold">Storage gap detected:</span> GA4 recorded <strong>{ga4Captures}</strong> email captures but only <strong>{supabaseCount}</strong> leads are in the database ({gap} missing). Check Supabase RLS policies and browser console for <code className="bg-amber-100 px-1 rounded">submission_failed</code> events in GA4.
+      </CardContent>
+    </Card>
   );
 }
 
@@ -590,6 +635,7 @@ function Dashboard({ session }: { session: Session }) {
           <KPI label="This week"     value={thisWeek}     icon={TrendingUp} />
           <KPI label="This month"    value={thisMonth}    icon={Mail} />
         </div>
+        <StorageHealthBanner supabaseCount={leads.length} accessToken={session.access_token} />
 
         {/* Leads table */}
         <Card>

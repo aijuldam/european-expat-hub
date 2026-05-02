@@ -145,7 +145,7 @@ async function saveToSupabase(lead: Lead): Promise<void> {
     let top: { cityName: string; matchPercentage: number }[] = [];
     try { top = JSON.parse(lead.quiz_result_snapshot ?? "[]"); } catch { /* ignore */ }
 
-    await supabase.from("leads").insert({
+    const { error } = await supabase.from("leads").insert({
       id:               lead.lead_id,
       email:            lead.email,
       created_at:       lead.created_at,
@@ -166,8 +166,17 @@ async function saveToSupabase(lead: Lead): Promise<void> {
       top_city_3_pct:   top[2]?.matchPercentage ?? null,
       marketing_consent: lead.marketing_consent ?? false,
     });
+    if (error) {
+      // Surface failures to GA4 without logging PII
+      const { trackSubmissionFailed } = await import("./analytics");
+      trackSubmissionFailed("quiz", "supabase_insert");
+    }
   } catch {
-    // Fire-and-forget — localStorage is the fallback
+    // Network or import failure — surface to GA4
+    try {
+      const { trackSubmissionFailed } = await import("./analytics");
+      trackSubmissionFailed("quiz", "supabase_network");
+    } catch { /* never let analytics errors surface */ }
   }
 }
 
@@ -223,7 +232,7 @@ export async function saveEmailLead(email: string, marketingConsent: boolean): P
   try {
     const { supabase } = await import("./supabase");
     const params = new URLSearchParams(window.location.search);
-    await supabase.from("leads").insert({
+    const { error } = await supabase.from("leads").insert({
       email,
       created_at: new Date().toISOString(),
       source: "footer",
@@ -232,8 +241,15 @@ export async function saveEmailLead(email: string, marketingConsent: boolean): P
       utm_campaign: params.get("utm_campaign") ?? null,
       marketing_consent: marketingConsent,
     });
+    if (error) {
+      const { trackSubmissionFailed } = await import("./analytics");
+      trackSubmissionFailed("footer", "supabase_insert");
+    }
   } catch {
-    // Fire-and-forget — mark submitted regardless
+    try {
+      const { trackSubmissionFailed } = await import("./analytics");
+      trackSubmissionFailed("footer", "supabase_network");
+    } catch { /* never let analytics errors surface */ }
   }
   try { localStorage.setItem(SUBMITTED_KEY, "1"); } catch { /* ignore */ }
 }

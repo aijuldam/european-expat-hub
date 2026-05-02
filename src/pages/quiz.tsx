@@ -69,8 +69,15 @@ export default function Quiz() {
   const [isSubmitting, setIsSubmitting]   = useState(false);
   const emailRef                          = useRef<HTMLInputElement>(null);
 
-  // ── Fire quiz_start once on mount ───────────────────────
-  useEffect(() => { trackQuizStart(); }, []);
+  // ── Fire quiz_start once per browser session ────────────
+  // sessionStorage prevents re-firing on React remounts or StrictMode
+  // double-invocation while still counting a genuine new tab/session.
+  useEffect(() => {
+    if (!sessionStorage.getItem("quiz_started")) {
+      sessionStorage.setItem("quiz_started", "1");
+      trackQuizStart();
+    }
+  }, []);
 
   // ── Quiz question state ──────────────────────────────────
   const question   = quizQuestions[currentStep];

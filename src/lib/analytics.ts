@@ -19,7 +19,8 @@ export type AnalyticsEvent =
   | "quiz_step"
   | "quiz_complete"
   | "email_capture"
-  | "quiz_skip";
+  | "quiz_skip"
+  | "submission_failed";
 
 export function trackEvent(
   name: AnalyticsEvent,
@@ -57,4 +58,13 @@ export function trackEmailCapture(marketing_opt_in: boolean) {
 /** Fired when the user clicks "Skip and view results online". */
 export function trackQuizSkip() {
   trackEvent("quiz_skip");
+}
+
+/**
+ * Fired when a lead storage attempt fails (Supabase insert error, network, etc.).
+ * source: "quiz" | "footer"
+ * reason: short non-sensitive description (e.g. "supabase_insert")
+ */
+export function trackSubmissionFailed(source: string, reason: string) {
+  trackEvent("submission_failed", { source, reason });
 }
