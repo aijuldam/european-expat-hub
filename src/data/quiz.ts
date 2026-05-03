@@ -20,7 +20,6 @@ export type QuizCategory =
   | "international"
   | "cityLife"
   | "transport"
-  | "language"
   | "lifestyle";
 
 export interface QuizOption {
@@ -44,7 +43,6 @@ export const categoryConfig: Record<QuizCategory, { label: string; colorClass: s
   weather:     { label: "Weather",        colorClass: "bg-amber-50 text-amber-700 border-amber-200" },
   salary:      { label: "Salary",         colorClass: "bg-violet-50 text-violet-700 border-violet-200" },
   family:      { label: "Family",         colorClass: "bg-rose-50 text-rose-700 border-rose-200" },
-  language:    { label: "Language",        colorClass: "bg-indigo-50 text-indigo-700 border-indigo-200" },
   international:{ label: "International", colorClass: "bg-cyan-50 text-cyan-700 border-cyan-200" },
   cityLife:    { label: "City Life",      colorClass: "bg-orange-50 text-orange-700 border-orange-200" },
   transport:   { label: "Transport",      colorClass: "bg-emerald-50 text-emerald-700 border-emerald-200" },
@@ -228,52 +226,6 @@ export const quizQuestions: QuizQuestion[] = [
         label: "Mostly by car",
         value: "car",
         scores: { publicTransport: -1 },
-      },
-    ],
-  },
-  {
-    id: "language_env",
-    category: "language",
-    question: "What kind of language environment works for you?",
-    description: "Some cities are much easier to navigate in English than others.",
-    options: [
-      {
-        label: "English-first — I need English at work and in daily life",
-        value: "english_first",
-        scores: { expatFit: 3, internationalVibe: 1 },
-      },
-      {
-        label: "Mixed — I can manage with some local language alongside English",
-        value: "mixed",
-        scores: { expatFit: 1 },
-      },
-      {
-        label: "Fully local — I'm happy to work and live in the local language",
-        value: "local",
-        scores: {},
-      },
-    ],
-  },
-  {
-    id: "language_skills",
-    category: "language",
-    multiSelect: true,
-    question: "Which local languages do you already speak or are willing to learn?",
-    description: "Select all that apply.",
-    options: [
-      ...Array.from(
-        new Set(countries.flatMap((c) => c.languages))
-      )
-        .sort()
-        .map((lang) => ({
-          label: lang,
-          value: lang.toLowerCase(),
-          scores: { expatFit: 1 } as Partial<Record<QuizDimension, number>>,
-        })),
-      {
-        label: "None — I'd rather stay in English",
-        value: "none",
-        scores: { expatFit: 2, internationalVibe: 1 } as Partial<Record<QuizDimension, number>>,
       },
     ],
   },

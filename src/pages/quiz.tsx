@@ -8,7 +8,7 @@ import { quizQuestions, categoryConfig, calculateQuizResults } from "@/data/quiz
 import {
   ArrowLeft, ArrowRight, Check, Compass,
   Globe, CheckCircle2, ShieldCheck,
-  Shield, Coins, Sun, Banknote, Heart, Languages, Zap, Train, Palette,
+  Shield, Coins, Sun, Banknote, Heart, Zap, Train, Palette,
 } from "lucide-react";
 import {
   saveLead,
@@ -31,20 +31,11 @@ const categoryIcons: Record<string, React.ElementType> = {
   weather: Sun,
   salary: Banknote,
   family: Heart,
-  language: Languages,
   international: Globe,
   cityLife: Zap,
   transport: Train,
   lifestyle: Palette,
 };
-
-// ── Language skip logic ────────────────────────────────────────
-const langEnvIdx   = quizQuestions.findIndex((q) => q.id === "language_env");
-const langSkillsIdx = quizQuestions.findIndex((q) => q.id === "language_skills");
-
-function shouldSkipLanguageSkills(answers: Record<string, string | string[]>) {
-  return answers["language_env"] === "english_first";
-}
 
 // ── Helpers ───────────────────────────────────────────────────
 function buildResultsUrl(answers: Record<string, string | string[]>) {
@@ -88,9 +79,7 @@ export default function Quiz() {
     ? (Array.isArray(rawAnswer) ? rawAnswer : [])
     : [];
 
-  const visibleQuestions = quizQuestions.filter(
-    (q) => q.id !== "language_skills" || !shouldSkipLanguageSkills(answers)
-  );
+  const visibleQuestions = quizQuestions;
   const visibleIdx   = visibleQuestions.findIndex((q) => q.id === question.id);
   const totalVisible = visibleQuestions.length;
   const progress     = ((visibleIdx + 1) / totalVisible) * 100;
@@ -110,11 +99,6 @@ export default function Quiz() {
 
   const handleNext = useCallback(() => {
     trackQuizStep(visibleIdx + 1, totalVisible);
-    if (question.id === "language_env" && answers["language_env"] === "english_first") {
-      setAnswers((prev) => { const n = { ...prev }; delete n["language_skills"]; return n; });
-      setCurrentStep(langSkillsIdx + 1);
-      return;
-    }
     if (currentStep < quizQuestions.length - 1) {
       setCurrentStep((s) => s + 1);
     } else {
@@ -122,15 +106,11 @@ export default function Quiz() {
       setShowGate(true);
       setTimeout(() => emailRef.current?.focus(), 80);
     }
-  }, [currentStep, answers, question.id, visibleIdx, totalVisible]);
+  }, [currentStep, visibleIdx, totalVisible]);
 
   const handleBack = useCallback(() => {
-    if (currentStep === langSkillsIdx + 1 && shouldSkipLanguageSkills(answers)) {
-      setCurrentStep(langEnvIdx);
-      return;
-    }
     if (currentStep > 0) setCurrentStep((s) => s - 1);
-  }, [currentStep, answers]);
+  }, [currentStep]);
 
   // Submit with email
   const handleGetResult = useCallback(async () => {
