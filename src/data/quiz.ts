@@ -20,6 +20,7 @@ export type QuizCategory =
   | "international"
   | "cityLife"
   | "transport"
+  | "language"
   | "lifestyle";
 
 export interface QuizOption {
@@ -46,6 +47,7 @@ export const categoryConfig: Record<QuizCategory, { label: string; colorClass: s
   international:{ label: "International", colorClass: "bg-cyan-50 text-cyan-700 border-cyan-200" },
   cityLife:    { label: "City Life",      colorClass: "bg-orange-50 text-orange-700 border-orange-200" },
   transport:   { label: "Transport",      colorClass: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  language:    { label: "Language",        colorClass: "bg-indigo-50 text-indigo-700 border-indigo-200" },
   lifestyle:   { label: "Lifestyle",      colorClass: "bg-pink-50 text-pink-700 border-pink-200" },
 };
 
@@ -226,6 +228,29 @@ export const quizQuestions: QuizQuestion[] = [
         label: "Mostly by car",
         value: "car",
         scores: { publicTransport: -1 },
+      },
+    ],
+  },
+  {
+    id: "language_env",
+    category: "language",
+    question: "What kind of language environment works for you?",
+    description: "Some cities are much easier to navigate in English than others.",
+    options: [
+      {
+        label: "English-first — I need English at work and in daily life",
+        value: "english_first",
+        scores: { expatFit: 3, internationalVibe: 1 },
+      },
+      {
+        label: "Mixed — I can manage with some local language alongside English",
+        value: "mixed",
+        scores: { expatFit: 1 },
+      },
+      {
+        label: "Fully local — I'm happy to work and live in the local language",
+        value: "local",
+        scores: {},
       },
     ],
   },

@@ -8,7 +8,7 @@ import { quizQuestions, categoryConfig, calculateQuizResults } from "@/data/quiz
 import {
   ArrowLeft, ArrowRight, Check, Compass,
   Globe, CheckCircle2, ShieldCheck,
-  Shield, Coins, Sun, Banknote, Heart, Zap, Train, Palette,
+  Shield, Coins, Sun, Banknote, Heart, Languages, Zap, Train, Palette,
 } from "lucide-react";
 import {
   saveLead,
@@ -31,6 +31,7 @@ const categoryIcons: Record<string, React.ElementType> = {
   weather: Sun,
   salary: Banknote,
   family: Heart,
+  language: Languages,
   international: Globe,
   cityLife: Zap,
   transport: Train,
