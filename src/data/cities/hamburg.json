@@ -1,0 +1,82 @@
+{
+  "cityId": "hamburg",
+  "lastReviewed": "2026-05-03",
+  "sources": [
+    {
+      "label": "Numbeo Hamburg 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Hamburg",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "Statistisches Amt Hamburg 2024",
+      "url": "https://www.statistik-nord.de",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official Hamburg statistics authority."
+    },
+    {
+      "label": "HVV Transit Fares 2025",
+      "url": "https://www.hvv.de",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official HVV Hamburg fare schedule. Deutschlandticket €49/mo valid."
+    }
+  ],
+  "rent": {
+    "oneBrCityCenter": 1200,
+    "oneBrOutside": 900,
+    "threeBrCityCenter": 2300,
+    "perM2CityCenter": 22
+  },
+  "grocery": {
+    "monthlyEur2Adults": 360
+  },
+  "groceriesIndex": 57,
+  "safety": {
+    "safetyIndex": 70,
+    "crimeIndex": 30,
+    "propertyCrimeIndex": 36,
+    "violentCrimeIndex": 18,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
+  "eatingOut": {
+    "dinnerForTwo": 55,
+    "latte": 3.5,
+    "domesticBeer": 3.5
+  },
+  "transport": {
+    "monthlyPass": 49,
+    "taxiStart": 3.5,
+    "fuelLiter": 1.85
+  },
+  "utilities": {
+    "basic85m2": 195
+  },
+  "internet": {
+    "monthly": 35
+  },
+  "salary": {
+    "grossRef": 70000,
+    "netEstimate": 43500,
+    "currency": "EUR",
+    "note": "After progressive income tax (Lohnsteuer) + solidarity surcharge (Soli) + social contributions (Kranken-, Renten-, Pflege-, Arbeitslosenversicherung). Kirchensteuer not included."
+  },
+  "healthcare": {
+    "monthlyEstimate": 0,
+    "note": "Statutory health insurance (GKV) included in social contributions above. Private supplement optional."
+  },
+  "climate": {
+    "avgHighByMonth": [3, 4, 8, 13, 18, 21, 23, 23, 19, 13, 7, 4],
+    "avgLowByMonth": [-1, -1, 2, 5, 10, 13, 15, 15, 11, 7, 3, 0],
+    "sunshineHoursPerYear": 1626
+  }
+}

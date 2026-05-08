@@ -2,17 +2,61 @@
   "cityId": "amsterdam",
   "lastReviewed": "2026-04-18",
   "sources": [
-    { "label": "Numbeo Amsterdam 2025", "url": "https://www.numbeo.com/cost-of-living/in/Amsterdam" },
-    { "label": "CBS Netherlands Statistics 2024", "url": "https://www.cbs.nl/en-gb" },
-    { "label": "GVB Transit Fares 2025", "url": "https://www.gvb.nl" },
-    { "label": "Zorgverzekeringslijn 2025", "url": "https://www.zorgverzekeringslijn.nl" }
+    {
+      "label": "Numbeo Amsterdam 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Amsterdam",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "CBS Netherlands Statistics 2024",
+      "url": "https://www.cbs.nl/en-gb",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official Dutch statistics bureau."
+    },
+    {
+      "label": "GVB Transit Fares 2025",
+      "url": "https://www.gvb.nl",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official GVB Amsterdam fare schedule."
+    },
+    {
+      "label": "Zorgverzekeringslijn 2025",
+      "url": "https://www.zorgverzekeringslijn.nl",
+      "source_type": "official_statistical",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["healthcare.monthlyEstimate"],
+      "notes": "Dutch health insurance benchmark."
+    }
   ],
   "rent": {
     "oneBrCityCenter": 1900,
     "oneBrOutside": 1450,
-    "threeBrCityCenter": 3200
+    "threeBrCityCenter": 3200,
+    "perM2CityCenter": 38
+  },
+  "grocery": {
+    "monthlyEur2Adults": 450
   },
   "groceriesIndex": 65,
+  "safety": {
+    "safetyIndex": 73,
+    "crimeIndex": 27,
+    "propertyCrimeIndex": 33,
+    "violentCrimeIndex": 18,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
   "eatingOut": {
     "dinnerForTwo": 65,
     "latte": 4.5,

@@ -2,16 +2,52 @@
   "cityId": "paris",
   "lastReviewed": "2026-04-18",
   "sources": [
-    { "label": "Numbeo Paris 2025", "url": "https://www.numbeo.com/cost-of-living/in/Paris" },
-    { "label": "INSEE France Statistics 2024", "url": "https://www.insee.fr" },
-    { "label": "RATP Transit Fares 2025", "url": "https://www.ratp.fr" }
+    {
+      "label": "Numbeo Paris 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Paris",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "INSEE France Statistics 2024",
+      "url": "https://www.insee.fr",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official French national statistics institute."
+    },
+    {
+      "label": "RATP Transit Fares 2025",
+      "url": "https://www.ratp.fr",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official RATP Paris fare schedule."
+    }
   ],
   "rent": {
     "oneBrCityCenter": 1800,
     "oneBrOutside": 1350,
-    "threeBrCityCenter": 3500
+    "threeBrCityCenter": 3500,
+    "perM2CityCenter": 35
+  },
+  "grocery": {
+    "monthlyEur2Adults": 410
   },
   "groceriesIndex": 72,
+  "safety": {
+    "safetyIndex": 65,
+    "crimeIndex": 35,
+    "propertyCrimeIndex": 43,
+    "violentCrimeIndex": 24,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
   "eatingOut": {
     "dinnerForTwo": 70,
     "latte": 4.0,

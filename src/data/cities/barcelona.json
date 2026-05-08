@@ -2,16 +2,52 @@
   "cityId": "barcelona",
   "lastReviewed": "2026-04-18",
   "sources": [
-    { "label": "Numbeo Barcelona 2025", "url": "https://www.numbeo.com/cost-of-living/in/Barcelona" },
-    { "label": "INE Spain Statistics 2024", "url": "https://www.ine.es" },
-    { "label": "TMB Barcelona Transit Fares", "url": "https://www.tmb.cat" }
+    {
+      "label": "Numbeo Barcelona 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Barcelona",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "INE Spain Statistics 2024",
+      "url": "https://www.ine.es",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official Spanish national statistics institute."
+    },
+    {
+      "label": "TMB Barcelona Transit Fares",
+      "url": "https://www.tmb.cat",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official TMB Barcelona fare schedule."
+    }
   ],
   "rent": {
     "oneBrCityCenter": 1300,
     "oneBrOutside": 950,
-    "threeBrCityCenter": 2400
+    "threeBrCityCenter": 2400,
+    "perM2CityCenter": 22
+  },
+  "grocery": {
+    "monthlyEur2Adults": 320
   },
   "groceriesIndex": 59,
+  "safety": {
+    "safetyIndex": 65,
+    "crimeIndex": 35,
+    "propertyCrimeIndex": 42,
+    "violentCrimeIndex": 22,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
   "eatingOut": {
     "dinnerForTwo": 50,
     "latte": 2.2,

@@ -2,16 +2,52 @@
   "cityId": "munich",
   "lastReviewed": "2026-04-18",
   "sources": [
-    { "label": "Numbeo Munich 2025", "url": "https://www.numbeo.com/cost-of-living/in/Munich" },
-    { "label": "Destatis Germany Statistics 2024", "url": "https://www.destatis.de" },
-    { "label": "MVV Transit Fares 2025", "url": "https://www.mvv-muenchen.de" }
+    {
+      "label": "Numbeo Munich 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Munich",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "Destatis Germany Statistics 2024",
+      "url": "https://www.destatis.de",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official German federal statistics office."
+    },
+    {
+      "label": "MVV Transit Fares 2025",
+      "url": "https://www.mvv-muenchen.de",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official MVV Munich fare schedule."
+    }
   ],
   "rent": {
     "oneBrCityCenter": 2000,
     "oneBrOutside": 1550,
-    "threeBrCityCenter": 3600
+    "threeBrCityCenter": 3600,
+    "perM2CityCenter": 32
+  },
+  "grocery": {
+    "monthlyEur2Adults": 420
   },
   "groceriesIndex": 60,
+  "safety": {
+    "safetyIndex": 80,
+    "crimeIndex": 20,
+    "propertyCrimeIndex": 24,
+    "violentCrimeIndex": 12,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
   "eatingOut": {
     "dinnerForTwo": 65,
     "latte": 4.5,

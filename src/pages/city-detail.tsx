@@ -7,7 +7,9 @@ import { getCityBySlug } from "@/data/cities";
 import { getCountryBySlug } from "@/data/countries";
 import { monthNames } from "@/data/salary-calculator";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { ArrowRight, MapPin, Sun, Shield, Wallet, Users, Globe, Calculator, Scale, ChevronLeft, Thermometer, Home, ShoppingCart, Train, UtensilsCrossed } from "lucide-react";
+import { MapPin, Sun, Wallet, Users, Globe, Calculator, Scale, ChevronLeft, Thermometer } from "lucide-react";
+import { CostBreakdownCard } from "@/components/city/CostBreakdownCard";
+import { SafetyBreakdownCard } from "@/components/city/SafetyBreakdownCard";
 
 export default function CityDetail() {
   const params = useParams<{ countrySlug: string; citySlug: string }>();
@@ -32,12 +34,6 @@ export default function CityDetail() {
     temp,
   }));
 
-  const costCategories = [
-    { label: "Rent", value: city.rentIndex, icon: Home, color: "text-red-500" },
-    { label: "Groceries", value: city.groceriesIndex, icon: ShoppingCart, color: "text-green-500" },
-    { label: "Transport", value: city.transportIndex, icon: Train, color: "text-blue-500" },
-    { label: "Dining", value: city.diningIndex, icon: UtensilsCrossed, color: "text-orange-500" },
-  ];
 
   return (
     <Layout>
@@ -99,34 +95,7 @@ export default function CityDetail() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Shield className="w-5 h-5 text-emerald-500" />
-                  <h3 className="font-semibold text-foreground">Safety</h3>
-                </div>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="text-4xl font-bold text-foreground">{city.safetyIndex}</div>
-                  <div>
-                    <div className="text-sm font-medium text-foreground">/100</div>
-                    <div className="text-xs text-muted-foreground">Safety Index</div>
-                  </div>
-                </div>
-                <div className="w-full bg-muted rounded-full h-3 mb-4">
-                  <div
-                    className="bg-emerald-500 h-3 rounded-full transition-all"
-                    style={{ width: `${city.safetyIndex}%` }}
-                  />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {city.safetyIndex >= 70
-                    ? "This city has a high safety rating, indicating low crime and a secure environment for residents."
-                    : city.safetyIndex >= 60
-                    ? "This city has a moderate-to-good safety rating. Standard urban precautions are advised."
-                    : "Exercise typical urban awareness. Safety varies by neighborhood."}
-                </p>
-              </CardContent>
-            </Card>
+            <SafetyBreakdownCard city={city} />
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 mb-8">
@@ -157,33 +126,7 @@ export default function CityDetail() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Wallet className="w-5 h-5 text-blue-500" />
-                  <h3 className="font-semibold text-foreground">Cost of Living</h3>
-                </div>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="text-4xl font-bold text-foreground">{city.costOfLivingIndex}</div>
-                  <div>
-                    <div className="text-sm font-medium text-foreground">/100</div>
-                    <div className="text-xs text-muted-foreground">Overall Index</div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  {costCategories.map((cat) => (
-                    <div key={cat.label} className="flex items-center gap-3">
-                      <cat.icon className={`w-4 h-4 ${cat.color} flex-shrink-0`} />
-                      <span className="text-sm text-muted-foreground w-20 flex-shrink-0">{cat.label}</span>
-                      <div className="flex-1 bg-muted rounded-full h-2">
-                        <div className="bg-foreground/30 h-2 rounded-full" style={{ width: `${cat.value}%` }} />
-                      </div>
-                      <span className="text-xs font-medium text-foreground w-10 text-right">{cat.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <CostBreakdownCard city={city} />
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 mb-8">

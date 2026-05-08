@@ -1,5 +1,7 @@
 import { type City, getCityById } from "./cities";
 import { type Country, getCountryById } from "./countries";
+import { getCostOfLiving, REFERENCE_CITY_NAME } from "./cost-of-living";
+import { getCityMetrics } from "./city-costs";
 
 export interface ComparisonDimension {
   label: string;
@@ -22,10 +24,13 @@ export const comparisonDimensions: ComparisonDimension[] = [
   {
     label: "Safety Index",
     key: "safetyIndex",
-    getValue: (city) => city.safetyIndex,
+    getValue: (city) => {
+      const m = getCityMetrics(city.slug);
+      return m?.safety.safetyIndex ?? city.safetyIndex;
+    },
     format: (v) => `${v}/100`,
     higherIsBetter: true,
-    description: "Safety rating based on crime data and quality of life indices",
+    description: "Perception-based safety index (Numbeo, 0–100). Higher = safer. Not an official crime rate.",
   },
   {
     label: "Median Gross Salary",
@@ -44,44 +49,44 @@ export const comparisonDimensions: ComparisonDimension[] = [
     description: "Estimated annual net salary after tax and contributions",
   },
   {
-    label: "Cost of Living Index",
-    key: "costOfLivingIndex",
-    getValue: (city) => city.costOfLivingIndex,
-    format: (v) => `${v}/100`,
+    label: `Cost of Living Score`,
+    key: "costScore",
+    getValue: (city) => getCostOfLiving(city).totalScore,
+    format: (v) => `${v} (${REFERENCE_CITY_NAME}=100)`,
     higherIsBetter: false,
-    description: "Overall cost of living (lower = more affordable)",
+    description: `Monthly cost score for a 2-adult household, 1BR city centre. ${REFERENCE_CITY_NAME} = 100 (median of all supported cities). Lower = more affordable.`,
   },
   {
-    label: "Rent Index",
-    key: "rentIndex",
-    getValue: (city) => city.rentIndex,
-    format: (v) => `${v}/100`,
+    label: "Rent (€/m² city centre)",
+    key: "rentPerM2",
+    getValue: (city) => getCityMetrics(city.slug)?.rent.perM2CityCenter ?? 0,
+    format: (v) => v ? `€${v}/m²` : "—",
     higherIsBetter: false,
-    description: "Housing rental costs (lower = more affordable)",
+    description: "City-centre residential rent per square metre. Source: Numbeo crowd-reported data.",
   },
   {
-    label: "Groceries Index",
-    key: "groceriesIndex",
-    getValue: (city) => city.groceriesIndex,
-    format: (v) => `${v}/100`,
+    label: "Groceries (€/mo · 2 adults)",
+    key: "groceryMonthly",
+    getValue: (city) => getCityMetrics(city.slug)?.grocery.monthlyEur2Adults ?? 0,
+    format: (v) => v ? `€${v}/mo` : "—",
     higherIsBetter: false,
-    description: "Grocery and food shopping costs",
+    description: "Estimated monthly grocery spend for 2 adults.",
   },
   {
-    label: "Transport Index",
-    key: "transportIndex",
-    getValue: (city) => city.transportIndex,
-    format: (v) => `${v}/100`,
+    label: "Transport (monthly pass)",
+    key: "transportPass",
+    getValue: (city) => getCityMetrics(city.slug)?.transport.monthlyPass ?? 0,
+    format: (v) => v ? `€${v}/mo` : "—",
     higherIsBetter: false,
-    description: "Public transport and commuting costs",
+    description: "Monthly public transport subscription. Sourced from official transit operator.",
   },
   {
-    label: "Dining Index",
-    key: "diningIndex",
-    getValue: (city) => city.diningIndex,
-    format: (v) => `${v}/100`,
+    label: "Dining (dinner for 2)",
+    key: "diningDinner",
+    getValue: (city) => getCityMetrics(city.slug)?.eatingOut.dinnerForTwo ?? 0,
+    format: (v) => v ? `€${v}` : "—",
     higherIsBetter: false,
-    description: "Restaurant and dining costs",
+    description: "Mid-range restaurant dinner for 2 adults including drinks.",
   },
 ];
 

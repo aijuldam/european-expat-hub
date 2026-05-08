@@ -2,16 +2,52 @@
   "cityId": "budapest",
   "lastReviewed": "2026-04-18",
   "sources": [
-    { "label": "Numbeo Budapest 2025", "url": "https://www.numbeo.com/cost-of-living/in/Budapest" },
-    { "label": "KSH Hungary Statistics 2024", "url": "https://www.ksh.hu" },
-    { "label": "BKK Transit Fares 2025", "url": "https://bkk.hu" }
+    {
+      "label": "Numbeo Budapest 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Budapest",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "KSH Hungary Statistics 2024",
+      "url": "https://www.ksh.hu",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official Hungarian Central Statistical Office."
+    },
+    {
+      "label": "BKK Transit Fares 2025",
+      "url": "https://bkk.hu",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official BKK Budapest fare schedule."
+    }
   ],
   "rent": {
     "oneBrCityCenter": 700,
     "oneBrOutside": 500,
-    "threeBrCityCenter": 1300
+    "threeBrCityCenter": 1300,
+    "perM2CityCenter": 14
+  },
+  "grocery": {
+    "monthlyEur2Adults": 220
   },
   "groceriesIndex": 42,
+  "safety": {
+    "safetyIndex": 72,
+    "crimeIndex": 28,
+    "propertyCrimeIndex": 32,
+    "violentCrimeIndex": 18,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
   "eatingOut": {
     "dinnerForTwo": 30,
     "latte": 2.0,

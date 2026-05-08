@@ -2,16 +2,52 @@
   "cityId": "berlin",
   "lastReviewed": "2026-04-18",
   "sources": [
-    { "label": "Numbeo Berlin 2025", "url": "https://www.numbeo.com/cost-of-living/in/Berlin" },
-    { "label": "Destatis Germany Statistics 2024", "url": "https://www.destatis.de" },
-    { "label": "BVG Transit Fares 2025", "url": "https://www.bvg.de" }
+    {
+      "label": "Numbeo Berlin 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Berlin",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "Destatis Germany Statistics 2024",
+      "url": "https://www.destatis.de",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official German federal statistics office."
+    },
+    {
+      "label": "BVG Transit Fares 2025",
+      "url": "https://www.bvg.de",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official BVG Berlin fare schedule."
+    }
   ],
   "rent": {
     "oneBrCityCenter": 1400,
     "oneBrOutside": 1050,
-    "threeBrCityCenter": 2500
+    "threeBrCityCenter": 2500,
+    "perM2CityCenter": 23
+  },
+  "grocery": {
+    "monthlyEur2Adults": 370
   },
   "groceriesIndex": 55,
+  "safety": {
+    "safetyIndex": 65,
+    "crimeIndex": 35,
+    "propertyCrimeIndex": 42,
+    "violentCrimeIndex": 20,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
   "eatingOut": {
     "dinnerForTwo": 55,
     "latte": 4.0,

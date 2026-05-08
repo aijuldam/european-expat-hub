@@ -2,17 +2,61 @@
   "cityId": "lisbon",
   "lastReviewed": "2026-04-18",
   "sources": [
-    { "label": "Numbeo Lisbon 2025", "url": "https://www.numbeo.com/cost-of-living/in/Lisbon" },
-    { "label": "INE Portugal Statistics 2024", "url": "https://www.ine.pt" },
-    { "label": "Carris/Metro Lisboa Fares 2025", "url": "https://www.metrolisboa.pt" },
-    { "label": "IPMA Climate Normals Lisbon", "url": "https://www.ipma.pt" }
+    {
+      "label": "Numbeo Lisbon 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Lisbon",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "INE Portugal Statistics 2024",
+      "url": "https://www.ine.pt",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official Portuguese national statistics institute."
+    },
+    {
+      "label": "Carris/Metro Lisboa Fares 2025",
+      "url": "https://www.metrolisboa.pt",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official Carris/Metro Lisboa fare schedule."
+    },
+    {
+      "label": "IPMA Climate Normals Lisbon",
+      "url": "https://www.ipma.pt",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["climate"],
+      "notes": "Official Portuguese meteorological authority."
+    }
   ],
   "rent": {
     "oneBrCityCenter": 1300,
     "oneBrOutside": 950,
-    "threeBrCityCenter": 2400
+    "threeBrCityCenter": 2400,
+    "perM2CityCenter": 22
+  },
+  "grocery": {
+    "monthlyEur2Adults": 280
   },
   "groceriesIndex": 54,
+  "safety": {
+    "safetyIndex": 72,
+    "crimeIndex": 28,
+    "propertyCrimeIndex": 33,
+    "violentCrimeIndex": 18,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
   "eatingOut": {
     "dinnerForTwo": 40,
     "latte": 1.8,

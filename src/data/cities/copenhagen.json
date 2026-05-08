@@ -2,16 +2,52 @@
   "cityId": "copenhagen",
   "lastReviewed": "2026-04-18",
   "sources": [
-    { "label": "Numbeo Copenhagen 2025", "url": "https://www.numbeo.com/cost-of-living/in/Copenhagen" },
-    { "label": "Danmarks Statistik 2024", "url": "https://www.dst.dk" },
-    { "label": "Rejsekort / DSB Fares 2025", "url": "https://www.dsb.dk" }
+    {
+      "label": "Numbeo Copenhagen 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Copenhagen",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "Danmarks Statistik 2024",
+      "url": "https://www.dst.dk",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official Danish statistics authority."
+    },
+    {
+      "label": "Rejsekort / DSB Fares 2025",
+      "url": "https://www.dsb.dk",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official Rejsekort/Movia Copenhagen fare schedule."
+    }
   ],
   "rent": {
     "oneBrCityCenter": 1700,
     "oneBrOutside": 1300,
-    "threeBrCityCenter": 3000
+    "threeBrCityCenter": 3000,
+    "perM2CityCenter": 28
+  },
+  "grocery": {
+    "monthlyEur2Adults": 490
   },
   "groceriesIndex": 90,
+  "safety": {
+    "safetyIndex": 82,
+    "crimeIndex": 18,
+    "propertyCrimeIndex": 22,
+    "violentCrimeIndex": 12,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
   "eatingOut": {
     "dinnerForTwo": 90,
     "latte": 6.0,

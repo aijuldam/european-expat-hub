@@ -2,16 +2,52 @@
   "cityId": "brussels",
   "lastReviewed": "2026-04-18",
   "sources": [
-    { "label": "Numbeo Brussels 2025", "url": "https://www.numbeo.com/cost-of-living/in/Brussels" },
-    { "label": "Statbel Belgium Statistics 2024", "url": "https://statbel.fgov.be" },
-    { "label": "STIB-MIVB Transit Fares 2025", "url": "https://www.stib-mivb.be" }
+    {
+      "label": "Numbeo Brussels 2025",
+      "url": "https://www.numbeo.com/cost-of-living/in/Brussels",
+      "source_type": "crowdsourced",
+      "source_date": "2025-Q1",
+      "confidence": "medium",
+      "metric_keys": ["groceriesIndex", "grocery.monthlyEur2Adults", "eatingOut", "safety", "rent.perM2CityCenter"],
+      "notes": "Perception-based crowdsourced data."
+    },
+    {
+      "label": "Statbel Belgium Statistics 2024",
+      "url": "https://statbel.fgov.be",
+      "source_type": "official_statistical",
+      "source_date": "2024-01-01",
+      "confidence": "high",
+      "metric_keys": ["salary"],
+      "notes": "Official Belgian statistical office."
+    },
+    {
+      "label": "STIB-MIVB Transit Fares 2025",
+      "url": "https://www.stib-mivb.be",
+      "source_type": "official_operator",
+      "source_date": "2025-01-01",
+      "confidence": "high",
+      "metric_keys": ["transport.monthlyPass"],
+      "notes": "Official STIB Brussels fare schedule."
+    }
   ],
   "rent": {
     "oneBrCityCenter": 1200,
     "oneBrOutside": 950,
-    "threeBrCityCenter": 2300
+    "threeBrCityCenter": 2300,
+    "perM2CityCenter": 20
+  },
+  "grocery": {
+    "monthlyEur2Adults": 370
   },
   "groceriesIndex": 64,
+  "safety": {
+    "safetyIndex": 62,
+    "crimeIndex": 38,
+    "propertyCrimeIndex": 45,
+    "violentCrimeIndex": 25,
+    "propertyCrimeMetricType": "perception_index",
+    "violentCrimeMetricType": "perception_index"
+  },
   "eatingOut": {
     "dinnerForTwo": 60,
     "latte": 4.0,
