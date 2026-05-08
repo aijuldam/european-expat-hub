@@ -16,7 +16,7 @@ import type { City } from "./data/cities";
 import { countryLPData } from "./data/salary-lp-data";
 import { cityComparisonData } from "./data/city-comparison-lp-data";
 
-export const SITE = "https://expatlix.com";
+export const SITE = "https://www.expatlix.com";
 
 export interface RouteSeo {
   title: string;
