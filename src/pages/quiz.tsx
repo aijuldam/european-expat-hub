@@ -292,6 +292,7 @@ export default function Quiz() {
   // ── Quiz questions ───────────────────────────────────────
   return (
     <Layout>
+      <h1 className="sr-only">Expat City Match Quiz</h1>
       <div className="min-h-[calc(100dvh-8rem)] flex flex-col">
 
         {/* Progress bar */}

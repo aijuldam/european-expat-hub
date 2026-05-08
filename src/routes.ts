@@ -57,9 +57,9 @@ export const staticRoutes: RouteConfig[] = [
   {
     path: "/salary-calculator",
     seo: {
-      title: "European Salary Calculator 2024 | Expatlix",
+      title: "European Salary Calculator 2026 | Expatlix",
       description:
-        "Estimate your gross-to-net salary in the Netherlands, France, Germany, and Hungary with 2024 tax parameters.",
+        "Estimate your gross-to-net salary across 12 European countries with 2026 tax parameters.",
     },
   },
   {

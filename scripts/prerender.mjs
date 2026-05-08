@@ -21,7 +21,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root    = path.resolve(__dirname, "..");
 const outDir  = path.resolve(root, "dist/public");
 const rawBase = process.env.BASE_PATH ?? "/";
-const SITE    = "https://expatlix.com";
+const SITE    = "https://www.expatlix.com";
 
 /** Split point: Helmet head tags appear before the first block-level element. */
 const BODY_START_RE = /<(div|header|main|section|article|nav|footer|ul|ol)\b/;
