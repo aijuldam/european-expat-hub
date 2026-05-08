@@ -100,7 +100,12 @@ export default function Compare() {
                       </div>
                       <div className="flex flex-col items-center justify-center px-4 border-x bg-muted/20 min-w-[140px]">
                         <div className="text-xs font-medium text-foreground text-center">{dimension.label}</div>
-                        <div className="text-xs text-muted-foreground mt-0.5">
+                        {dimension.hint && (
+                          <div className="text-[10px] text-muted-foreground/60 mt-0.5 text-center leading-tight">
+                            {dimension.hint}
+                          </div>
+                        )}
+                        <div className="text-xs text-muted-foreground mt-1">
                           {winner === "tie" ? (
                             <span className="flex items-center gap-1"><Minus className="w-3 h-3" /> Equal</span>
                           ) : (

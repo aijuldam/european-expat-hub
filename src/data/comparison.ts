@@ -10,6 +10,8 @@ export interface ComparisonDimension {
   format: (value: string | number) => string;
   higherIsBetter: boolean;
   description: string;
+  /** Optional caption shown once in the center label column — use for index baselines, units, etc. */
+  hint?: string;
 }
 
 export const comparisonDimensions: ComparisonDimension[] = [
@@ -52,9 +54,10 @@ export const comparisonDimensions: ComparisonDimension[] = [
     label: `Cost of Living Score`,
     key: "costScore",
     getValue: (city) => getCostOfLiving(city).totalScore,
-    format: (v) => `${v} (${REFERENCE_CITY_NAME}=100)`,
+    format: (v) => `${v}`,
     higherIsBetter: false,
     description: `Monthly cost score for a 2-adult household, 1BR city centre. ${REFERENCE_CITY_NAME} = 100 (median of all supported cities). Lower = more affordable.`,
+    hint: `Indexed · ${REFERENCE_CITY_NAME} = 100`,
   },
   {
     label: "Rent (€/m² city centre)",
