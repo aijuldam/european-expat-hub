@@ -2,6 +2,7 @@ import { type City, getCityById } from "./cities";
 import { type Country, getCountryById } from "./countries";
 import { getCostOfLiving, REFERENCE_CITY_NAME } from "./cost-of-living";
 import { getCityMetrics } from "./city-costs";
+import { getRentPerM2 } from "./rent-per-m2";
 
 export interface ComparisonDimension {
   label: string;
@@ -62,10 +63,13 @@ export const comparisonDimensions: ComparisonDimension[] = [
   {
     label: "Rent (€/m² city centre)",
     key: "rentPerM2",
-    getValue: (city) => getCityMetrics(city.slug)?.rent.perM2CityCenter ?? 0,
+    getValue: (city) =>
+      getCityMetrics(city.slug)?.rent.perM2CityCenter
+      ?? getRentPerM2(city.slug)?.perM2CityCenter
+      ?? 0,
     format: (v) => v ? `€${v}/m²` : "—",
     higherIsBetter: false,
-    description: "City-centre residential rent per square metre. Source: Numbeo crowd-reported data.",
+    description: "City-centre residential rent per square metre. Sources: official housing observatories, large property portals (Pararius, Idealista, ImmoScout24), or Numbeo as fallback.",
   },
   {
     label: "Groceries (€/mo · 2 adults)",

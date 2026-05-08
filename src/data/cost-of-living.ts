@@ -20,6 +20,7 @@
  */
 
 import { getCityMetrics } from "./city-costs";
+import { getRentPerM2 } from "./rent-per-m2";
 import type { City } from "./cities";
 
 export const REFERENCE_CITY_ID   = "hamburg";
@@ -64,7 +65,7 @@ export function getCostOfLiving(city: City): CityCostOfLiving {
     referenceCityName: REFERENCE_CITY_NAME,
     referenceScore:    100,
     totalScore: computeCityScore(city.costOfLivingIndex),
-    rentEurPerM2CityCenter:   metrics?.rent.perM2CityCenter      ?? null,
+    rentEurPerM2CityCenter:   metrics?.rent.perM2CityCenter      ?? getRentPerM2(city.slug)?.perM2CityCenter ?? null,
     groceryMonthlyEur2Adults: metrics?.grocery.monthlyEur2Adults  ?? null,
     transportMonthlyPassEur:  metrics?.transport.monthlyPass      ?? null,
     diningMidrangeDinner2Eur: metrics?.eatingOut.dinnerForTwo     ?? null,

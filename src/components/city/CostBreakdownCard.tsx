@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/tooltip";
 import { getCostOfLiving, REFERENCE_CITY_NAME } from "@/data/cost-of-living";
 import { getCityMetrics } from "@/data/city-costs";
+import { getRentPerM2 } from "@/data/rent-per-m2";
 import type { City } from "@/data/cities";
 
 interface Props {
@@ -62,7 +63,12 @@ function MetricRow({
 export function CostBreakdownCard({ city }: Props) {
   const col = getCostOfLiving(city);
   const metrics = getCityMetrics(city.slug);
-  const hasDetail = metrics !== null;
+  // hasDetail = true if we have at least one EUR data point to show
+  const hasDetail =
+    col.rentEurPerM2CityCenter !== null ||
+    col.groceryMonthlyEur2Adults !== null ||
+    col.transportMonthlyPassEur !== null ||
+    col.diningMidrangeDinner2Eur !== null;
 
   const scoreColor =
     col.totalScore <= 85 ? "text-emerald-600" :
@@ -155,28 +161,47 @@ export function CostBreakdownCard({ city }: Props) {
         )}
 
         {/* Sources footer */}
-        {hasDetail && metrics.sources.length > 0 && (
-          <div className="border-t border-border/50 pt-3">
-            <div className="text-xs text-muted-foreground mb-1.5 font-medium">Sources</div>
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
-              {metrics.sources.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {s.label}
-                  <ExternalLink className="w-2.5 h-2.5" aria-hidden="true" />
-                  {s.source_type === "crowdsourced" && (
-                    <span className="text-amber-600/80 text-[10px]">(crowd)</span>
-                  )}
-                </a>
-              ))}
+        {hasDetail && (() => {
+          const rentEntry = !metrics ? getRentPerM2(city.slug) : null;
+          const sources = metrics?.sources ?? [];
+          if (sources.length === 0 && !rentEntry) return null;
+          return (
+            <div className="border-t border-border/50 pt-3">
+              <div className="text-xs text-muted-foreground mb-1.5 font-medium">Sources</div>
+              <div className="flex flex-wrap gap-x-3 gap-y-1">
+                {sources.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {s.label}
+                    <ExternalLink className="w-2.5 h-2.5" aria-hidden="true" />
+                    {s.source_type === "crowdsourced" && (
+                      <span className="text-amber-600/80 text-[10px]">(crowd)</span>
+                    )}
+                  </a>
+                ))}
+                {rentEntry && (
+                  <a
+                    href={rentEntry.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {rentEntry.sourceLabel}
+                    <ExternalLink className="w-2.5 h-2.5" aria-hidden="true" />
+                    {rentEntry.sourceType === "crowdsourced" && (
+                      <span className="text-amber-600/80 text-[10px]">(crowd)</span>
+                    )}
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </CardContent>
     </Card>
   );
