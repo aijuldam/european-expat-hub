@@ -22,6 +22,12 @@ export interface RouteSeo {
   title: string;
   description: string;
   schema?: object;
+  /** If true: <meta name="robots" content="noindex"> is injected and the route is excluded from sitemap.xml */
+  noindex?: true;
+  /** Sitemap priority hint (0.0–1.0). Defaults applied by route type in prerender.mjs. */
+  priority?: number;
+  /** Sitemap changefreq hint. */
+  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
 }
 
 export interface RouteConfig {
@@ -75,6 +81,7 @@ export const staticRoutes: RouteConfig[] = [
     seo: {
       title: "Your City Match Results | Expatlix",
       description: "Your personalised European city recommendations from the expat lifestyle quiz.",
+      noindex: true, // dynamic results page — no meaningful static content to index
     },
   },
   {
@@ -119,6 +126,7 @@ export const staticRoutes: RouteConfig[] = [
     seo: {
       title: "City Comparison Embed | Expatlix",
       description: "Embeddable side-by-side city cost comparison widget.",
+      noindex: true, // embed widget — not a page for Google to index
     },
   },
 ];

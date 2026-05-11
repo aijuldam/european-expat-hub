@@ -46,6 +46,9 @@ function buildHead(route) {
     `<title>${route.seo.title}</title>`,
     `<meta name="description" content="${d}" />`,
     `<link rel="canonical" href="${url}" />`,
+    route.seo.noindex
+      ? `<meta name="robots" content="noindex,follow" />`
+      : null,
     `<meta property="og:title" content="${t}" />`,
     `<meta property="og:description" content="${d}" />`,
     `<meta property="og:url" content="${url}" />`,
@@ -56,6 +59,32 @@ function buildHead(route) {
       : null,
   ].filter(Boolean).join("\n    ");
 }
+
+/** Infer sitemap priority from path if not explicitly set. */
+function sitemapPriority(route) {
+  if (route.seo.priority != null) return route.seo.priority;
+  const p = route.path;
+  if (p === "/") return 1.0;
+  if (p === "/compare" || p === "/salary-calculator" || p === "/quiz" || p === "/countries") return 0.9;
+  if (p.startsWith("/countries/") && p.split("/").length === 3) return 0.8; // country pages
+  if (p.startsWith("/countries/") && p.split("/").length === 4) return 0.8; // city pages
+  if (p.startsWith("/compare/")) return 0.7; // city comparison LPs
+  if (p.startsWith("/salary-calculator/")) return 0.7; // salary LPs
+  if (p.startsWith("/guides/")) return 0.6;
+  return 0.5;
+}
+
+/** Infer sitemap changefreq from path if not explicitly set. */
+function sitemapChangefreq(route) {
+  if (route.seo.changefreq) return route.seo.changefreq;
+  const p = route.path;
+  if (p === "/") return "weekly";
+  if (p.startsWith("/countries/")) return "monthly";
+  if (p.startsWith("/compare/") || p.startsWith("/salary-calculator/")) return "monthly";
+  return "monthly";
+}
+
+const SITEMAP_LASTMOD = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
 async function main() {
   // ── 1. Vite dev server — handles TS/JSX/CSS/path-aliases via ssrLoadModule ──
@@ -106,11 +135,19 @@ async function main() {
 
   await vite.close();
 
-  // ── 4. sitemap.xml ──────────────────────────────────────────────────────────
+  // ── 4. sitemap.xml — exclude noindex routes, add lastmod/priority/changefreq ──
+  const indexableRoutes = routes.filter((r) => !r.seo.noindex);
   const sitemap = [
     `<?xml version="1.0" encoding="UTF-8"?>`,
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
-    ...routes.map((r) => `  <url><loc>${SITE}${r.path}</loc></url>`),
+    ...indexableRoutes.map((r) => [
+      `  <url>`,
+      `    <loc>${SITE}${r.path}</loc>`,
+      `    <lastmod>${SITEMAP_LASTMOD}</lastmod>`,
+      `    <changefreq>${sitemapChangefreq(r)}</changefreq>`,
+      `    <priority>${sitemapPriority(r).toFixed(1)}</priority>`,
+      `  </url>`,
+    ].join("\n")),
     `</urlset>`,
   ].join("\n");
   await fs.writeFile(path.join(outDir, "sitemap.xml"), sitemap + "\n");
